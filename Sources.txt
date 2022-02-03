@@ -1,0 +1,6 @@
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.449.5576&rep=rep1&type=pdf !
+https://nickmcd.me/2020/04/15/procedural-hydrology/ <- incredible !
+https://huw-man.github.io/Interactive-Erosion-Simulator-on-GPU/ !
+https://hal.inria.fr/inria-00402079/document
+https://80.lv/articles/river-editor-water-simulation-in-real-time/
+https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2001WR000602 (loads of attached sources)
