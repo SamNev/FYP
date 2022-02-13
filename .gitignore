@@ -1,2 +1,7 @@
-
+.vs/
 ~$oposal.docx
+Release/
+*.vcxproj.*
+*.vcxproj
+WaterProj/x64/
+WaterProj/WaterProj.sln
