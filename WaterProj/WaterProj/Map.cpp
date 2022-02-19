@@ -1,4 +1,7 @@
 #include "Map.h"
+
+#include <time.h>
+
 #include "MapRenderer.h"
 #include "Node.h"
 #include "PerlinNoise.h"
@@ -11,12 +14,15 @@ Map::Map(int width, int height)
 	m_renderer = new MapRenderer(this);
 	m_pointDist = 1.0f;
 
-	PerlinNoise perlin;
+	srand(time(NULL));
+	int seed = rand() % 9999;
+	PerlinNoise perlin(seed);
+	
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			m_nodes[y * width + x].addMarker(perlin.noise(x, y, 0.5f), 1.0f);
+			m_nodes[y * width + x].addMarker(perlin.noise(x, y, 0.5f) * 1.25, 1.0f);
 		}
 	}
 }
