@@ -20,4 +20,5 @@ protected:
 	MapRenderer* m_renderer;
 	int m_width;
 	int m_height;
+	float m_pointDist;
 };

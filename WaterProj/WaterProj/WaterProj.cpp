@@ -31,21 +31,9 @@ int main()
 		throw std::exception("GlewInit failed");
 	}
 
-	glMatrixMode(GL_PROJECTION);
-	gluPerspective(45.0, 900 / 900, 0.1f, 1000.0f);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glShadeModel(GL_SMOOTH);                            // Enable Smooth Shading
-	glClearDepth(1.0f);                                    // Depth Buffer Setup
-	glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
-	glDepthFunc(GL_LEQUAL);                                // The Type Of Depth Testing To Do
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);    // Really Nice Perspective Calculations
-	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
-
 	Map myMap(50, 50);
 	myMap.render();
 	SDL_GL_SwapWindow(window);
+	myMap.render();
 	std::getchar();
 }

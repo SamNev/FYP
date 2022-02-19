@@ -9,6 +9,7 @@ Map::Map(int width, int height)
 	m_width = width;
 	m_height = height;
 	m_renderer = new MapRenderer(this);
+	m_pointDist = 1.0f;
 
 	PerlinNoise perlin;
 	for (int x = 0; x < width; ++x)
@@ -48,6 +49,14 @@ float Map::getHeightAt(int x, int y)
 	if (x >= m_width)
 	{
 		return getHeightAt(fmin(x, m_width - 1), y);
+	}
+	if (x < 0)
+	{
+		return getHeightAt(0, y);
+	}
+	if (y < 0)
+	{
+		return getHeightAt(x, 0);
 	}
 
 	return m_nodes[y * m_width + x].top()->height;

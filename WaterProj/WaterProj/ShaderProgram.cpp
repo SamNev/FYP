@@ -58,8 +58,6 @@ ShaderProgram::ShaderProgram(const std::string vertexShader, const std::string f
 	glAttachShader(m_id, fragmentShaderId);
 
 	glBindAttribLocation(m_id, 0, "in_Position");
-	glBindAttribLocation(m_id, 1, "in_Color");
-	glBindAttribLocation(m_id, 2, "in_PointHeight");
 
 	glLinkProgram(m_id);
 	glGetProgramiv(m_id, GL_LINK_STATUS, &success);
