@@ -1,3 +1,4 @@
+#version 130
 attribute vec3 in_Position;
 uniform vec3 u_Color;
 uniform vec4 u_Surrounding;
@@ -5,9 +6,14 @@ uniform mat4 u_Pos;
 uniform mat4 u_Proj;
 uniform mat4 u_View;
 
+out VS_OUT {
+    vec3 FragPos;
+} vs_out;
+
 void main()
 {
 int id = gl_VertexID;
+vs_out.FragPos = vec3(u_Pos * vec4(in_Position, 1.0));
 if(id % 3 == 0)
 {
 	gl_Position = u_Proj * u_View * u_Pos * vec4(in_Position, 1.0);
