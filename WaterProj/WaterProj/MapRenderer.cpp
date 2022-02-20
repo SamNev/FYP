@@ -173,8 +173,8 @@ void MapRenderer::render(SDL_Window* window)
 	GLuint pos = m_groundRenderer->getUniform("u_Pos");
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
-	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, 100.f);
-	glm::mat4 viewMat = glm::lookAt(glm::vec3(0, 5, 0), glm::vec3(1, 5, 1), glm::vec3(0, 1, 0));
+	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, 500.f);
+	glm::mat4 viewMat = glm::lookAt(glm::vec3(0, 8, 0), glm::vec3(1, 8, 1), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
 

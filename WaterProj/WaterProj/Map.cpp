@@ -1,6 +1,8 @@
 #include "Map.h"
 
 #include <time.h>
+#include <glm.hpp>
+#include <ext.hpp>
 
 #include "MapRenderer.h"
 #include "Node.h"
@@ -17,14 +19,54 @@ Map::Map(int width, int height)
 	srand(time(NULL));
 	int seed = rand() % 9999;
 	PerlinNoise perlin(seed);
+	seed = rand() % 9999;
+	PerlinNoise perlin2(seed);
+	seed = rand() % 9999;
+	PerlinNoise perlin3(seed);
 	
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			m_nodes[y * width + x].addMarker(perlin.noise(x, y, 0.5f) * 1.25, 1.0f);
+			const float val = perlin.noise(x, y, 0.5f) * 0.5;
+			const float hill = getHillValue(&perlin2, x, y);
+			const float mount = getMountainValue(&perlin3, x, y);
+			m_nodes[y * width + x].addMarker(val + hill + mount, 1.0f);
 		}
 	}
+}
+
+float Map::getHillValue(PerlinNoise* noise, int x, int y)
+{
+	int lowX = x / 10;
+	int lowY = y / 10;
+	int highX = lowX + 1;
+	int highY = lowY + 1;
+	float xOffset = x % 10;
+	float yOffset = y % 10;
+	float hillX = lowX + (xOffset / 10.0) * (highX - lowX);
+	float hillY = lowY + (yOffset / 10.0) * (highY - lowY);
+	return noise->noise(hillX, hillY, 0.5f) * 4.0;
+
+}
+
+float Map::getMountainValue(PerlinNoise* noise, int x, int y)
+{
+	int lowX = x / 50;
+	int lowY = y / 50;
+	int highX = lowX + 1;
+	int highY = lowY + 1;
+	float xOffset = x % 50;
+	float yOffset = y % 50;
+	float mountX = lowX + (xOffset / 50.0) * (highX - lowX);
+	float mountY = lowY + (yOffset / 50.0) * (highY - lowY);
+	float mountainVal = 0.0f;
+	bool mountain = noise->noise(mountX, mountY, 0.5f) > 0.9;
+	if (mountain)
+	{
+		mountainVal += (noise->noise(mountX, mountY, 0.5f) - 0.9) * 100.0;
+	}
+	return mountainVal;
 }
 
 void Map::render(SDL_Window* window)
