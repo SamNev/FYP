@@ -31,9 +31,7 @@ int main()
 		throw std::exception("GlewInit failed");
 	}
 
-	Map myMap(50, 50);
-	myMap.render();
-	SDL_GL_SwapWindow(window);
-	myMap.render();
+	Map myMap(250, 250);
+	myMap.render(window);
 	std::getchar();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include "SDL2/SDL.h"
 #include <string>
 #include <vector>
 
@@ -13,7 +14,7 @@ public:
 	MapRenderer(Map* map);
 	~MapRenderer();
 	ShaderProgram* createShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);
-	void render();
+	void render(SDL_Window* window);
 	void calcPath(std::string& path);
 	void makeMapTile();
 protected:

@@ -160,7 +160,7 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 	return prog;
 }
 
-void MapRenderer::render()
+void MapRenderer::render(SDL_Window* window)
 {
 	m_groundRenderer->use(); 
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
@@ -174,7 +174,7 @@ void MapRenderer::render()
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, 100.f);
-	glm::mat4 viewMat = glm::lookAt(glm::vec3(0, 2, 0), glm::vec3(1, 2, 1), glm::vec3(0, 1, 0));
+	glm::mat4 viewMat = glm::lookAt(glm::vec3(0, 5, 0), glm::vec3(1, 5, 1), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
 
@@ -211,6 +211,8 @@ void MapRenderer::render()
 
 	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(0);
+
+	SDL_GL_SwapWindow(window);
 }
 
 void MapRenderer::calcPath(std::string& path)

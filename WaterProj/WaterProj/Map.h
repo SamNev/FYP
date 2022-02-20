@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Node.h"
+#include "SDL2/SDL.h"
 
 class MapRenderer;
 
@@ -10,7 +11,7 @@ public:
 	Map(int width, int height);
 	~Map();
 
-	void render();
+	void render(SDL_Window* window);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
 	Node* getNodeAt(int x, int y);

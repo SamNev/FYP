@@ -27,9 +27,9 @@ Map::Map(int width, int height)
 	}
 }
 
-void Map::render()
+void Map::render(SDL_Window* window)
 {
-	m_renderer->render();
+	m_renderer->render(window);
 }
 
 Node* Map::getNodeAt(int x, int y)
