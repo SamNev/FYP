@@ -5,5 +5,5 @@ in VS_OUT {
 
 void main()
 {
-    gl_FragColor = vec4(0.0, fs_in.FragPos.y, 0.0, 1.0);
+    gl_FragColor = vec4(0.0, fract(fs_in.FragPos.y), 0.0, 1.0);
 }
