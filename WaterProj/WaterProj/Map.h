@@ -3,7 +3,6 @@
 #include "Node.h"
 #include "SDL2/SDL.h"
 
-class MapRenderer;
 class PerlinNoise;
 
 struct MapParams
@@ -25,7 +24,6 @@ public:
 	Map(int width, int height, MapParams params);
 	~Map();
 
-	void render(SDL_Window* window);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
 	float getScale() { return m_scale; }
@@ -36,7 +34,6 @@ public:
 protected:
 	float m_scale = 10.0f;
 	Node* m_nodes;
-	MapRenderer* m_renderer;
 	int m_width;
 	int m_height;
 };

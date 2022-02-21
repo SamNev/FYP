@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 
 #include "Map.h"
+#include "MapRenderer.h"
 
 int main()
 {
@@ -32,8 +33,9 @@ int main()
 	}
 
 	MapParams params;
-	Map startMap(500, 500, params);
-	startMap.render(window);
+	Map* currentMap = new Map(500, 500, params);
+	MapRenderer renderer(currentMap);
+	renderer.render(window);
 
 	bool exit = false;
 	while (!exit)
@@ -47,9 +49,15 @@ int main()
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_SPACE)
 				{
-					MapParams params;
-					Map myMap(500, 500, params);
-					myMap.render(window);
+					delete(currentMap);
+					currentMap = new Map(500, 500, params);
+					renderer.setMap(currentMap);
+					renderer.render(window);
+				}
+				else if (event.key.keysym.sym == SDLK_w)
+				{
+					renderer.transformCam(glm::vec2(2.0f, 2.0f));
+					renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 					exit = true;

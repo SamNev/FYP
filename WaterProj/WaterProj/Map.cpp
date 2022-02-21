@@ -13,7 +13,6 @@ Map::Map(int width, int height, MapParams params)
 	m_nodes = new Node[width * height];
 	m_width = width;
 	m_height = height;
-	m_renderer = new MapRenderer(this);
 	m_scale = params.scale;
 
 	srand(time(NULL));
@@ -74,11 +73,6 @@ float Map::getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeig
 	return mountainVal;
 }
 
-void Map::render(SDL_Window* window)
-{
-	m_renderer->render(window);
-}
-
 Node* Map::getNodeAt(int x, int y)
 {
 	if (y >= m_height)
@@ -118,5 +112,4 @@ float Map::getHeightAt(int x, int y)
 Map::~Map()
 {
 	delete[m_width * m_height] m_nodes;
-	delete(m_renderer);
 }

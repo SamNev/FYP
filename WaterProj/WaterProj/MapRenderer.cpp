@@ -1,9 +1,7 @@
 #include "MapRenderer.h"
 
-#include <ext.hpp>
 #include <fstream>
 #include <GL/glew.h>
-#include <glm.hpp>
 #include <Windows.h>
 
 #include "Map.h"
@@ -12,6 +10,7 @@
 MapRenderer::MapRenderer(Map* map)
 {
 	m_map = map;
+	m_camPos = glm::vec3(0.0f, 12.0f + m_map->getScale(), 0.0f);
 	m_groundRenderer = createShaderProgram("vertex.txt", "fragment.txt");
 	makeMapTile();
 }
@@ -24,6 +23,12 @@ MapRenderer::~MapRenderer()
 	}
 
 	m_shaderPrograms.clear();
+}
+
+void MapRenderer::setMap(Map* map)
+{
+	m_map = map;
+	m_camPos = glm::vec3(0.0f, 12.0f + m_map->getScale(), 0.0f);
 }
 
 void MapRenderer::makeMapTile()
@@ -160,6 +165,11 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 	return prog;
 }
 
+void MapRenderer::transformCam(glm::vec2 transformation)
+{
+	m_camPos = glm::vec3(m_camPos.x + transformation.x, m_camPos.y, m_camPos.z + transformation.y);
+}
+
 void MapRenderer::render(SDL_Window* window)
 {
 	m_groundRenderer->use(); 
@@ -174,7 +184,7 @@ void MapRenderer::render(SDL_Window* window)
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, 1000.f);
-	glm::mat4 viewMat = glm::lookAt(glm::vec3(0, 12.0f + m_map->getScale(), 0), glm::vec3(1, 12.0f + m_map->getScale(), 1), glm::vec3(0, 1, 0));
+	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
 
