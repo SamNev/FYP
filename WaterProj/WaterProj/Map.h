@@ -15,8 +15,8 @@ struct MapParams
 	float lieModif = -20.0f;
 	float hillHeight = 100.0f;
 	float hillRarity = 500.0f;
-	float mountainHeight = 1000.0f;
-	float mountainRarity = 5000.0f;
+	float mountainHeight = 300.0f;
+	float mountainRarity = 2000.0f;
 };
 
 class Map 

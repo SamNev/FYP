@@ -69,7 +69,7 @@ float Map::getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeig
 	bool mountain = noise->noise(mountX, mountY, 0.5f) > 0.85;
 	if (mountain)
 	{
-		mountainVal += (noise->noise(mountX, mountY, 0.5f) - 0.85) * mountainHeight / m_scale;
+		mountainVal += (noise->noise(mountX, mountY, 0.5f) - 0.85) * mountainHeight * 6.6f / m_scale;
 	}
 	return mountainVal;
 }
