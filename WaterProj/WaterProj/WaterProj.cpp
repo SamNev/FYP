@@ -31,7 +31,8 @@ int main()
 		throw std::exception("GlewInit failed");
 	}
 
-	Map startMap(500, 500);
+	MapParams params;
+	Map startMap(500, 500, params);
 	startMap.render(window);
 
 	bool exit = false;
@@ -46,7 +47,8 @@ int main()
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_SPACE)
 				{
-					Map myMap(500, 500);
+					MapParams params;
+					Map myMap(500, 500, params);
 					myMap.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
@@ -57,7 +59,4 @@ int main()
 			}
 		}
 	}
-
-
-	std::getchar();
 }

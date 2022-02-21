@@ -8,13 +8,13 @@
 #include "Node.h"
 #include "PerlinNoise.h"
 
-Map::Map(int width, int height)
+Map::Map(int width, int height, MapParams params)
 {
 	m_nodes = new Node[width * height];
 	m_width = width;
 	m_height = height;
 	m_renderer = new MapRenderer(this);
-	m_pointDist = 1.0f;
+	m_scale = params.scale;
 
 	srand(time(NULL));
 	int seed = rand() % 9999;
@@ -23,48 +23,53 @@ Map::Map(int width, int height)
 	PerlinNoise perlin2(seed);
 	seed = rand() % 9999;
 	PerlinNoise perlin3(seed);
+	seed = rand() % 9999;
+	PerlinNoise perlin4(seed);
 	
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			const float val = perlin.noise(x, y, 0.5f) * 0.5;
-			const float hill = getHillValue(&perlin2, x, y);
-			const float mount = getMountainValue(&perlin3, x, y);
-			m_nodes[y * width + x].addMarker(val + hill + mount, 1.0f);
+			const float val = perlin.noise(x, y, 0.5f) * params.baseVariance * glm::min(m_scale, 10.0f);
+			const float base = (perlin4.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
+			const float hill = getHillValue(&perlin2, x, y, params.hillHeight, params.hillRarity);
+			const float mount = getMountainValue(&perlin3, x, y, params.mountainHeight, params.mountainRarity);
+			m_nodes[y * width + x].addMarker(base + val + hill + mount, 1.0f);
 		}
 	}
 }
 
-float Map::getHillValue(PerlinNoise* noise, int x, int y)
+float Map::getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity)
 {
-	int lowX = x / 10;
-	int lowY = y / 10;
+	float scalar = (rarity / m_scale);
+	int lowX = x / scalar;
+	int lowY = y / scalar;
 	int highX = lowX + 1;
 	int highY = lowY + 1;
-	float xOffset = x % 10;
-	float yOffset = y % 10;
-	float hillX = lowX + (xOffset / 10.0) * (highX - lowX);
-	float hillY = lowY + (yOffset / 10.0) * (highY - lowY);
-	return noise->noise(hillX, hillY, 0.5f) * 4.0;
+	float xOffset = x % (int)scalar;
+	float yOffset = y % (int)scalar;
+	float hillX = lowX + (xOffset / scalar) * (highX - lowX);
+	float hillY = lowY + (yOffset / scalar) * (highY - lowY);
+	return (noise->noise(hillX, hillY, 0.5f) - 0.1f) * noise->noise(hillX, hillY, 0.0f) * hillHeight / m_scale;
 
 }
 
-float Map::getMountainValue(PerlinNoise* noise, int x, int y)
+float Map::getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity)
 {
-	int lowX = x / 50;
-	int lowY = y / 50;
+	float scalar = (rarity / m_scale);
+	int lowX = x / scalar;
+	int lowY = y / scalar;
 	int highX = lowX + 1;
 	int highY = lowY + 1;
-	float xOffset = x % 50;
-	float yOffset = y % 50;
-	float mountX = lowX + (xOffset / 50.0) * (highX - lowX);
-	float mountY = lowY + (yOffset / 50.0) * (highY - lowY);
+	float xOffset = x % (int)scalar;
+	float yOffset = y % (int)scalar;
+	float mountX = lowX + (xOffset / scalar) * (highX - lowX);
+	float mountY = lowY + (yOffset / scalar) * (highY - lowY);
 	float mountainVal = 0.0f;
-	bool mountain = noise->noise(mountX, mountY, 0.5f) > 0.9;
+	bool mountain = noise->noise(mountX, mountY, 0.5f) > 0.85;
 	if (mountain)
 	{
-		mountainVal += (noise->noise(mountX, mountY, 0.5f) - 0.9) * 100.0;
+		mountainVal += (noise->noise(mountX, mountY, 0.5f) - 0.85) * mountainHeight / m_scale;
 	}
 	return mountainVal;
 }
