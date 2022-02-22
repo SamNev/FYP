@@ -49,7 +49,7 @@ float Map::getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, floa
 	float yOffset = y % (int)scalar;
 	float hillX = lowX + (xOffset / scalar) * (highX - lowX);
 	float hillY = lowY + (yOffset / scalar) * (highY - lowY);
-	return (noise->noise(hillX, hillY, 0.5f) - 0.1f) * noise->noise(hillX, hillY, 0.0f) * hillHeight / m_scale;
+	return (noise->noise(hillX, hillY, 0.5f) - 0.1f) * glm::pow(noise->noise(hillX, hillY, 1.0f), 0.5) * hillHeight / m_scale;
 
 }
 
@@ -68,7 +68,7 @@ float Map::getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeig
 	bool mountain = noise->noise(mountX, mountY, 0.5f) > 0.85;
 	if (mountain)
 	{
-		mountainVal += (noise->noise(mountX, mountY, 0.5f) - 0.85) * mountainHeight * 6.6f / m_scale;
+		mountainVal += pow((noise->noise(mountX, mountY, 0.5f) - 0.85) * sqrt(mountainHeight) * 6.6f / m_scale, 2);
 	}
 	return mountainVal;
 }

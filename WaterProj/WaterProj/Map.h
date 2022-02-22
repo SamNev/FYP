@@ -11,8 +11,8 @@ struct MapParams
 	float baseVariance = 0.07f;
 	float lieChangeRate = 10000.0f;
 	float liePeak = 25.0f;
-	float lieModif = -20.0f;
-	float hillHeight = 100.0f;
+	float lieModif = -25.0f;
+	float hillHeight = 80.0f;
 	float hillRarity = 500.0f;
 	float mountainHeight = 300.0f;
 	float mountainRarity = 2000.0f;

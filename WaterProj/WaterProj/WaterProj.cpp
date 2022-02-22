@@ -33,6 +33,8 @@ int main()
 	}
 
 	MapParams params;
+	//params.hillRarity = 2000;
+	//params.hillHeight = 300;
 	Map* currentMap = new Map(500, 500, params);
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
