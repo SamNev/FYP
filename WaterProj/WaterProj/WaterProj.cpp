@@ -34,7 +34,7 @@ int main()
 
 	MapParams params;
 	params.randomize();
-	Map* currentMap = new Map(1000, 1000, params);
+	Map* currentMap = new Map(2000, 2000, params);
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
 
@@ -52,13 +52,23 @@ int main()
 				{
 					delete(currentMap);
 					params.randomize();
-					currentMap = new Map(1000, 1000, params);
+					currentMap = new Map(2000, 2000, params);
 					renderer.setMap(currentMap);
 					renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_w)
 				{
 					renderer.transformCam(glm::vec2(2.0f, 2.0f));
+					renderer.render(window);
+				}
+				else if (event.key.keysym.sym == SDLK_q)
+				{
+					renderer.zoomIn();
+					renderer.render(window);
+				}
+				else if (event.key.keysym.sym == SDLK_e)
+				{
+					renderer.zoomOut();
 					renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)

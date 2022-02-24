@@ -21,6 +21,10 @@ public:
 	void makeMapTile();
 	void transformCam(glm::vec2 transformation);
 	void setMap(Map* map);
+	void zoomIn();
+	void zoomOut();
+	float getCullDist();
+	float distFromCamera(glm::vec3 pos);
 protected:
 	std::vector<ShaderProgram*> m_shaderPrograms;
 	ShaderProgram* m_groundRenderer;
@@ -28,4 +32,5 @@ protected:
 	GLuint m_vaoId;
 	std::string m_knownResourceFolder;
 	glm::vec3 m_camPos;
+	int m_zoomLevel = 1;
 };

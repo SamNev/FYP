@@ -28,6 +28,7 @@ MapRenderer::~MapRenderer()
 void MapRenderer::setMap(Map* map)
 {
 	m_map = map;
+	m_zoomLevel = 1;
 	m_camPos = glm::vec3(0.0f, 12.0f + m_map->getScale(), 0.0f);
 }
 
@@ -170,6 +171,16 @@ void MapRenderer::transformCam(glm::vec2 transformation)
 	m_camPos = glm::vec3(m_camPos.x + transformation.x, m_camPos.y, m_camPos.z + transformation.y);
 }
 
+float MapRenderer::getCullDist()
+{
+	return min(m_zoomLevel * 500.0f, 4000.0f);
+}
+
+float MapRenderer::distFromCamera(glm::vec3 pos)
+{
+	return glm::length(m_camPos - pos);
+}
+
 void MapRenderer::render(SDL_Window* window)
 {
 	m_groundRenderer->use(); 
@@ -183,27 +194,32 @@ void MapRenderer::render(SDL_Window* window)
 	GLuint pos = m_groundRenderer->getUniform("u_Pos");
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
-	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, 2000.f);
+	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
 	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
+	const float cullDist = getCullDist();
 
-	for (int x = 0; x < m_map->getWidth(); ++x)
+	for (int x = 0; x < m_map->getWidth(); x += m_zoomLevel)
 	{
-		for (int y = 0; y < m_map->getHeight(); ++y)
+		for (int y = 0; y < m_map->getHeight(); y += m_zoomLevel)
 		{
 			// calc model matrix here
 			const float height = m_map->getHeightAt(x, y);
 			const glm::vec3 current = { x, height, y };
+			if (cullDist < distFromCamera(current))
+				continue;
+
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
-			const float right = m_map->getHeightAt(x + 1, y);
-			const float left = m_map->getHeightAt(x - 1, y);
-			const float down = m_map->getHeightAt(x, y + 1);
-			const float up = m_map->getHeightAt(x, y - 1);
-			const float rightUp = m_map->getHeightAt(x + 1, y - 1);
-			const float rightDown = m_map->getHeightAt(x + 1, y + 1);
-			const float leftUp = m_map->getHeightAt(x - 1, y - 1);
-			const float leftDown = m_map->getHeightAt(x - 1, y + 1);
+			model = glm::scale(model, glm::vec3(m_zoomLevel, 1.0f, m_zoomLevel));
+			const float right = m_map->getHeightAt(x + m_zoomLevel, y);
+			const float left = m_map->getHeightAt(x - m_zoomLevel, y);
+			const float down = m_map->getHeightAt(x, y + m_zoomLevel);
+			const float up = m_map->getHeightAt(x, y - m_zoomLevel);
+			const float rightUp = m_map->getHeightAt(x + m_zoomLevel, y - m_zoomLevel);
+			const float rightDown = m_map->getHeightAt(x + m_zoomLevel, y + m_zoomLevel);
+			const float leftUp = m_map->getHeightAt(x - m_zoomLevel, y - m_zoomLevel);
+			const float leftDown = m_map->getHeightAt(x - m_zoomLevel, y + m_zoomLevel);
 
 			const float topRightHeight = ((up + right + rightUp + height) / 4.0f) - height;
 			const float bottomRightHeight = ((down + right + rightDown + height) / 4.0f) - height;
@@ -270,4 +286,19 @@ void MapRenderer::calcPath(std::string& path)
 			}
 		}
 	}
+}
+
+void MapRenderer::zoomIn()
+{
+	if (m_zoomLevel > 1)
+	{
+		m_zoomLevel--;
+		m_camPos.y -= m_zoomLevel;
+	}
+}
+
+void MapRenderer::zoomOut()
+{
+	m_zoomLevel++;
+	m_camPos.y += m_zoomLevel;
 }

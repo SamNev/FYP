@@ -19,9 +19,9 @@ struct MapParams
 		srand(time(NULL));
 		scale = 10;
 		baseVariance = 0.05f;
-		lieChangeRate = 10000.0f * getRandomModif();
+		lieChangeRate = 3000.0f * getRandomModif();
 		liePeak = 25.0f * getRandomModif();
-		lieModif = -27.0f * getRandomModif();
+		lieModif = -24.0f * getRandomModif();
 		hillHeight = 80.0f * getRandomModif();
 		hillRarity = (int)(1000.0f * getRandomModif());
 		mountainHeight = 2000.0f * getRandomModif();
@@ -29,14 +29,14 @@ struct MapParams
 	}
 
 	int scale = 10;
-	float baseVariance = 0.07f;
-	float lieChangeRate = 10000.0f;
+	float baseVariance = 0.05f;
+	float lieChangeRate = 3000.0f;
 	float liePeak = 25.0f;
-	float lieModif = -27.0f;
+	float lieModif = -24.0f;
 	float hillHeight = 80.0f;
-	int hillRarity = 800.0f;
-	float mountainHeight = 300.0f;
-	int mountainRarity = 2000.0f;
+	int hillRarity = 1000.0f;
+	float mountainHeight = 200.0f;
+	int mountainRarity = 3000.0f;
 };
 
 class Map 
