@@ -1,6 +1,5 @@
 #include "Map.h"
 
-#include <time.h>
 #include <glm.hpp>
 #include <ext.hpp>
 
@@ -24,12 +23,16 @@ Map::Map(int width, int height, MapParams params)
 	PerlinNoise perlin3(seed);
 	seed = rand() % 9999;
 	PerlinNoise perlin4(seed);
+
+	// Ensure our values are valid- hill and mountain rarity must be a multiple of scale
+	params.hillRarity -= (params.hillRarity % m_scale);
+	params.mountainRarity -= (params.mountainRarity % m_scale);
 	
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			const float val = perlin.noise(x, y, 0.5f) * params.baseVariance * glm::min(m_scale, 10.0f);
+			const float val = perlin.noise(x, y, 0.5f) * params.baseVariance * glm::min(m_scale, 10);
 			const float base = (perlin4.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
 			const float hill = getHillValue(&perlin2, x, y, params.hillHeight, params.hillRarity);
 			const float mount = getMountainValue(&perlin3, x, y, params.mountainHeight, params.mountainRarity);

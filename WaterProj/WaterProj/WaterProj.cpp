@@ -33,8 +33,7 @@ int main()
 	}
 
 	MapParams params;
-	//params.hillRarity = 2000;
-	//params.hillHeight = 300;
+	params.randomize();
 	Map* currentMap = new Map(1000, 1000, params);
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
@@ -52,6 +51,7 @@ int main()
 				if (event.key.keysym.sym == SDLK_SPACE)
 				{
 					delete(currentMap);
+					params.randomize();
 					currentMap = new Map(1000, 1000, params);
 					renderer.setMap(currentMap);
 					renderer.render(window);
