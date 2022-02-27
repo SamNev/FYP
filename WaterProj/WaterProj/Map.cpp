@@ -12,17 +12,18 @@ Map::Map(int width, int height, MapParams params)
 	m_nodes = new Node[width * height];
 	m_width = width;
 	m_height = height;
+	m_maxHeight = 0.0f;
 	m_scale = params.scale;
 
 	srand(time(NULL));
-	int seed = rand() % 9999;
-	PerlinNoise perlin(seed);
-	seed = rand() % 9999;
-	PerlinNoise perlin2(seed);
-	seed = rand() % 9999;
-	PerlinNoise perlin3(seed);
-	seed = rand() % 9999;
-	PerlinNoise perlin4(seed);
+	int seed = rand() % 99999;
+	PerlinNoise baseVarianceNoise(seed);
+	seed = rand() % 99999;
+	PerlinNoise hillNoise(seed);
+	seed = rand() % 99999;
+	PerlinNoise mountainNoise(seed);
+	seed = rand() % 99999;
+	PerlinNoise lieNoise(seed);
 
 	// Ensure our values are valid- hill and mountain rarity must be a multiple of scale
 	params.hillRarity -= (params.hillRarity % m_scale);
@@ -32,11 +33,11 @@ Map::Map(int width, int height, MapParams params)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			const float val = perlin.noise(x, y, 0.5f) * params.baseVariance * glm::min(m_scale, 10);
-			const float base = (perlin4.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
-			const float hill = getHillValue(&perlin2, x, y, params.hillHeight, params.hillRarity);
-			const float mount = getMountainValue(&perlin3, x, y, params.mountainHeight, params.mountainRarity);
-			m_nodes[y * width + x].addMarker(base + val + hill + mount, 1.0f);
+			const float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;//glm::max(glm::min(m_scale, 10), 5);
+			const float base = (lieNoise.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
+			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
+			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
+			m_nodes[y * width + x].addMarker(base + val + hill + mount, 1.0f, m_maxHeight);
 		}
 	}
 }

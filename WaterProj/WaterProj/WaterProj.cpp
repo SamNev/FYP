@@ -61,6 +61,21 @@ int main()
 					renderer.transformCam(glm::vec2(2.0f, 2.0f));
 					renderer.render(window);
 				}
+				else if (event.key.keysym.sym == SDLK_a)
+				{
+					renderer.transformCam(glm::vec2(2.0f, -2.0f));
+					renderer.render(window);
+				}
+				else if (event.key.keysym.sym == SDLK_s)
+				{
+					renderer.transformCam(glm::vec2(-2.0f, -2.0f));
+					renderer.render(window);
+				}
+				else if (event.key.keysym.sym == SDLK_d)
+				{
+					renderer.transformCam(glm::vec2(-2.0f, 2.0f));
+					renderer.render(window);
+				}
 				else if (event.key.keysym.sym == SDLK_q)
 				{
 					renderer.zoomIn();

@@ -12,7 +12,7 @@ struct NodeMarker
 
 class Node {
 public:
-	void addMarker(float height, float density);
+	void addMarker(float height, float density, float& maxHeight);
 	NodeMarker* top();
 protected:
 	std::vector<NodeMarker> m_nodeData;

@@ -17,7 +17,7 @@ struct MapParams
 	void randomize()
 	{
 		srand(time(NULL));
-		scale = 10;
+		scale = 3;
 		baseVariance = 0.05f;
 		lieChangeRate = 3000.0f * getRandomModif();
 		liePeak = 25.0f * getRandomModif();
@@ -48,6 +48,7 @@ public:
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
 	float getScale() { return m_scale; }
+	float getMaxHeight() { return m_maxHeight; }
 	Node* getNodeAt(int x, int y);
 	float getHeightAt(int x, int y);
 	float getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
@@ -57,4 +58,5 @@ protected:
 	Node* m_nodes;
 	int m_width;
 	int m_height;
+	float m_maxHeight;
 };
