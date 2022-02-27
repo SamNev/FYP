@@ -50,6 +50,7 @@ public:
 	float getScale() { return m_scale; }
 	float getMaxHeight() { return m_maxHeight; }
 	Node* getNodeAt(int x, int y);
+	float getDensityAt(int x, int y, float height);
 	float getHeightAt(int x, int y);
 	float getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);

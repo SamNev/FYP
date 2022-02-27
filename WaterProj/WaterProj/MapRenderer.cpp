@@ -190,18 +190,18 @@ void MapRenderer::render(SDL_Window* window)
 	glBindVertexArray(m_vaoId);
 	glViewport(0, 0, 900, 900);
 	glEnable(GL_DEPTH_TEST);
-	GLuint color = m_groundRenderer->getUniform("u_Colour");
-	GLuint surrounding = m_groundRenderer->getUniform("u_Surrounding");
-	GLuint pos = m_groundRenderer->getUniform("u_Pos");
+	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
+	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
+	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
+	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
-	GLuint maxHeight = m_groundRenderer->getUniform("u_MaxHeight");
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
 	m_camPos.y = m_map->getHeightAt(m_camPos.x, m_camPos.z) + (m_zoomLevel * 2);
 	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
-	glUniform1f(maxHeight, m_map->getMaxHeight());
+	glUniform1f(maxHeightLoc, m_map->getMaxHeight());
 	const float cullDist = getCullDist();
 
 	for (int x = 0; x < m_map->getWidth(); x += lodScale)
@@ -230,10 +230,11 @@ void MapRenderer::render(SDL_Window* window)
 			const float bottomLeftHeight = ((down + left + leftDown + height) / 4.0f) - height;
 			const float topLeftHeight = ((up + left + leftUp + height) / 4.0f) - height;
 
-			//glUniform4f(surrounding, topRightHeight, bottomLeftHeight, bottomRightHeight, topLeftHeight);
-			glUniform4f(surrounding, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
-			glUniform3f(color, 0.0f, 1.0f, 0.0f);
-			glUniformMatrix4fv(pos, 1, GL_FALSE, glm::value_ptr(model));
+			//glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, bottomRightHeight, topLeftHeight);
+			glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
+			glm::vec3 color = m_map->getNodeAt(x, y)->top()->color;
+			glUniform3f(colorLoc, color.x, color.y, color.z);
+			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			glDrawArrays(GL_TRIANGLES, 0, 12);
 		}

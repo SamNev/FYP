@@ -1,11 +1,13 @@
 #include "Node.h"
 
+#include <ext.hpp>
+
 NodeMarker* Node::top()
 {
 	return &m_nodeData[0];
 }
 
-void Node::addMarker(float height, float density, float& maxHeight)
+void Node::addMarker(float height, float density, bool hardStop, glm::vec3 color, float& maxHeight)
 {
 	if (height > maxHeight)
 	{
@@ -18,6 +20,8 @@ void Node::addMarker(float height, float density, float& maxHeight)
 		NodeMarker marker;
 		marker.height = height;
 		marker.density = density;
+		marker.hardStop = hardStop;
+		marker.color = color;
 
 		m_nodeData.push_back(marker);
 		return;
@@ -32,7 +36,38 @@ void Node::addMarker(float height, float density, float& maxHeight)
 		NodeMarker marker;
 		marker.height = height;
 		marker.density = density;
+		marker.hardStop = hardStop;
+		marker.color = color;
 		m_nodeData.insert(m_nodeData.begin() + i, marker);
 		return;
 	}
+}
+
+float Node::getDensityAtHeight(float height)
+{
+	if (m_nodeData.size() == 0)
+		return 0;
+
+	float prevDensity = 0.0f;
+	float prevHeight = 0.0f;
+
+	for (int i = 0; i < m_nodeData.size(); ++i)
+	{
+		if (height < m_nodeData[i].height)
+		{
+			if (!m_nodeData[i].hardStop) 
+			{
+				prevDensity = m_nodeData[i].density;
+				prevHeight = m_nodeData[i].height;
+			}
+			continue;
+		}
+
+		float currHeight = m_nodeData[i].height;
+		float currDens = m_nodeData[i].density;
+		float downScaledDist = (height - currHeight) / (prevHeight - currHeight);
+		return (currDens + downScaledDist * (prevDensity - currDens));
+	}
+
+	return m_nodeData[m_nodeData.size() - 1].density;
 }

@@ -37,7 +37,20 @@ Map::Map(int width, int height, MapParams params)
 			const float base = (lieNoise.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
-			m_nodes[y * width + x].addMarker(base + val + hill + mount, 1.0f, m_maxHeight);
+			// topsoil (2.3g/cm3)
+			m_nodes[y * width + x].addMarker(base + val + hill + mount, 2.3f, false, glm::vec3(0.0f, 1.0f, 0.0f), m_maxHeight);
+			// bedrock (7.0g/cm3)
+			m_nodes[y * width + x].addMarker(-0.1f, 7.5f, true, glm::vec3(0.0f, 0.0f, 1.0f), m_maxHeight);
+		}
+	}
+
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			// soil density (2.5-2.8g/cm3)
+
+			// rock density (3.2-3.8g/cm3)
 		}
 	}
 }
@@ -111,6 +124,11 @@ float Map::getHeightAt(int x, int y)
 	}
 
 	return m_nodes[y * m_width + x].top()->height;
+}
+
+float Map::getDensityAt(int x, int y, float height)
+{
+	return getNodeAt(x, y)->getDensityAtHeight(height);
 }
 
 Map::~Map()
