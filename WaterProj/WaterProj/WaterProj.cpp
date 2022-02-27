@@ -13,7 +13,7 @@ int main()
 		throw std::exception("SDL Init failed!");
 	}
 
-	SDL_Window* window = SDL_CreateWindow("My Engine",
+	SDL_Window* window = SDL_CreateWindow("Water, water, everywhere!",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		900, 900,
 		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -40,6 +40,7 @@ int main()
 
 	float height = 0.2f;
 	bool exit = false;
+	bool heightMode = false;
 	while (!exit)
 	{
 		SDL_Event event;
@@ -56,52 +57,65 @@ int main()
 					currentMap = new Map(2000, 2000, params);
 					renderer.setMap(currentMap);
 					renderer.render(window);
+					heightMode = false;
 					height = 0.2f;
 				}
 				else if (event.key.keysym.sym == SDLK_w)
 				{
 					renderer.transformCam(glm::vec2(2.0f, 2.0f));
-					renderer.render(window);
+					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_a)
 				{
 					renderer.transformCam(glm::vec2(2.0f, -2.0f));
-					renderer.render(window);
+					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_s)
 				{
 					renderer.transformCam(glm::vec2(-2.0f, -2.0f));
-					renderer.render(window);
+					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_d)
 				{
 					renderer.transformCam(glm::vec2(-2.0f, 2.0f));
-					renderer.render(window);
+					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_q)
 				{
 					renderer.zoomIn();
-					renderer.render(window);
+					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_e)
 				{
 					renderer.zoomOut();
-					renderer.render(window);
+					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_l)
 				{
-					currentMap->skimTop();
-					renderer.render(window);
+					// debug
+					//currentMap->skimTop();
+					//renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_UP)
 				{
-					height = height + 0.2f;
-					renderer.renderAtHeight(window, height);
+					if (heightMode)
+					{
+						height = height + 0.2f;
+						renderer.renderAtHeight(window, height);
+					}
 				}
 				else if (event.key.keysym.sym == SDLK_DOWN)
 				{
-					height = height - 0.2f;
-					renderer.renderAtHeight(window, height);
+					if (heightMode) 
+					{
+						height = height - 0.2f;
+						renderer.renderAtHeight(window, height);
+					}
+				}
+				else if (event.key.keysym.sym == SDLK_h)
+				{
+					heightMode = !heightMode;
+					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 					exit = true;
