@@ -69,7 +69,7 @@ Map::Map(int width, int height, MapParams params)
 					if (currVal > 0.6f)
 					{
 						float density = 3.2f + (currVal - 0.6f) * params.rockDensityVariance;
-						m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, density, true, glm::vec3(0.6f, 0.6f, 0.6f), m_maxHeight);
+						m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, density, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, m_maxHeight);
 						isRock = true;
 					}
 				}
@@ -78,7 +78,7 @@ Map::Map(int width, int height, MapParams params)
 					float currVal = rockNoise.noise(x / (params.rockRarity / m_scale), y / (params.rockRarity / m_scale), densHeight);
 					if (currVal < 0.6f)
 					{
-						m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.6f, 0.6f, 0.6f), m_maxHeight);
+						m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, m_maxHeight);
 						isRock = false;
 					}
 				}

@@ -251,6 +251,59 @@ void MapRenderer::render(SDL_Window* window)
 	SDL_GL_SwapWindow(window);
 }
 
+void MapRenderer::renderAtHeight(SDL_Window* window, float height)
+{
+	const int lodScale = lodScaling();
+	m_groundRenderer->use();
+	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindVertexArray(m_vaoId);
+	glViewport(0, 0, 900, 900);
+	glEnable(GL_DEPTH_TEST);
+	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
+	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
+	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
+	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
+	GLuint proj = m_groundRenderer->getUniform("u_Proj");
+	GLuint view = m_groundRenderer->getUniform("u_View");
+	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
+	m_camPos.y = height + (m_zoomLevel * 2);
+	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
+	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
+	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
+	glUniform1f(maxHeightLoc, height);
+	const float cullDist = getCullDist();
+
+	for (int x = 0; x < m_map->getWidth(); x += lodScale)
+	{
+		for (int y = 0; y < m_map->getHeight(); y += lodScale)
+		{
+			if (height > m_map->getHeightAt(x, y))
+				continue;
+
+			// calc model matrix here
+			const glm::vec3 current = { x, height, y };
+			if (cullDist < distFromCamera(current))
+				continue;
+
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
+			model = glm::scale(model, glm::vec3(lodScale, 1.0f, lodScale));
+
+			glUniform4f(surroundingLoc, 0.0f, 0.0f, 0.0f, 0.0f);
+			glm::vec3 color = m_map->getNodeAt(x, y)->getColorAtHeight(height);
+			glUniform3f(colorLoc, color.x, color.y, color.z);
+			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			glDrawArrays(GL_TRIANGLES, 0, 12);
+		}
+	}
+
+	glDisable(GL_DEPTH_TEST);
+	glBindVertexArray(0);
+
+	SDL_GL_SwapWindow(window);
+}
+
 void MapRenderer::calcPath(std::string& path)
 {
 	bool found = false;

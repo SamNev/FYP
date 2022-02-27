@@ -17,6 +17,7 @@ public:
 	~MapRenderer();
 	ShaderProgram* createShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);
 	void render(SDL_Window* window);
+	void renderAtHeight(SDL_Window* window, float height);
 	void calcPath(std::string& path);
 	void makeMapTile();
 	void transformCam(glm::vec2 transformation);

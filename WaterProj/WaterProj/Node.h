@@ -16,6 +16,7 @@ class Node {
 public:
 	void addMarker(float height, float density, bool hardStop, glm::vec3 color, float& maxHeight);
 	float getDensityAtHeight(float height);
+	glm::vec3 getColorAtHeight(float height);
 	NodeMarker* top();
 	void skim();
 protected:

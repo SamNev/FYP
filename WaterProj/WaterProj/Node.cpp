@@ -83,6 +83,46 @@ float Node::getDensityAtHeight(float height)
 	return m_nodeData[m_nodeData.size() - 1].density;
 }
 
+glm::vec3 Node::getColorAtHeight(float height)
+{
+	if (m_nodeData.size() == 0)
+		return glm::vec3(0.0f, 0.0f, 0.0f);
+
+	glm::vec3 prevColor(0.0f);
+	float prevHeight = 0.0f;
+	glm::vec3 rockColor(0.0f);
+	bool isRock = false;
+
+	for (int i = 0; i < m_nodeData.size(); ++i)
+	{
+		if (height < m_nodeData[i].height)
+		{
+			if (!m_nodeData[i].hardStop)
+			{
+				prevColor = m_nodeData[i].color;
+				prevHeight = m_nodeData[i].height;
+			}
+			else
+			{
+				if (!isRock)
+					rockColor = m_nodeData[i].color;
+				isRock = !isRock;
+			}
+			continue;
+		}
+
+		if (isRock)
+			return rockColor;
+
+		float currHeight = m_nodeData[i].height;
+		glm::vec3 currCol = m_nodeData[i].color;
+		float downScaledDist = (height - currHeight) / (prevHeight - currHeight);
+		return (currCol + downScaledDist * (prevColor - currCol));
+	}
+
+	return m_nodeData[m_nodeData.size() - 1].color;
+}
+
 // debug function. Removes top node data.
 void Node::skim()
 {

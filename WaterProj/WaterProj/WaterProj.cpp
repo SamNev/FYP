@@ -38,6 +38,7 @@ int main()
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
 
+	float height = 0.2f;
 	bool exit = false;
 	while (!exit)
 	{
@@ -55,6 +56,7 @@ int main()
 					currentMap = new Map(2000, 2000, params);
 					renderer.setMap(currentMap);
 					renderer.render(window);
+					height = 0.2f;
 				}
 				else if (event.key.keysym.sym == SDLK_w)
 				{
@@ -90,6 +92,16 @@ int main()
 				{
 					currentMap->skimTop();
 					renderer.render(window);
+				}
+				else if (event.key.keysym.sym == SDLK_UP)
+				{
+					height = height + 0.2f;
+					renderer.renderAtHeight(window, height);
+				}
+				else if (event.key.keysym.sym == SDLK_DOWN)
+				{
+					height = height - 0.2f;
+					renderer.renderAtHeight(window, height);
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 					exit = true;
