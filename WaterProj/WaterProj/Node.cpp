@@ -50,6 +50,8 @@ float Node::getDensityAtHeight(float height)
 
 	float prevDensity = 0.0f;
 	float prevHeight = 0.0f;
+	float rockDensity = 0.0f;
+	bool isRock = false;
 
 	for (int i = 0; i < m_nodeData.size(); ++i)
 	{
@@ -60,8 +62,17 @@ float Node::getDensityAtHeight(float height)
 				prevDensity = m_nodeData[i].density;
 				prevHeight = m_nodeData[i].height;
 			}
+			else
+			{
+				if(!isRock)
+					rockDensity = m_nodeData[i].density;
+				isRock = !isRock;
+			}
 			continue;
 		}
+
+		if (isRock)
+			return rockDensity;
 
 		float currHeight = m_nodeData[i].height;
 		float currDens = m_nodeData[i].density;
@@ -70,4 +81,11 @@ float Node::getDensityAtHeight(float height)
 	}
 
 	return m_nodeData[m_nodeData.size() - 1].density;
+}
+
+// debug function. Removes top node data.
+void Node::skim()
+{
+	if(m_nodeData.size() > 1)
+		m_nodeData.erase(m_nodeData.begin());
 }

@@ -166,6 +166,11 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 	return prog;
 }
 
+float MapRenderer::lodScaling()
+{
+	return max((int)min(6.0f, m_zoomLevel * 0.6f), 1);
+}
+
 void MapRenderer::transformCam(glm::vec2 transformation)
 {
 	m_camPos = glm::vec3(m_camPos.x + transformation.x, m_camPos.y, m_camPos.z + transformation.y);
@@ -173,7 +178,7 @@ void MapRenderer::transformCam(glm::vec2 transformation)
 
 float MapRenderer::getCullDist()
 {
-	return min(max((int)min(10.0f, m_zoomLevel * 0.5f), 1) * 250.0f, 4000.0f);
+	return min(lodScaling() * 250.0f, 4000.0f);
 }
 
 float MapRenderer::distFromCamera(glm::vec3 pos)
@@ -183,7 +188,7 @@ float MapRenderer::distFromCamera(glm::vec3 pos)
 
 void MapRenderer::render(SDL_Window* window)
 {
-	const int lodScale = max((int)min(10.0f, m_zoomLevel * 0.5f), 1);
+	const int lodScale = lodScaling();
 	m_groundRenderer->use(); 
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

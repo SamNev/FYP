@@ -24,6 +24,10 @@ Map::Map(int width, int height, MapParams params)
 	PerlinNoise mountainNoise(seed);
 	seed = rand() % 99999;
 	PerlinNoise lieNoise(seed);
+	seed = rand() % 99999;
+	PerlinNoise densityNoise(seed);
+	seed = rand() % 99999;
+	PerlinNoise rockNoise(seed);
 
 	// Ensure our values are valid- hill and mountain rarity must be a multiple of scale
 	params.hillRarity -= (params.hillRarity % m_scale);
@@ -48,9 +52,37 @@ Map::Map(int width, int height, MapParams params)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			// soil density (2.5-2.8g/cm3)
+			bool isRock = false;
+			float maxHeightScaled = getHeightAt(x, y) / m_maxHeight;
+			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.1f)
+			{
+				if (!isRock)
+				{
+					// soil density (2.5-2.8g/cm3)
+					float noise = densityNoise.noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), densHeight);
+					float density = 2.5f + noise * params.densityVariance;
+					glm::vec3 col = glm::vec3(0.2f + noise * 0.4f, 0.3f, 0.0f);
+					m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, density, false, col, m_maxHeight);
 
-			// rock density (3.2-3.8g/cm3)
+					// rock density (3.2-3.8g/cm3)
+					float currVal = rockNoise.noise(x / (params.rockRarity / m_scale), y / (params.rockRarity / m_scale), densHeight);
+					if (currVal > 0.6f)
+					{
+						float density = 3.2f + (currVal - 0.6f) * params.rockDensityVariance;
+						m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, density, true, glm::vec3(0.6f, 0.6f, 0.6f), m_maxHeight);
+						isRock = true;
+					}
+				}
+				else 
+				{
+					float currVal = rockNoise.noise(x / (params.rockRarity / m_scale), y / (params.rockRarity / m_scale), densHeight);
+					if (currVal < 0.6f)
+					{
+						m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.6f, 0.6f, 0.6f), m_maxHeight);
+						isRock = false;
+					}
+				}
+			}
 		}
 	}
 }
@@ -129,6 +161,18 @@ float Map::getHeightAt(int x, int y)
 float Map::getDensityAt(int x, int y, float height)
 {
 	return getNodeAt(x, y)->getDensityAtHeight(height);
+}
+
+// Debug function. Removes top layer of every node, to test density values etc. without erosion
+void Map::skimTop()
+{
+	for (int x = 0; x < m_width; ++x)
+	{
+		for (int y = 0; y < m_height; ++y)
+		{
+			getNodeAt(x, y)->skim();
+		}
+	}
 }
 
 Map::~Map()

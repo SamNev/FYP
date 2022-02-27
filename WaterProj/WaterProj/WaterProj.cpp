@@ -86,6 +86,11 @@ int main()
 					renderer.zoomOut();
 					renderer.render(window);
 				}
+				else if (event.key.keysym.sym == SDLK_l)
+				{
+					currentMap->skimTop();
+					renderer.render(window);
+				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 					exit = true;
 				break;

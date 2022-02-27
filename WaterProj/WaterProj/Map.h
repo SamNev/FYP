@@ -37,6 +37,10 @@ struct MapParams
 	int hillRarity = 1000.0f;
 	float mountainHeight = 200.0f;
 	int mountainRarity = 3000.0f;
+	float densityChangeRate = 2000.0f;
+	float densityVariance = 0.3f;
+	float rockRarity = 200.0f;
+	float rockDensityVariance = 0.6f;
 };
 
 class Map 
@@ -54,6 +58,7 @@ public:
 	float getHeightAt(int x, int y);
 	float getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
+	void skimTop();
 protected:
 	int m_scale = 10;
 	Node* m_nodes;
