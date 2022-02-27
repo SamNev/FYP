@@ -166,9 +166,14 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 	return prog;
 }
 
-float MapRenderer::lodScaling()
+int MapRenderer::lodScaling()
 {
-	return max((int)min(6.0f, m_zoomLevel * 0.6f), 1);
+	return min(8.0f, uncappedLodScaling());
+}
+
+int MapRenderer::uncappedLodScaling()
+{
+	return max((int)(m_zoomLevel * 0.5f), 1);
 }
 
 void MapRenderer::transformCam(glm::vec2 transformation)
@@ -178,7 +183,7 @@ void MapRenderer::transformCam(glm::vec2 transformation)
 
 float MapRenderer::getCullDist()
 {
-	return min(lodScaling() * 250.0f, 4000.0f);
+	return min(uncappedLodScaling() * 100.0f, 4000.0f);
 }
 
 float MapRenderer::distFromCamera(glm::vec3 pos)
@@ -199,6 +204,7 @@ void MapRenderer::render(SDL_Window* window)
 	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
 	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
 	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
+	GLuint igHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
@@ -207,6 +213,7 @@ void MapRenderer::render(SDL_Window* window)
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
 	glUniform1f(maxHeightLoc, m_map->getMaxHeight());
+	glUniform1i(igHeightLoc, false);
 	const float cullDist = getCullDist();
 
 	for (int x = 0; x < m_map->getWidth(); x += lodScale)
@@ -264,6 +271,7 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
 	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
 	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
+	GLuint igHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
@@ -272,6 +280,7 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
 	glUniform1f(maxHeightLoc, height);
+	glUniform1i(igHeightLoc, true);
 	const float cullDist = getCullDist();
 
 	for (int x = 0; x < m_map->getWidth(); x += lodScale)

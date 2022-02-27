@@ -2,6 +2,7 @@
 
 uniform float u_MaxHeight;
 uniform vec3 u_Color;
+uniform bool u_IgnoreHeight;
 
 in VS_OUT {
     vec3 FragPos;
@@ -9,6 +10,13 @@ in VS_OUT {
 
 void main()
 {
-    vec3 col = fs_in.FragPos.y > 0.0 ? u_Color * (0.1 + (fs_in.FragPos.y/u_MaxHeight) * 0.9) : vec3(0.0, 0.0, 0.3 -(fs_in.FragPos.y));
-    gl_FragColor = vec4(col, 1.0);
+    if(!u_IgnoreHeight)
+    {
+        vec3 col = fs_in.FragPos.y > 0.0 ? u_Color * (0.2 + (fs_in.FragPos.y/u_MaxHeight) * 0.8) : vec3(0.0, 0.2, -(fs_in.FragPos.y - 0.2f));
+        gl_FragColor = vec4(col, 1.0);
+    }
+    else
+    {
+	gl_FragColor = vec4(u_Color, 1.0);
+    }
 }

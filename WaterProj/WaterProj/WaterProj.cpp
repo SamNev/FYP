@@ -44,6 +44,7 @@ int main()
 	while (!exit)
 	{
 		SDL_Event event;
+		float speed = renderer.uncappedLodScaling() * 0.4f;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 			case SDL_QUIT:
@@ -62,22 +63,22 @@ int main()
 				}
 				else if (event.key.keysym.sym == SDLK_w)
 				{
-					renderer.transformCam(glm::vec2(2.0f, 2.0f));
+					renderer.transformCam(glm::vec2(speed, speed));
 					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_a)
 				{
-					renderer.transformCam(glm::vec2(2.0f, -2.0f));
+					renderer.transformCam(glm::vec2(speed, -speed));
 					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_s)
 				{
-					renderer.transformCam(glm::vec2(-2.0f, -2.0f));
+					renderer.transformCam(glm::vec2(-speed, -speed));
 					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_d)
 				{
-					renderer.transformCam(glm::vec2(-2.0f, 2.0f));
+					renderer.transformCam(glm::vec2(-speed, speed));
 					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_q)

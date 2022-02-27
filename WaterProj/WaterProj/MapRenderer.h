@@ -26,7 +26,8 @@ public:
 	void zoomOut();
 	float getCullDist();
 	float distFromCamera(glm::vec3 pos);
-	float lodScaling();
+	int lodScaling();
+	int uncappedLodScaling();
 protected:
 	std::vector<ShaderProgram*> m_shaderPrograms;
 	ShaderProgram* m_groundRenderer;

@@ -42,9 +42,9 @@ Map::Map(int width, int height, MapParams params)
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
 			// topsoil (2.3g/cm3)
-			m_nodes[y * width + x].addMarker(base + val + hill + mount, 2.3f, false, glm::vec3(0.0f, 1.0f, 0.0f), m_maxHeight);
+			m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount), 2.3f, false, glm::vec3(0.0f, 1.0f, 0.0f), m_maxHeight);
 			// bedrock (7.0g/cm3)
-			m_nodes[y * width + x].addMarker(-0.1f, 7.5f, true, glm::vec3(0.0f, 0.0f, 1.0f), m_maxHeight);
+			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
 		}
 	}
 
