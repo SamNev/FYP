@@ -283,40 +283,25 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
 	glUniform1f(maxHeightLoc, m_map->getMaxHeight());
-	glUniform1i(igHeightLoc, false);
+	glUniform1i(igHeightLoc, true);
 	const float cullDist = getCullDist();
 
 	for (int x = 0; x < m_map->getWidth(); x += lodScale)
 	{
 		for (int y = 0; y < m_map->getHeight(); y += lodScale)
 		{
-			// calc model matrix here
-			const float currHeight = m_map->getAtOrLower(x, y, height);
-			const glm::vec3 current = { x, currHeight, y };
-			if (cullDist < distFromCamera(current))
+			if (height > m_map->getHeightAt(x, y))
 				continue;
 
-			if (current.x < m_camPos.x && current.y < m_camPos.y)
+			// calc model matrix here
+			const glm::vec3 current = { x, height, y };
+			if (cullDist < distFromCamera(current))
 				continue;
 
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
 			model = glm::scale(model, glm::vec3(lodScale, 1.0f, lodScale));
-			const float right = m_map->getAtOrLower(x + lodScale, y, height);
-			const float left = m_map->getAtOrLower(x - lodScale, y, height);
-			const float down = m_map->getAtOrLower(x, y + lodScale, height);
-			const float up = m_map->getAtOrLower(x, y - lodScale, height);
-			const float rightUp = m_map->getAtOrLower(x + lodScale, y - lodScale, height);
-			const float rightDown = m_map->getAtOrLower(x + lodScale, y + lodScale, height);
-			const float leftUp = m_map->getAtOrLower(x - lodScale, y - lodScale, height);
-			const float leftDown = m_map->getAtOrLower(x - lodScale, y + lodScale, height);
 
-			const float topRightHeight = ((up + right + rightUp + currHeight) / 4.0f) - currHeight;
-			const float bottomRightHeight = ((down + right + rightDown + currHeight) / 4.0f) - currHeight;
-			const float bottomLeftHeight = ((down + left + leftDown + currHeight) / 4.0f) - currHeight;
-			const float topLeftHeight = ((up + left + leftUp + currHeight) / 4.0f) - currHeight;
-
-			//glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, bottomRightHeight, topLeftHeight);
-			glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
+			glUniform4f(surroundingLoc, 0.0f, 0.0f, 0.0f, 0.0f);
 			glm::vec3 color = m_map->getNodeAt(x, y)->getColorAtHeight(height);
 			glUniform3f(colorLoc, color.x, color.y, color.z);
 			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
