@@ -173,7 +173,7 @@ int MapRenderer::lodScaling()
 
 int MapRenderer::uncappedLodScaling()
 {
-	return max((int)(m_zoomLevel * 0.5f), 1);
+	return max((int)(sqrt(m_zoomLevel) * 1.1f) + ((m_zoomLevel == 1) ? 0.0f : 1.0f), 1);
 }
 
 void MapRenderer::transformCam(glm::vec2 transformation)
@@ -183,7 +183,7 @@ void MapRenderer::transformCam(glm::vec2 transformation)
 
 float MapRenderer::getCullDist()
 {
-	return min(uncappedLodScaling() * 100.0f, 4000.0f);
+	return min(pow(uncappedLodScaling(), 1.9f) * 50.0f, 4000.0f);
 }
 
 float MapRenderer::distFromCamera(glm::vec3 pos)
@@ -224,6 +224,9 @@ void MapRenderer::render(SDL_Window* window)
 			const float height = m_map->getHeightAt(x, y);
 			const glm::vec3 current = { x, height, y };
 			if (cullDist < distFromCamera(current))
+				continue;
+
+			if (current.x < m_camPos.x && current.y < m_camPos.y)
 				continue;
 
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
