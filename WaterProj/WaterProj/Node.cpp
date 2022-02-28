@@ -129,3 +129,14 @@ void Node::skim()
 	if(m_nodeData.size() > 1)
 		m_nodeData.erase(m_nodeData.begin());
 }
+
+float Node::getAtOrLower(float height)
+{
+	if (m_nodeData.size() == 0)
+		return height;
+
+	if (top()->height <= height)
+		return top()->height;
+	else
+		return height;
+}

@@ -132,6 +132,14 @@ Node* Map::getNodeAt(int x, int y)
 	{
 		return getNodeAt(fmin(x, m_width - 1), y);
 	}
+	if (x < 0)
+	{
+		return getNodeAt(0, y);
+	}
+	if (y < 0)
+	{
+		return getNodeAt(x, 0);
+	}
 
 	return &m_nodes[y * m_width + x];
 }
@@ -156,6 +164,11 @@ float Map::getHeightAt(int x, int y)
 	}
 
 	return m_nodes[y * m_width + x].top()->height;
+}
+
+float Map::getAtOrLower(int x, int y, float height)
+{
+	return getNodeAt(x, y)->getAtOrLower(height);
 }
 
 float Map::getDensityAt(int x, int y, float height)
