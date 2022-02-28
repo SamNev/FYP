@@ -278,11 +278,11 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
-	m_camPos.y = height + (m_zoomLevel * 2);
+	m_camPos.y = m_map->getHeightAt(m_camPos.x, m_camPos.z) + (m_zoomLevel * 2);
 	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
-	glUniform1f(maxHeightLoc, height);
+	glUniform1f(maxHeightLoc, m_map->getMaxHeight());
 	glUniform1i(igHeightLoc, false);
 	const float cullDist = getCullDist();
 
