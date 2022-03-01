@@ -26,6 +26,7 @@ struct MapParams
 		hillRarity = (int)(1000.0f * getRandomModif());
 		mountainHeight = 2000.0f * getRandomModif();
 		mountainRarity = (int)(3000.0f * getRandomModif());
+		divetRarity = (int)(85.0f * getRandomModif());
 	}
 
 	int scale = 10;
@@ -34,9 +35,10 @@ struct MapParams
 	float liePeak = 25.0f;
 	float lieModif = -24.0f;
 	float hillHeight = 80.0f;
-	int hillRarity = 1000.0f;
+	int hillRarity = 1000;
+	int divetRarity = 85;
 	float mountainHeight = 200.0f;
-	int mountainRarity = 3000.0f;
+	int mountainRarity = 3000;
 	float densityChangeRate = 2000.0f;
 	float densityVariance = 0.3f;
 	float rockRarity = 200.0f;
@@ -57,6 +59,7 @@ public:
 	float getDensityAt(int x, int y, float height);
 	float getHeightAt(int x, int y);
 	float getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
+	float getDivetValue(PerlinNoise* noise, int x, int y, float divetHeight, float rarity);
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
 	void skimTop();
 protected:

@@ -94,8 +94,8 @@ int main()
 				else if (event.key.keysym.sym == SDLK_l)
 				{
 					// debug
-					//currentMap->skimTop();
-					//renderer.render(window);
+					currentMap->skimTop();
+					renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_UP)
 				{

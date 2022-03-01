@@ -12,6 +12,7 @@ MapRenderer::MapRenderer(Map* map)
 	m_map = map;
 	m_camPos = glm::vec3(0.0f, m_map->getMaxHeight(), 0.0f);
 	m_groundRenderer = createShaderProgram("vertex.txt", "fragment.txt");
+	m_zoomLevel = 50;
 	makeMapTile();
 }
 
@@ -28,7 +29,7 @@ MapRenderer::~MapRenderer()
 void MapRenderer::setMap(Map* map)
 {
 	m_map = map;
-	m_zoomLevel = 1;
+	m_zoomLevel = 50;
 	m_camPos = glm::vec3(0.0f, m_map->getMaxHeight(), 0.0f);
 }
 

@@ -21,6 +21,8 @@ Map::Map(int width, int height, MapParams params)
 	seed = rand() % 99999;
 	PerlinNoise hillNoise(seed);
 	seed = rand() % 99999;
+	PerlinNoise divetNoise(seed);
+	seed = rand() % 99999;
 	PerlinNoise mountainNoise(seed);
 	seed = rand() % 99999;
 	PerlinNoise lieNoise(seed);
@@ -40,9 +42,10 @@ Map::Map(int width, int height, MapParams params)
 			const float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;//glm::max(glm::min(m_scale, 10), 5);
 			const float base = (lieNoise.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
+			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight/20.0f, params.divetRarity);
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
 			// topsoil (2.3g/cm3)
-			m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount), 2.3f, false, glm::vec3(0.0f, 1.0f, 0.0f), m_maxHeight);
+			m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount + div), 2.3f, false, glm::vec3(0.0f, 1.0f, 0.0f), m_maxHeight);
 			// bedrock (7.0g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
 		}
@@ -98,7 +101,25 @@ float Map::getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, floa
 	float yOffset = y % (int)scalar;
 	float hillX = lowX + (xOffset / scalar) * (highX - lowX);
 	float hillY = lowY + (yOffset / scalar) * (highY - lowY);
-	return (noise->noise(hillX, hillY, 0.5f) - 0.1f) * glm::pow(noise->noise(hillX, hillY, 1.0f), 0.5) * hillHeight / m_scale;
+	float hillVal = (noise->noise(hillX, hillY, 0.5f) - 0.1f) * glm::pow(noise->noise(hillX, hillY, 1.0f), 0.5f);
+
+	return hillVal * hillHeight / m_scale;
+}
+
+float Map::getDivetValue(PerlinNoise* noise, int x, int y, float divetHeight, float rarity)
+{
+	int divetScalar = (rarity / m_scale);
+	int divetLowX = x / divetScalar;
+	int divetLowY = y / divetScalar;
+	int divetHighX = divetLowX + 1;
+	int divetHighY = divetLowY + 1;
+	float divetXOffset = x % (int)divetScalar;
+	float divetYOffset = y % (int)divetScalar;
+	float divetHillX = divetLowX + (divetXOffset / divetScalar) * (divetHighX - divetLowX);
+	float divetHillY = divetLowY + (divetYOffset / divetScalar) * (divetHighY - divetLowY);
+	float divetVal = -(float)noise->noise(divetHillX, divetHillY, 0.5f);
+
+	return divetVal * divetHeight / m_scale;
 
 }
 
