@@ -25,9 +25,17 @@ struct MapParams
 		hillHeight = 80.0f * getRandomModif();
 		hillRarity = (int)(1000.0f * getRandomModif());
 		mountainHeight = 2000.0f * getRandomModif();
-		mountainRarity = (int)(3000.0f * getRandomModif());
+		mountainRarity = (int)(5000.0f * getRandomModif());
 		divetRarity = (int)(85.0f * getRandomModif());
 		rockVerticalScaling = 5.0f * getRandomModif();
+	}
+
+	void tweak(float amount)
+	{
+		liePeak *= (1.0 + amount);
+		lieModif *= (1.0 + amount);
+		hillHeight *= (1.0 + amount);
+		mountainHeight *= (1.0 + amount);
 	}
 
 	int scale = 10;
@@ -39,7 +47,7 @@ struct MapParams
 	int hillRarity = 1000;
 	int divetRarity = 85;
 	float mountainHeight = 200.0f;
-	int mountainRarity = 3000;
+	int mountainRarity = 5000;
 	float densityChangeRate = 2000.0f;
 	float densityVariance = 0.3f;
 	float rockRarity = 200.0f;

@@ -39,7 +39,7 @@ Map::Map(int width, int height, MapParams params)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			const float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;//glm::max(glm::min(m_scale, 10), 5);
+			const float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;
 			const float base = (lieNoise.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
 			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight/20.0f, params.divetRarity);
