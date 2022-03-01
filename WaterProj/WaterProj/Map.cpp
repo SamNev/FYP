@@ -59,16 +59,17 @@ Map::Map(int width, int height, MapParams params)
 			float maxHeightScaled = getHeightAt(x, y) / m_maxHeight;
 			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.1f)
 			{
+				const float scaledDensHeight = densHeight * params.rockVerticalScaling;
 				if (!isRock)
 				{
 					// soil density (2.5-2.8g/cm3)
-					float noise = densityNoise.noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), densHeight);
+					float noise = densityNoise.noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), scaledDensHeight);
 					float density = 2.5f + noise * params.densityVariance;
 					glm::vec3 col = glm::vec3(0.2f + noise * 0.4f, 0.3f, 0.0f);
 					m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, density, false, col, m_maxHeight);
 
 					// rock density (3.2-3.8g/cm3)
-					float currVal = rockNoise.noise(x / (params.rockRarity / m_scale), y / (params.rockRarity / m_scale), densHeight);
+					float currVal = rockNoise.noise(x / (params.rockRarity / m_scale), y / (params.rockRarity / m_scale), scaledDensHeight);
 					if (currVal > 0.6f)
 					{
 						float density = 3.2f + (currVal - 0.6f) * params.rockDensityVariance;
@@ -78,7 +79,7 @@ Map::Map(int width, int height, MapParams params)
 				}
 				else 
 				{
-					float currVal = rockNoise.noise(x / (params.rockRarity / m_scale), y / (params.rockRarity / m_scale), densHeight);
+					float currVal = rockNoise.noise(x / (params.rockRarity / m_scale), y / (params.rockRarity / m_scale), scaledDensHeight);
 					if (currVal < 0.6f)
 					{
 						m_nodes[y * width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, m_maxHeight);

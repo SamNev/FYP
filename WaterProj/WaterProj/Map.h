@@ -27,6 +27,7 @@ struct MapParams
 		mountainHeight = 2000.0f * getRandomModif();
 		mountainRarity = (int)(3000.0f * getRandomModif());
 		divetRarity = (int)(85.0f * getRandomModif());
+		rockVerticalScaling = 5.0f * getRandomModif();
 	}
 
 	int scale = 10;
@@ -43,6 +44,7 @@ struct MapParams
 	float densityVariance = 0.3f;
 	float rockRarity = 200.0f;
 	float rockDensityVariance = 0.6f;
+	float rockVerticalScaling = 5.0f;
 };
 
 class Map 
