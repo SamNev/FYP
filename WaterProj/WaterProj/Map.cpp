@@ -34,6 +34,7 @@ Map::Map(int width, int height, MapParams params)
 	// Ensure our values are valid- hill and mountain rarity must be a multiple of scale
 	params.hillRarity -= (params.hillRarity % m_scale);
 	params.mountainRarity -= (params.mountainRarity % m_scale);
+	const glm::vec3 colorVary = glm::vec3((float)(rand() % 100) / 100.0f * 0.45f, 0.9f + (float)(rand() % 100) / 100.0f * 0.1f, (float)(rand() % 100) / 100.0f * 0.45f);
 	
 	for (int x = 0; x < width; ++x)
 	{
@@ -44,8 +45,9 @@ Map::Map(int width, int height, MapParams params)
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
 			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight/20.0f, params.divetRarity);
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
+
 			// topsoil (2.3g/cm3)
-			m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount + div), 2.3f, false, glm::vec3(0.0f, 1.0f, 0.0f), m_maxHeight);
+			m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount + div), 2.3f, false, colorVary, m_maxHeight);
 			// bedrock (7.0g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
 		}
