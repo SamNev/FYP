@@ -61,6 +61,8 @@ public:
 	Map(int width, int height, MapParams params);
 	~Map();
 
+	void addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity);
+	glm::vec2 calculateXYFromRarity(int x, int y, float rarity);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
 	float getScale() { return m_scale; }
