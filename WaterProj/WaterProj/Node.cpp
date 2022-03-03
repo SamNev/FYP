@@ -142,12 +142,16 @@ void Node::erodeByValue(float amount)
 
 		if (i == 0)
 		{
+			m_nodeData[i].color = getColorAtHeight(newVal);
+			m_nodeData[i].density = getDensityAtHeight(newVal);
 			m_nodeData[i].height = newVal;
 			return;
 		}
 
 		if (m_nodeData[i].height >= newVal)
 		{
+			m_nodeData[i].color = getColorAtHeight(newVal);
+			m_nodeData[i].density = getDensityAtHeight(newVal);
 			m_nodeData[i].height = newVal;
 			m_nodeData.erase(m_nodeData.begin() + (i - 1));
 			return;
