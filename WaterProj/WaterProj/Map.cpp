@@ -156,6 +156,14 @@ Node* Map::getNodeAt(int x, int y)
 	{
 		return getNodeAt(fmin(x, m_width - 1), y);
 	}
+	if (x < 0)
+	{
+		return getNodeAt(0, y);
+	}
+	if (y < 0)
+	{
+		return getNodeAt(x, 0);
+	}
 
 	return &m_nodes[y * m_width + x];
 }
