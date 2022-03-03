@@ -74,6 +74,7 @@ public:
 	float getDivetValue(PerlinNoise* noise, int x, int y, float divetHeight, float rarity);
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
 	void skimTop();
+	void erodeAllByValue(float amount);
 protected:
 	int m_scale = 10;
 	Node* m_nodes;

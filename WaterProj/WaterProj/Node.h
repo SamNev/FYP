@@ -15,6 +15,7 @@ struct NodeMarker
 class Node {
 public:
 	void addMarker(float height, float density, bool hardStop, glm::vec3 color, float& maxHeight);
+	void erodeByValue(float amount);
 	float getDensityAtHeight(float height);
 	glm::vec3 getColorAtHeight(float height);
 	NodeMarker* top();

@@ -129,3 +129,28 @@ void Node::skim()
 	if(m_nodeData.size() > 1)
 		m_nodeData.erase(m_nodeData.begin());
 }
+
+void Node::erodeByValue(float amount)
+{
+	const float base = m_nodeData[0].height;
+	const float newVal = base - amount;
+
+	for (int i = m_nodeData.size() - 1; i >= 0; --i)
+	{
+		if (m_nodeData[i].height < newVal)
+			continue;
+
+		if (i == 0)
+		{
+			m_nodeData[i].height = newVal;
+			return;
+		}
+
+		if (m_nodeData[i].height >= newVal)
+		{
+			m_nodeData[i].height = newVal;
+			m_nodeData.erase(m_nodeData.begin() + (i - 1));
+			return;
+		}
+	}
+}

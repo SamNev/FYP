@@ -202,6 +202,18 @@ void Map::skimTop()
 	}
 }
 
+// Debug function. Erodes everything, to test erosion.
+void Map::erodeAllByValue(float amount)
+{
+	for (int x = 0; x < m_width; ++x)
+	{
+		for (int y = 0; y < m_height; ++y)
+		{
+			getNodeAt(x, y)->erodeByValue(amount);
+		}
+	}
+}
+
 Map::~Map()
 {
 	delete[m_width * m_height] m_nodes;
