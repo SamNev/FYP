@@ -45,8 +45,17 @@ Map::Map(int width, int height, MapParams params)
 			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight / 20.0f, params.divetRarity);
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
 
-			// topsoil (2.3g/cm3)
-			m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount + div), 2.3f, false, colorVary, m_maxHeight);
+			if ((base + val + hill + mount + div) < 1.0f)
+			{
+				// sand (1.8g/cm3)
+				// this is slightly hack-y. We know this is going to be low, so we set the color to >1.0f so it'll render brighter.
+				m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount + div), 1.8f, false, glm::vec3(3.0f, 3.0f, 0.8f), m_maxHeight);
+			}
+			else
+			{
+				// topsoil (2.3g/cm3)
+				m_nodes[y * width + x].addMarker(glm::max(-1.9f, base + val + hill + mount + div), 2.3f, false, colorVary, m_maxHeight);
+			}
 			// bedrock (7.0g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
 		}
