@@ -29,9 +29,10 @@ Map::Map(int width, int height, MapParams params)
 	seed = rand() % 99999;
 	PerlinNoise rockNoise(seed);
 
-	// Ensure our values are valid- hill and mountain rarity must be a multiple of scale
+	// Ensure our values are valid-  rarity must be a multiple of scale
 	params.hillRarity -= (params.hillRarity % m_scale);
 	params.mountainRarity -= (params.mountainRarity % m_scale);
+	params.divetRarity -= (params.divetRarity % m_scale);
 	const glm::vec3 colorVary = glm::vec3((float)(rand() % 100) / 100.0f * 0.45f, 0.9f + (float)(rand() % 100) / 100.0f * 0.1f, (float)(rand() % 100) / 100.0f * 0.45f);
 	
 	for (int x = 0; x < width; ++x)
@@ -41,7 +42,7 @@ Map::Map(int width, int height, MapParams params)
 			const float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;
 			const float base = (lieNoise.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
-			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight/20.0f, params.divetRarity);
+			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight / 20.0f, params.divetRarity);
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
 
 			// topsoil (2.3g/cm3)

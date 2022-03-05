@@ -8,6 +8,7 @@ uniform mat4 u_View;
 
 out VS_OUT {
     vec3 FragPos;
+    vec2 Offset;
 } vs_out;
 
 void main()
@@ -42,5 +43,6 @@ else if(id == 1 || id == 11)
 
 gl_Position = u_Proj * u_View * u_Pos * vec4(in_Position + heightDiff, 1.0);
 vs_out.FragPos = vec3(u_Pos * vec4(in_Position + heightDiff, 1.0));
+vs_out.Offset = vec2(in_Position.x + 0.5, in_Position.z + 0.5);
 
 }

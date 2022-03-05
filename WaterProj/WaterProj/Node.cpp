@@ -43,7 +43,7 @@ void Node::addMarker(float height, float density, bool hardStop, glm::vec3 color
 	}
 }
 
-float Node::getDensityAtHeight(float height)
+float Node::getDensityAtHeight(float height) const
 {
 	if (m_nodeData.size() == 0)
 		return 0;
@@ -83,7 +83,7 @@ float Node::getDensityAtHeight(float height)
 	return m_nodeData[m_nodeData.size() - 1].density;
 }
 
-glm::vec3 Node::getColorAtHeight(float height)
+glm::vec3 Node::getColorAtHeight(float height) const
 {
 	if (m_nodeData.size() == 0)
 		return glm::vec3(0.0f, 0.0f, 0.0f);
@@ -120,7 +120,7 @@ glm::vec3 Node::getColorAtHeight(float height)
 		return (currCol + downScaledDist * (prevColor - currCol));
 	}
 
-	return m_nodeData[m_nodeData.size() - 1].color;
+	return m_nodeData[0].color;
 }
 
 // debug function. Removes top node data.
@@ -157,4 +157,14 @@ void Node::erodeByValue(float amount)
 			return;
 		}
 	}
+}
+
+float Node::topHeight() const
+{
+	return m_nodeData[0].height;
+}
+
+glm::vec3 Node::topColor() const
+{
+	return m_nodeData[0].color;
 }

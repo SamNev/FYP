@@ -5,6 +5,7 @@
 #include <Windows.h>
 
 #include "Map.h"
+#include "Node.h"
 #include "ShaderProgram.h"
 
 MapRenderer::MapRenderer(Map* map)
@@ -203,6 +204,7 @@ void MapRenderer::render(SDL_Window* window)
 	glEnable(GL_DEPTH_TEST);
 	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
 	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
+	GLuint surroundingColorLoc = m_groundRenderer->getUniform("u_SurroundingColor");
 	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
 	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
 	GLuint igHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
@@ -223,6 +225,7 @@ void MapRenderer::render(SDL_Window* window)
 		{
 			// calc model matrix here
 			const float height = m_map->getHeightAt(x, y);
+			const glm::vec3 color = m_map->getNodeAt(x, y)->topColor();
 			const glm::vec3 current = { x, height, y };
 			if (cullDist < distFromCamera(current))
 				continue;
@@ -232,23 +235,29 @@ void MapRenderer::render(SDL_Window* window)
 
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
 			model = glm::scale(model, glm::vec3(lodScale, 1.0f, lodScale));
-			const float right = m_map->getHeightAt(x + lodScale, y);
-			const float left = m_map->getHeightAt(x - lodScale, y);
-			const float down = m_map->getHeightAt(x, y + lodScale);
-			const float up = m_map->getHeightAt(x, y - lodScale);
-			const float rightUp = m_map->getHeightAt(x + lodScale, y - lodScale);
-			const float rightDown = m_map->getHeightAt(x + lodScale, y + lodScale);
-			const float leftUp = m_map->getHeightAt(x - lodScale, y - lodScale);
-			const float leftDown = m_map->getHeightAt(x - lodScale, y + lodScale);
+			const Node* right = m_map->getNodeAt(x + lodScale, y);
+			const Node* left = m_map->getNodeAt(x - lodScale, y);
+			const Node* down = m_map->getNodeAt(x, y + lodScale);
+			const Node* up = m_map->getNodeAt(x, y - lodScale);
+			const Node* rightUp = m_map->getNodeAt(x + lodScale, y - lodScale);
+			const Node* rightDown = m_map->getNodeAt(x + lodScale, y + lodScale);
+			const Node* leftUp = m_map->getNodeAt(x - lodScale, y - lodScale);
+			const Node* leftDown = m_map->getNodeAt(x - lodScale, y + lodScale);
+			
+			const float topRightHeight = ((up->topHeight() + right->topHeight() + rightUp->topHeight() + height) / 4.0f) - height;
+			const float bottomRightHeight = ((down->topHeight() + right->topHeight() + rightDown->topHeight() + height) / 4.0f) - height;
+			const float bottomLeftHeight = ((down->topHeight() + left->topHeight() + leftDown->topHeight() + height) / 4.0f) - height;
+			const float topLeftHeight = ((up->topHeight() + left->topHeight() + leftUp->topHeight() + height) / 4.0f) - height;
+			
+			const glm::vec3 topRightColor = ((up->topColor() + right->topColor() + rightUp->topColor() + color) / 4.0f);
+			const glm::vec3 bottomRightColor = ((down->topColor() + right->topColor() + rightDown->topColor() + color) / 4.0f);
+			const glm::vec3 bottomLeftColor = ((down->topColor() + left->topColor() + leftDown->topColor() + color) / 4.0f);
+			const glm::vec3 topLeftColor = ((up->topColor() + left->topColor() + leftUp->topColor() + color) / 4.0f);
 
-			const float topRightHeight = ((up + right + rightUp + height) / 4.0f) - height;
-			const float bottomRightHeight = ((down + right + rightDown + height) / 4.0f) - height;
-			const float bottomLeftHeight = ((down + left + leftDown + height) / 4.0f) - height;
-			const float topLeftHeight = ((up + left + leftUp + height) / 4.0f) - height;
+			const float values[12] = { topRightColor.x, topRightColor.y, topRightColor.z, bottomLeftColor.x, bottomLeftColor.y, bottomLeftColor.z, topLeftColor.x, topLeftColor.y, topLeftColor.z, bottomRightColor.x, bottomRightColor.y, bottomRightColor.z};
 
-			//glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, bottomRightHeight, topLeftHeight);
+			glUniform3fv(surroundingColorLoc, 4, values);
 			glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
-			glm::vec3 color = m_map->getNodeAt(x, y)->top()->color;
 			glUniform3f(colorLoc, color.x, color.y, color.z);
 			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
 
@@ -273,6 +282,7 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 	glEnable(GL_DEPTH_TEST);
 	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
 	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
+	GLuint surroundingColorLoc = m_groundRenderer->getUniform("u_SurroundingColor");
 	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
 	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
 	GLuint igHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
@@ -302,8 +312,26 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
 			model = glm::scale(model, glm::vec3(lodScale, 1.0f, lodScale));
 
+			const Node* right = m_map->getNodeAt(x + lodScale, y);
+			const Node* left = m_map->getNodeAt(x - lodScale, y);
+			const Node* down = m_map->getNodeAt(x, y + lodScale);
+			const Node* up = m_map->getNodeAt(x, y - lodScale);
+			const Node* rightUp = m_map->getNodeAt(x + lodScale, y - lodScale);
+			const Node* rightDown = m_map->getNodeAt(x + lodScale, y + lodScale);
+			const Node* leftUp = m_map->getNodeAt(x - lodScale, y - lodScale);
+			const Node* leftDown = m_map->getNodeAt(x - lodScale, y + lodScale); 
+
+			const glm::vec3 color = m_map->getNodeAt(x, y)->getColorAtHeight(height);
+			const glm::vec3 topRightColor = ((up->getColorAtHeight(height) + right->getColorAtHeight(height) + rightUp->getColorAtHeight(height) + color) / 4.0f);
+			const glm::vec3 bottomRightColor = ((down->getColorAtHeight(height) + right->getColorAtHeight(height) + rightDown->getColorAtHeight(height) + color) / 4.0f);
+			const glm::vec3 bottomLeftColor = ((down->getColorAtHeight(height) + left->getColorAtHeight(height) + leftDown->getColorAtHeight(height) + color) / 4.0f);
+			const glm::vec3 topLeftColor = ((up->getColorAtHeight(height) + left->getColorAtHeight(height) + leftUp->getColorAtHeight(height) + color) / 4.0f);
+
+ 			const float values[12] = { topRightColor.x, topRightColor.y, topRightColor.z, bottomLeftColor.x, bottomLeftColor.y, bottomLeftColor.z, topLeftColor.x, topLeftColor.y, topLeftColor.z, bottomRightColor.x, bottomRightColor.y, bottomRightColor.z };
+
+			glUniform3fv(surroundingColorLoc, 4, values);
+
 			glUniform4f(surroundingLoc, 0.0f, 0.0f, 0.0f, 0.0f);
-			glm::vec3 color = m_map->getNodeAt(x, y)->getColorAtHeight(height);
 			glUniform3f(colorLoc, color.x, color.y, color.z);
 			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
 
