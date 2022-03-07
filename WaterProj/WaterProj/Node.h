@@ -9,6 +9,7 @@ struct NodeMarker
 	float height;
 	float density;
 	bool hardStop;
+	float foliage = 0.0f;
 	glm::vec3 color;
 };
 

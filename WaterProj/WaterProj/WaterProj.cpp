@@ -95,7 +95,7 @@ int main()
 				{
 					// debug
 					//currentMap->skimTop();
-					currentMap->erodeAllByValue(0.1f);
+					currentMap->erodeAllByValue(0.5f);
 					renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_UP)
