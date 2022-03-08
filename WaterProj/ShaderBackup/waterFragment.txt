@@ -1,0 +1,11 @@
+#version 130
+
+in VS_OUT {
+    vec3 FragPos;
+    vec2 Offset;
+} fs_in;
+
+void main()
+{ 
+    //gl_FragDepth = gl_FragCoord.z;
+}
