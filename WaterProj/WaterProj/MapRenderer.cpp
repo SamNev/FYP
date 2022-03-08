@@ -13,8 +13,31 @@ MapRenderer::MapRenderer(Map* map)
 	m_map = map;
 	m_camPos = glm::vec3(0.0f, m_map->getMaxHeight(), 0.0f);
 	m_groundRenderer = createShaderProgram("vertex.txt", "fragment.txt");
+	m_waterRenderer = createShaderProgram("vertex.txt", "waterFragment.txt");
 	m_zoomLevel = 50;
 	makeMapTile();
+
+	glGenFramebuffers(1, &m_fbo);
+	glGenTextures(1, &m_tex); 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_tex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16,
+		900, 900, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_tex, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		throw std::exception("oh no");
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glUseProgram(0);
 }
 
 MapRenderer::~MapRenderer()
@@ -196,12 +219,15 @@ float MapRenderer::distFromCamera(glm::vec3 pos)
 void MapRenderer::render(SDL_Window* window)
 {
 	const int lodScale = lodScaling();
-	m_groundRenderer->use(); 
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindVertexArray(m_vaoId);
 	glViewport(0, 0, 900, 900);
 	glEnable(GL_DEPTH_TEST);
+
+	renderWater(window);
+
+	m_groundRenderer->use();
+	glBindVertexArray(m_vaoId);
 	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
 	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
 	GLuint surroundingColorLoc = m_groundRenderer->getUniform("u_SurroundingColor");
@@ -210,14 +236,19 @@ void MapRenderer::render(SDL_Window* window)
 	GLuint igHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
 	GLuint proj = m_groundRenderer->getUniform("u_Proj");
 	GLuint view = m_groundRenderer->getUniform("u_View");
+	GLuint sampler = m_groundRenderer->getUniform("u_Sampler");
+	GLuint cullDistLoc = m_groundRenderer->getUniform("u_CullDist");
+	GLuint dirLoc = m_groundRenderer->getUniform("u_Dir");
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
 	m_camPos.y = m_map->getHeightAt(m_camPos.x, m_camPos.z) + (m_zoomLevel * 2);
 	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
 	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
 	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
 	glUniform1f(maxHeightLoc, m_map->getMaxHeight());
-	glUniform1i(igHeightLoc, false);
 	const float cullDist = getCullDist();
+	glUniform1f(cullDistLoc, cullDist);
+	glUniform1i(igHeightLoc, false);
+	glBindTexture(GL_TEXTURE_2D, m_tex);
 
 	for (int x = 0; x < m_map->getWidth(); x += lodScale)
 	{
@@ -259,16 +290,81 @@ void MapRenderer::render(SDL_Window* window)
 			glUniform3fv(surroundingColorLoc, 4, values);
 			glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
 			glUniform3f(colorLoc, color.x, color.y, color.z);
+			glm::vec3 dir = normalize(current - m_camPos);
+			glUniform3f(dirLoc, dir.x, dir.y, dir.z);
 			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			glDrawArrays(GL_TRIANGLES, 0, 12);
 		}
 	}
 
-	glDisable(GL_DEPTH_TEST);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 
 	SDL_GL_SwapWindow(window);
+}
+
+void MapRenderer::renderWater(SDL_Window* window)
+{
+	const int lodScale = max(1.0f, lodScaling()- 5.0f);
+	m_waterRenderer->use();
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glBindVertexArray(m_vaoId);
+	glViewport(0, 0, 900, 900);
+	GLuint surroundingLoc = m_waterRenderer->getUniform("u_Surrounding");
+	GLuint posLoc = m_waterRenderer->getUniform("u_Pos");
+	GLuint proj = m_waterRenderer->getUniform("u_Proj");
+	GLuint view = m_waterRenderer->getUniform("u_View");
+	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
+	m_camPos.y = m_map->getHeightAt(m_camPos.x, m_camPos.z) + (m_zoomLevel * 2);
+	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
+	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
+	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
+	const float cullDist = getCullDist();
+
+	for (int x = 0; x < m_map->getWidth(); x += lodScale)
+	{
+		for (int y = 0; y < m_map->getHeight(); y += lodScale)
+		{
+			// calc model matrix here
+			const float height = m_map->getWaterHeightAt(x, y);
+
+			const glm::vec3 current = { x, height, y };
+			if (cullDist < distFromCamera(current))
+				continue;
+
+			if (current.x < m_camPos.x && current.y < m_camPos.y)
+				continue;
+
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
+			model = glm::scale(model, glm::vec3(lodScale, 1.0f, lodScale));
+			const Node* right = m_map->getNodeAt(x + lodScale, y);
+			const Node* left = m_map->getNodeAt(x - lodScale, y);
+			const Node* down = m_map->getNodeAt(x, y + lodScale);
+			const Node* up = m_map->getNodeAt(x, y - lodScale);
+			const Node* rightUp = m_map->getNodeAt(x + lodScale, y - lodScale);
+			const Node* rightDown = m_map->getNodeAt(x + lodScale, y + lodScale);
+			const Node* leftUp = m_map->getNodeAt(x - lodScale, y - lodScale);
+			const Node* leftDown = m_map->getNodeAt(x - lodScale, y + lodScale);
+
+			if(!(m_map->getNodeAt(x, y)->hasWater() || right->hasWater() || left->hasWater() || down->hasWater() || up->hasWater() || rightUp->hasWater() || rightDown->hasWater() || leftUp->hasWater() || leftDown->hasWater()))
+				continue;
+
+			const float topRightHeight = ((up->waterHeight() + right->waterHeight() + rightUp->waterHeight() + height) / 4.0f) - height;
+			const float bottomRightHeight = ((down->waterHeight() + right->waterHeight() + rightDown->waterHeight() + height) / 4.0f) - height;
+			const float bottomLeftHeight = ((down->waterHeight() + left->waterHeight() + leftDown->waterHeight() + height) / 4.0f) - height;
+			const float topLeftHeight = ((up->waterHeight() + left->waterHeight() + leftUp->waterHeight() + height) / 4.0f) - height;
+
+			glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
+			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			glDrawArrays(GL_TRIANGLES, 0, 12);
+		}
+	}
+
+	glBindVertexArray(0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void MapRenderer::renderAtHeight(SDL_Window* window, float height)
