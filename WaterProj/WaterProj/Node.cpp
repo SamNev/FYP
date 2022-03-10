@@ -169,3 +169,33 @@ glm::vec3 Node::topColor() const
 {
 	return m_nodeData[0].color;
 }
+
+void Node::addWater(float height)
+{
+	if (height <= 0.0f)
+		m_waterData.height = 0.0f;
+	else
+		m_waterData.height = height;
+}
+
+void Node::addWaterToLevel(float height)
+{
+	float terrHeight = topHeight();
+	if (terrHeight >= height)
+		m_waterData.height = 0.0f;
+	else
+		m_waterData.height = height - terrHeight;
+}
+
+float Node::waterHeight(float valIfNoWater) const
+{
+	if (!hasWater())
+		return valIfNoWater;
+
+	return topHeight() + m_waterData.height;
+}
+
+bool Node::hasWater() const
+{
+	return m_waterData.height > 0.02f;
+}

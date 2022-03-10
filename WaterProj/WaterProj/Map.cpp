@@ -75,6 +75,7 @@ Map::Map(int width, int height, MapParams params)
 			}
 			// bedrock (7.0g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
+			m_nodes[y * width + x].addWaterToLevel(0.0f);
 		}
 	}
 
