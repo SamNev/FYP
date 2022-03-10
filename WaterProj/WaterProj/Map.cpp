@@ -58,25 +58,23 @@ Map::Map(int width, int height, MapParams params)
 				if (mountSteep > currThreshold || hillSteep > currThreshold)
 				{
 					float modif = -(pow(1.0f + (glm::max(0.0f, mountSteep - currThreshold) + glm::max(0.0f, hillSteep - currThreshold)), 2) - 1.0f) * 50000.0f;
-					m_nodes[y * width + x].addMarker(total + modif, 3.5f, true, glm::vec3(0.8f, 0.8f, 0.8f), m_maxHeight);
+					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total + modif), 3.5f, true, glm::vec3(0.8f, 0.8f, 0.8f), m_maxHeight);
 				}
 				else 
 				{
 					// sand (1.8g/cm3)
 					// this is slightly hack-y. We know this is going to be low, so we set the color to >1.0f so it'll render brighter.
-					m_nodes[y * width + x].addMarker(total, 1.8f, false, glm::vec3(3.0f, 3.0f, 0.8f), m_maxHeight);
+					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.8f, false, glm::vec3(3.0f, 3.0f, 0.8f), m_maxHeight);
 				}
 			}
 			else
 			{
 				// topsoil (2.3g/cm3)
-				m_nodes[y * width + x].addMarker(total, 2.3f, false, colorVary, m_maxHeight);
+				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, colorVary, m_maxHeight);
 				m_nodes[y * width + x].top()->foliage = 1.0f;
 			}
 			// bedrock (7.0g/cm3)
-			m_nodes[y * width + x].addMarker(-5.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
-
-			m_nodes[y * width + x].addWaterToLevel(0.0f);
+			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
 		}
 	}
 
@@ -275,11 +273,6 @@ void Map::erodeAllByValue(float amount)
 			getNodeAt(x, y)->erodeByValue(amount);
 		}
 	}
-}
-
-float Map::getWaterHeightAt(int x, int y)
-{
-	return getNodeAt(x, y)->waterHeight();
 }
 
 Map::~Map()

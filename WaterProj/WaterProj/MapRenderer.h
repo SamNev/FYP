@@ -17,7 +17,6 @@ public:
 	~MapRenderer();
 	ShaderProgram* createShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);
 	void render(SDL_Window* window);
-	void renderWater(SDL_Window* window);
 	void renderAtHeight(SDL_Window* window, float height);
 	void calcPath(std::string& path);
 	void makeMapTile();
@@ -32,12 +31,9 @@ public:
 protected:
 	std::vector<ShaderProgram*> m_shaderPrograms;
 	ShaderProgram* m_groundRenderer;
-	ShaderProgram* m_waterRenderer;
 	Map* m_map;
 	GLuint m_vaoId;
 	std::string m_knownResourceFolder;
 	glm::vec3 m_camPos;
 	int m_zoomLevel = 1;
-	GLuint m_fbo;
-	GLuint m_tex;
 };
