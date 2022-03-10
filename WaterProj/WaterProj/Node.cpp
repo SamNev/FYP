@@ -133,7 +133,8 @@ void Node::skim()
 void Node::erodeByValue(float amount)
 {
 	const float base = m_nodeData[0].height;
-	amount = amount / m_nodeData[0].density;
+	float resistance = glm::min(m_nodeData[0].density - 1.0f, 1.0f);
+	amount = amount / resistance;
 	const float newVal = base - amount;
 
 	for (int i = m_nodeData.size() - 1; i >= 0; --i)

@@ -95,7 +95,7 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 		{
 			bool isRock = false;
 			float maxHeightScaled = getHeightAt(x, y) / m_maxHeight;
-			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.1f)
+			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.05f)
 			{
 				const float scaledDensHeight = densHeight * rockVerticalScaling;
 				if (!isRock)
@@ -272,6 +272,7 @@ void Map::erodeAllByValue(float amount)
 		for (int y = 0; y < m_height; ++y)
 		{
 			getNodeAt(x, y)->erodeByValue(amount);
+			getNodeAt(x, y)->addWaterToLevel(0.0f);
 		}
 	}
 }
