@@ -48,7 +48,7 @@ Map::Map(int width, int height, MapParams params)
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
 			const float total = (base + val + hill + mount + div);
 
-			const float sandThreshold = sandNoise.noise(x, y, 0.5f) * 0.5f + 0.75f;
+			const float sandThreshold = sandNoise.noise(x, y, 0.5f) * 0.5f;
 
 			if (total < sandThreshold)
 			{
@@ -57,7 +57,7 @@ Map::Map(int width, int height, MapParams params)
 				float currThreshold = params.cliffThreshold + (0.0001f * (mountainNoise.noise(x, y, 5.0f) - 0.5f));
 				if (mountSteep > currThreshold || hillSteep > currThreshold)
 				{
-					float modif = -(pow(1.0f + (glm::max(0.0f, mountSteep - currThreshold) + glm::max(0.0f, hillSteep - currThreshold)), 2) - 1.0f) * 50000.0f;
+					float modif = -(pow(1.0f + (glm::max(0.0f, mountSteep - currThreshold) + glm::max(0.0f, hillSteep - currThreshold)), 2)) * 10.0f;
 					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total + modif), 3.5f, true, glm::vec3(0.8f, 0.8f, 0.8f), m_maxHeight);
 				}
 				else 
