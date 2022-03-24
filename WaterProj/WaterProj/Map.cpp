@@ -2,12 +2,13 @@
 
 #include <glm.hpp>
 #include <ext.hpp>
+#include <iostream>
 
 #include "MapRenderer.h"
 #include "Node.h"
 #include "PerlinNoise.h"
 
-Map::Map(int width, int height, MapParams params)
+Map::Map(int width, int height, MapParams params, unsigned int seed)
 {
 	m_nodes = new Node[width * height];
 	m_width = width;
@@ -15,28 +16,33 @@ Map::Map(int width, int height, MapParams params)
 	m_maxHeight = 0.0f;
 	m_scale = params.scale;
 
-	srand(time(NULL));
-	int seed = rand() % 99999;
-	PerlinNoise baseVarianceNoise(seed);
-	seed = rand() % 99999;
-	PerlinNoise hillNoise(seed);
-	seed = rand() % 99999;
-	PerlinNoise divetNoise(seed);
-	seed = rand() % 99999;
-	PerlinNoise mountainNoise(seed);
-	seed = rand() % 99999;
-	PerlinNoise lieNoise(seed);
-	seed = rand() % 99999;
-	PerlinNoise rockNoise(seed);
-	seed = rand() % 99999;
-	PerlinNoise sandNoise(seed);
+	if(seed == 0)
+		srand(time(NULL));
+	else
+		srand(seed);
+
+	int generatedSeed = rand() % 99999;
+	PerlinNoise baseVarianceNoise(generatedSeed);
+	generatedSeed = rand() % 99999;
+	PerlinNoise hillNoise(generatedSeed);
+	generatedSeed = rand() % 99999;
+	PerlinNoise divetNoise(generatedSeed);
+	generatedSeed = rand() % 99999;
+	PerlinNoise mountainNoise(generatedSeed);
+	generatedSeed = rand() % 99999;
+	PerlinNoise lieNoise(generatedSeed);
+	generatedSeed = rand() % 99999;
+	PerlinNoise rockNoise(generatedSeed);
+	generatedSeed = rand() % 99999;
+	PerlinNoise sandNoise(generatedSeed);
 
 	// Ensure our values are valid-  rarity must be a multiple of scale
 	params.hillRarity -= (params.hillRarity % m_scale);
 	params.mountainRarity -= (params.mountainRarity % m_scale);
 	params.divetRarity -= (params.divetRarity % m_scale);
 	const glm::vec3 colorVary = glm::vec3((float)(rand() % 100) / 100.0f * 0.45f, 0.9f + (float)(rand() % 100) / 100.0f * 0.1f, (float)(rand() % 100) / 100.0f * 0.45f);
-	
+	float completion = 0.0f;
+
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
@@ -77,8 +83,13 @@ Map::Map(int width, int height, MapParams params)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
 			m_nodes[y * width + x].addWaterToLevel(0.0f);
 		}
+		float prevCompletion = completion;
+		completion = (x / (float)width) * 100.0f;
+		if((int)completion % 10 < (int) prevCompletion % 10)
+			std::cout << "Populating World Nodes: " << completion << "%" <<std::endl;
 	}
 
+	std::cout << "Populating World Nodes: 100%" << std::endl;
 	addRocksAndDirt(params.rockVerticalScaling, params.rockDensityVariance, params.densityVariance, params.densityChangeRate, params.rockRarity);
 }
 
@@ -88,6 +99,7 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 	PerlinNoise densityNoise(seed); 
 	seed = rand() % 99999;
 	PerlinNoise rockNoise(seed);
+	float completion = 0.0f;
 
 	for (int x = 0; x < m_width; ++x)
 	{
@@ -126,7 +138,13 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 				}
 			}
 		}
+
+		float prevCompletion = completion;
+		completion = (x / (float)m_width) * 100.0f;
+		if ((int)completion % 10 < (int)prevCompletion % 10)
+			std::cout << "Placing Rocks and Dirt: " << completion << "%" << std::endl;
 	}
+	std::cout << "Placing Rocks and Dirt: 100%" << std::endl;
 }
 
 float Map::getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity)

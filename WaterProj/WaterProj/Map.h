@@ -14,9 +14,13 @@ struct MapParams
 		return (float)(((rand() % 1000) / 1000.0f) * 1.4f) + 0.3f;
 	}
 
-	void randomize()
+	void randomize(unsigned int seed = 0)
 	{
-		srand(time(NULL));
+		if (seed == 0)
+			srand(time(NULL));
+		else
+			srand(seed);
+
 		scale = 3;
 		baseVariance = 0.05f;
 		lieChangeRate = 3000.0f * getRandomModif();
@@ -59,7 +63,7 @@ struct MapParams
 class Map 
 {
 public:
-	Map(int width, int height, MapParams params);
+	Map(int width, int height, MapParams params, unsigned int seed = 0);
 	~Map();
 
 	void addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity);

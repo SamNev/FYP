@@ -32,9 +32,25 @@ int main()
 		throw std::exception("GlewInit failed");
 	}
 
+	system("cls");
+	std::cout << "Input Seed (or leave blank for random): ";
+	std::string input;
+	std::getline(std::cin, input);
+	unsigned int seed = 0;
+	if (!input.empty())
+	{
+		seed = atoi(input.c_str());
+	}
+	else
+	{
+		srand(time(NULL));
+		seed = rand();
+		std::cout << "Seed is " << seed << std::endl;
+	}
+
 	MapParams params;
-	params.randomize();
-	Map* currentMap = new Map(2000, 2000, params);
+	params.randomize(seed);
+	Map* currentMap = new Map(2000, 2000, params, seed);
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
 
@@ -54,8 +70,22 @@ int main()
 				if (event.key.keysym.sym == SDLK_SPACE)
 				{
 					delete(currentMap);
-					params.randomize();
-					currentMap = new Map(2000, 2000, params);
+					seed = 0;
+					system("cls");
+					std::cout << "Input Seed (or leave blank for random): ";
+					std::getline(std::cin, input);
+					if (!input.empty())
+					{
+						seed = atoi(input.c_str());
+					}
+					else
+					{
+						srand(time(NULL));
+						seed = rand();
+						std::cout << "Seed is " << seed << std::endl;
+					}
+					params.randomize(seed);
+					currentMap = new Map(2000, 2000, params, seed);
 					renderer.setMap(currentMap);
 					renderer.render(window);
 					heightMode = false;
@@ -93,8 +123,6 @@ int main()
 				}
 				else if (event.key.keysym.sym == SDLK_l)
 				{
-					// debug
-					//currentMap->skimTop();
 					currentMap->erodeAllByValue(0.5f);
 					renderer.render(window);
 				}
