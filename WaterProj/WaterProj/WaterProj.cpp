@@ -5,7 +5,7 @@
 #include "Map.h"
 #include "MapRenderer.h"
 
-int main()
+SDL_Window* makeSDLWindow()
 {
 	// Init SDL, create window and screen
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -32,6 +32,11 @@ int main()
 		throw std::exception("GlewInit failed");
 	}
 
+	return window;
+}
+
+unsigned int getSeed()
+{
 	system("cls");
 	std::cout << "Input Seed (or leave blank for random): ";
 	std::string input;
@@ -47,6 +52,14 @@ int main()
 		seed = rand();
 		std::cout << "Seed is " << seed << std::endl;
 	}
+
+	return seed;
+}
+
+int main()
+{
+	SDL_Window* window = makeSDLWindow();
+	unsigned int seed = getSeed();
 
 	MapParams params;
 	params.randomize(seed);
@@ -70,68 +83,46 @@ int main()
 				if (event.key.keysym.sym == SDLK_SPACE)
 				{
 					delete(currentMap);
-					seed = 0;
-					system("cls");
-					std::cout << "Input Seed (or leave blank for random): ";
-					std::getline(std::cin, input);
-					if (!input.empty())
-					{
-						seed = atoi(input.c_str());
-					}
-					else
-					{
-						srand(time(NULL));
-						seed = rand();
-						std::cout << "Seed is " << seed << std::endl;
-					}
+					seed = getSeed();
 					params.randomize(seed);
 					currentMap = new Map(2000, 2000, params, seed);
 					renderer.setMap(currentMap);
-					renderer.render(window);
 					heightMode = false;
 					height = 0.2f;
 				}
 				else if (event.key.keysym.sym == SDLK_w)
 				{
 					renderer.transformCam(glm::vec2(speed, speed));
-					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_a)
 				{
 					renderer.transformCam(glm::vec2(speed, -speed));
-					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_s)
 				{
 					renderer.transformCam(glm::vec2(-speed, -speed));
-					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_d)
 				{
 					renderer.transformCam(glm::vec2(-speed, speed));
-					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_q)
 				{
 					renderer.zoomIn();
-					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_e)
 				{
 					renderer.zoomOut();
-					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_l)
 				{
 					currentMap->erodeAllByValue(0.5f);
-					renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_UP)
 				{
 					if (heightMode)
 					{
 						height = height + 0.2f;
-						renderer.renderAtHeight(window, height);
 					}
 				}
 				else if (event.key.keysym.sym == SDLK_DOWN)
@@ -139,16 +130,18 @@ int main()
 					if (heightMode) 
 					{
 						height = height - 0.2f;
-						renderer.renderAtHeight(window, height);
 					}
 				}
 				else if (event.key.keysym.sym == SDLK_h)
 				{
 					heightMode = !heightMode;
-					heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
+				{
 					exit = true;
+				}
+
+				heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;
 			default:
 				break;
