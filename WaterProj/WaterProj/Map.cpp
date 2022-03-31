@@ -7,6 +7,8 @@
 #include "MapRenderer.h"
 #include "Node.h"
 #include "PerlinNoise.h"
+#include "Vegetation.h"
+#include "Water.h"
 
 Map::Map(int width, int height, MapParams params, unsigned int seed)
 {
@@ -299,3 +301,96 @@ Map::~Map()
 {
 	delete[m_width * m_height] m_nodes;
 }
+/*
+===================================================
+		  HYDRAULIC EROSION FUNCTIONS
+===================================================
+
+void Map::erode(int cycles) {
+
+	//Track the Movement of all Particles
+	float track[m_width * m_height] = { 0.0f };
+
+	//Do a series of iterations!
+	for (int i = 0; i < cycles; i++) {
+
+		//Spawn New Particle
+		glm::vec2 newpos = glm::vec2(rand() % (int)m_width, rand() % (int)m_height);
+		Drop drop(newpos);
+
+		while (true) {
+
+			while (drop.descend(normal((int)drop.pos.x * m_height + (int)drop.pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
+			if (!drop.flood(heightmap, waterpool, dim))
+				break;
+
+		}
+
+	}
+
+	//Update Path
+	float lrate = 0.01;
+	for (int i = 0; i < m_width * m_height; i++)
+		waterpath[i] = (1.0 - lrate) * waterpath[i] + lrate * 50.0f * track[i] / (1.0f + 50.0f * track[i]);
+
+}
+
+bool Map::grow() {
+
+	//Random Position
+	{
+		int i = rand() % (m_width * m_height);
+		glm::vec3 n = normal(i);
+
+		if (waterpool[i] == 0.0 &&
+			waterpath[i] < 0.2 &&
+			n.y > 0.8) {
+
+			Plant ntree(i, dim);
+			ntree.root(plantdensity, dim, 1.0);
+			trees.push_back(ntree);
+		}
+	}
+
+	//Loop over all Trees
+	for (int i = 0; i < trees.size(); i++) {
+
+		//Grow the Tree
+		trees[i].grow();
+
+		//Spawn a new Tree!
+		if (rand() % 50 == 0) {
+			//Find New Position
+			glm::vec2 npos = trees[i].pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
+
+			//Check for Out-Of-Bounds
+			if (npos.x >= 0 && npos.x < dim.x &&
+				npos.y >= 0 && npos.y < dim.y) {
+
+				Plant ntree(npos, dim);
+				glm::vec3 n = normal(ntree.index);
+
+				if (waterpool[ntree.index] == 0.0 &&
+					waterpath[ntree.index] < 0.2 &&
+					n.y > 0.8 &&
+					(float)(rand() % 1000) / 1000.0 > plantdensity[ntree.index]) {
+					ntree.root(plantdensity, dim, 1.0);
+					trees.push_back(ntree);
+				}
+			}
+		}
+
+		//If the tree is in a pool or in a stream, kill it
+		if (waterpool[trees[i].index] > 0.0 ||
+			waterpath[trees[i].index] > 0.2 ||
+			rand() % 1000 == 0) { //Random Death Chance
+			trees[i].root(plantdensity, dim, -1.0);
+			trees.erase(trees.begin() + i);
+			i--;
+		}
+	}
+
+	return true;
+
+};
+*/

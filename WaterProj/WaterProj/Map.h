@@ -82,6 +82,26 @@ public:
 	float getHillSteepness(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	void skimTop();
 	void erodeAllByValue(float amount);
+
+	//Simple Hydrology Functions
+	void erode(int cycles);
+	bool grow();
+
+	/*
+	glm::vec3 normal(int index){
+
+	//Two large triangels adjacent to the plane (+Y -> +X) (-Y -> -X)
+	glm::vec3 n = glm::cross(glm::vec3(0.0, SCALE*(heightmap[index+1]-heightmap[index] + waterpool[index+1] - waterpool[index]), 1.0), glm::vec3(1.0, SCALE*(heightmap[index+dim.y]+waterpool[index+dim.y]-heightmap[index]-waterpool[index]), 0.0));
+	n += glm::cross(glm::vec3(0.0, SCALE*(heightmap[index-1]-heightmap[index] + waterpool[index-1]-waterpool[index]), -1.0), glm::vec3(-1.0, SCALE*(heightmap[index-dim.y]-heightmap[index]+waterpool[index-dim.y]-waterpool[index]), 0.0));
+
+	//Two Alternative Planes (+X -> -Y) (-X -> +Y)
+	n += glm::cross(glm::vec3(1.0, SCALE*(heightmap[index+dim.y]-heightmap[index]+waterpool[index+dim.y]-waterpool[index]), 0.0), glm::vec3(0.0, SCALE*(heightmap[index-1]-heightmap[index]+waterpool[index-1]-waterpool[index]), -1.0));
+	n += glm::cross(glm::vec3(-1.0, SCALE*(heightmap[index+dim.y]-heightmap[index]+waterpool[index+dim.y]-waterpool[index]), 0.0), glm::vec3(0.0, SCALE*(heightmap[index+1]-heightmap[index]+waterpool[index+1]-waterpool[index]), 1.0));
+
+	return glm::normalize(n);
+  }
+	*/
+
 protected:
 	int m_scale = 10;
 	Node* m_nodes;
