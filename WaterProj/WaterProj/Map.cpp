@@ -264,7 +264,35 @@ float Map::getHeightAt(int x, int y)
 		return getHeightAt(x, 0);
 	}
 
-	return m_nodes[y * m_width + x].top()->height;
+	return m_nodes[y * m_width + x].topHeight();
+}
+
+float Map::getHeightAt(int index)
+{
+	if (index >= (m_height * m_width))
+	{
+		return getHeightAt((m_height * m_width) - 1);
+	}
+	if (index < 0)
+	{
+		return getHeightAt(0);
+	}
+
+	return m_nodes[index].topHeight();
+}
+
+float Map::getDepthAt(int index)
+{
+	if (index >= (m_height * m_width))
+	{
+		return getDepthAt((m_height * m_width) - 1);
+	}
+	if (index < 0)
+	{
+		return getDepthAt(0);
+	}
+
+	return m_nodes[index].waterHeight(0.0f);
 }
 
 float Map::getDensityAt(int x, int y, float height)

@@ -75,6 +75,8 @@ public:
 	Node* getNodeAt(int x, int y);
 	float getDensityAt(int x, int y, float height);
 	float getHeightAt(int x, int y);
+	float getHeightAt(int index);
+	float getDepthAt(int index);
 	float getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	float getDivetValue(PerlinNoise* noise, int x, int y, float divetHeight, float rarity);
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
@@ -87,20 +89,19 @@ public:
 	void erode(int cycles);
 	bool grow();
 
-	/*
 	glm::vec3 normal(int index){
 
 	//Two large triangels adjacent to the plane (+Y -> +X) (-Y -> -X)
-	glm::vec3 n = glm::cross(glm::vec3(0.0, SCALE*(heightmap[index+1]-heightmap[index] + waterpool[index+1] - waterpool[index]), 1.0), glm::vec3(1.0, SCALE*(heightmap[index+dim.y]+waterpool[index+dim.y]-heightmap[index]-waterpool[index]), 0.0));
-	n += glm::cross(glm::vec3(0.0, SCALE*(heightmap[index-1]-heightmap[index] + waterpool[index-1]-waterpool[index]), -1.0), glm::vec3(-1.0, SCALE*(heightmap[index-dim.y]-heightmap[index]+waterpool[index-dim.y]-waterpool[index]), 0.0));
+	glm::vec3 n = glm::cross(glm::vec3(0.0, m_scale*(getHeightAt(index+1)-getHeightAt(index)+getDepthAt(index+1)-getDepthAt(index)), 1.0), glm::vec3(1.0, m_scale*(getHeightAt(index+m_height)+getDepthAt(index+m_height)-getHeightAt(index)-getDepthAt(index)), 0.0));
+	n += glm::cross(glm::vec3(0.0, m_scale*(getHeightAt(index-1)- getHeightAt(index) + getDepthAt(index-1)-getDepthAt(index)), -1.0), glm::vec3(-1.0, m_scale*(getHeightAt(index-m_height)-getHeightAt(index)+getDepthAt(index-m_height)-getDepthAt(index)), 0.0));
 
 	//Two Alternative Planes (+X -> -Y) (-X -> +Y)
-	n += glm::cross(glm::vec3(1.0, SCALE*(heightmap[index+dim.y]-heightmap[index]+waterpool[index+dim.y]-waterpool[index]), 0.0), glm::vec3(0.0, SCALE*(heightmap[index-1]-heightmap[index]+waterpool[index-1]-waterpool[index]), -1.0));
-	n += glm::cross(glm::vec3(-1.0, SCALE*(heightmap[index+dim.y]-heightmap[index]+waterpool[index+dim.y]-waterpool[index]), 0.0), glm::vec3(0.0, SCALE*(heightmap[index+1]-heightmap[index]+waterpool[index+1]-waterpool[index]), 1.0));
+	n += glm::cross(glm::vec3(1.0, m_scale*(getHeightAt(index+m_height)-getHeightAt(index)+getDepthAt(index+m_height)-getDepthAt(index)), 0.0), glm::vec3(0.0, m_scale*(getHeightAt(index-1)-getHeightAt(index)+getDepthAt(index-1)-getDepthAt(index)), -1.0));
+	n += glm::cross(glm::vec3(-1.0, m_scale*(getHeightAt(index+m_height)-getHeightAt(index)+getDepthAt(index+m_height)-getDepthAt(index)), 0.0), glm::vec3(0.0, m_scale*(getHeightAt(index+1)-getHeightAt(index)+getDepthAt(index+1)-getDepthAt(index)), 1.0));
 
 	return glm::normalize(n);
   }
-	*/
+	
 
 protected:
 	int m_scale = 10;
