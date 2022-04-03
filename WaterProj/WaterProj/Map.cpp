@@ -83,7 +83,7 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			}
 			// bedrock (7.0g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
-			m_nodes[y * width + x].addWaterToLevel(0.0f);
+			m_nodes[y * width + x].setWaterHeight(0.0f);
 		}
 		float prevCompletion = completion;
 		completion = (x / (float)width) * 100.0f;
@@ -320,7 +320,7 @@ void Map::erodeAllByValue(float amount)
 		for (int y = 0; y < m_height; ++y)
 		{
 			getNodeAt(x, y)->erodeByValue(amount);
-			getNodeAt(x, y)->addWaterToLevel(0.0f);
+			getNodeAt(x, y)->setWaterHeight(0.0f);
 		}
 	}
 }
@@ -341,14 +341,13 @@ void Map::erode(int cycles) {
 
 	//Do a series of iterations!
 	for (int i = 0; i < cycles; i++) {
-
 		//Spawn New Particle
 		glm::vec2 newpos = glm::vec2(rand() % (int)m_width, rand() % (int)m_height);
 		Drop drop(newpos);
 
 		while (true) {
 
-			while (drop.descend(normal((int)drop.pos.x * m_height + (int)drop.pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
+			while (drop.descend(normal((int)drop.m_pos.x * m_height + (int)drop.m_pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
 			if (!drop.flood(heightmap, waterpool, dim))
 				break;
 
@@ -389,19 +388,19 @@ bool Map::grow() {
 		//Spawn a new Tree!
 		if (rand() % 50 == 0) {
 			//Find New Position
-			glm::vec2 npos = trees[i].pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
+			glm::vec2 npos = trees[i].m_pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
 
 			//Check for Out-Of-Bounds
 			if (npos.x >= 0 && npos.x < dim.x &&
 				npos.y >= 0 && npos.y < dim.y) {
 
 				Plant ntree(npos, dim);
-				glm::vec3 n = normal(ntree.index);
+				glm::vec3 n = normal(ntree.m_index);
 
-				if (waterpool[ntree.index] == 0.0 &&
-					waterpath[ntree.index] < 0.2 &&
+				if (waterpool[ntree.m_index] == 0.0 &&
+					waterpath[ntree.m_index] < 0.2 &&
 					n.y > 0.8 &&
-					(float)(rand() % 1000) / 1000.0 > plantdensity[ntree.index]) {
+					(float)(rand() % 1000) / 1000.0 > plantdensity[ntree.m_index]) {
 					ntree.root(plantdensity, dim, 1.0);
 					trees.push_back(ntree);
 				}
@@ -409,8 +408,8 @@ bool Map::grow() {
 		}
 
 		//If the tree is in a pool or in a stream, kill it
-		if (waterpool[trees[i].index] > 0.0 ||
-			waterpath[trees[i].index] > 0.2 ||
+		if (waterpool[trees[i].m_index] > 0.0 ||
+			waterpath[trees[i].m_index] > 0.2 ||
 			rand() % 1000 == 0) { //Random Death Chance
 			trees[i].root(plantdensity, dim, -1.0);
 			trees.erase(trees.begin() + i);

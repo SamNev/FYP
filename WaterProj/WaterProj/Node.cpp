@@ -7,6 +7,13 @@ NodeMarker* Node::top()
 	return &m_nodeData[0];
 }
 
+void Node::addMarker(NodeMarker marker)
+{
+	float val = 0;
+	//TODO: this needs to use the map max val
+	addMarker(marker.height, marker.density, marker.hardStop, marker.color, val);
+}
+
 void Node::addMarker(float height, float density, bool hardStop, glm::vec3 color, float& maxHeight)
 {
 	if (height > maxHeight)
@@ -133,8 +140,6 @@ void Node::skim()
 void Node::erodeByValue(float amount)
 {
 	const float base = m_nodeData[0].height;
-	float resistance = glm::min(m_nodeData[0].density - 1.0f, 1.0f);
-	amount = amount / resistance;
 	const float newVal = base - amount;
 
 	for (int i = m_nodeData.size() - 1; i >= 0; --i)
@@ -179,13 +184,13 @@ void Node::addWater(float height)
 		m_waterData.height = height;
 }
 
-void Node::addWaterToLevel(float height)
+void Node::setWaterHeight(float waterHeight)
 {
 	float terrHeight = topHeight();
-	if (terrHeight >= height)
+	if (terrHeight >= waterHeight)
 		m_waterData.height = 0.0f;
 	else
-		m_waterData.height = height - terrHeight;
+		m_waterData.height = waterHeight - terrHeight;
 }
 
 float Node::waterHeight(float valIfNoWater) const
@@ -196,7 +201,29 @@ float Node::waterHeight(float valIfNoWater) const
 	return topHeight() + m_waterData.height;
 }
 
+void Node::setWaterDepth(float waterDepth)
+{
+	m_waterData.height = waterDepth;
+}
+
+float Node::waterDepth() const
+{
+	return m_waterData.height;
+}
+
 bool Node::hasWater() const
 {
 	return m_waterData.height > 0.02f;
+}
+
+void Node::setHeight(float height, NodeMarker fillerData)
+{
+	if (height < topHeight())
+	{
+		erodeByValue(topHeight() - height);
+	}
+	else if (height > topHeight())
+	{
+		addMarker(fillerData);
+	}
 }

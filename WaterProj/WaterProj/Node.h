@@ -21,7 +21,7 @@ struct NodeMarker
 class Node {
 public:
 	void addWater(float height);
-	void addWaterToLevel(float height);
+	void addMarker(NodeMarker marker);
 	void addMarker(float height, float density, bool hardStop, glm::vec3 color, float& maxHeight);
 	void erodeByValue(float amount);
 	float getDensityAtHeight(float height) const;
@@ -31,7 +31,11 @@ public:
 	NodeMarker* top();
 	void skim();
 	float waterHeight(float valIfNoWater) const;
+	float waterDepth() const;
+	void setWaterHeight(float waterHeight);
+	void setWaterDepth(float waterDepth);
 	bool hasWater() const;
+	void setHeight(float height, NodeMarker fillerValue);
 protected:
 	std::vector<NodeMarker> m_nodeData;
 	WaterData m_waterData;
