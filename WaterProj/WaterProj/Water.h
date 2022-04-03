@@ -89,6 +89,7 @@ struct Drop {
 };
 
 // b is pool here, no clue why
+//while(drop.descend(normal((int)drop.pos.x * dim.y + (int)drop.pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
 bool Drop::descend(glm::vec3 norm, Node* n, float* p, float* track, float* pd, glm::ivec2 dim, float scale) {
 
     if (m_volume < m_minVol)
