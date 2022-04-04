@@ -3,7 +3,7 @@
 #include <time.h>
 
 #include "Node.h"
-#include "Vegetation.h"
+#include "Plant.h"
 #include "SDL2/SDL.h"
 
 class PerlinNoise;

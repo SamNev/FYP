@@ -7,8 +7,8 @@
 #include "MapRenderer.h"
 #include "Node.h"
 #include "PerlinNoise.h"
-#include "Vegetation.h"
-#include "Water.h"
+#include "Plant.h"
+#include "Drop.h"
 
 Map::Map(int width, int height, MapParams params, unsigned int seed)
 {
@@ -392,19 +392,19 @@ bool Map::grow() {
 		//Spawn a new Tree!
 		if (rand() % 50 == 0) {
 			//Find New Position
-			glm::vec2 npos = m_trees[i].pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
+			glm::vec2 npos = m_trees[i].m_pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
 
 			//Check for Out-Of-Bounds
 			if (npos.x >= 0 && npos.x < m_width &&
 				npos.y >= 0 && npos.y < m_height) {
 
 				Plant ntree(npos, glm::vec2(m_width, m_height));
-				glm::vec3 n = normal(ntree.index);
+				glm::vec3 n = normal(ntree.m_index);
 
-				if (m_nodes[ntree.index].waterDepth() == 0.0 &&
-					m_nodes[ntree.index].getParticles() < 0.2 &&
+				if (m_nodes[ntree.m_index].waterDepth() == 0.0 &&
+					m_nodes[ntree.m_index].getParticles() < 0.2 &&
 					n.y > 0.8 &&
-					(float)(rand() % 1000) / 1000.0 > m_nodes[ntree.index].getFoliageDensity()) {
+					(float)(rand() % 1000) / 1000.0 > m_nodes[ntree.m_index].getFoliageDensity()) {
 					ntree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
 					m_trees.push_back(ntree);
 				}
@@ -412,8 +412,8 @@ bool Map::grow() {
 		}
 
 		//If the tree is in a pool or in a stream, kill it
-		if (m_nodes[m_trees[i].index].waterDepth() > 0.0 ||
-			m_nodes[m_trees[i].index].getParticles() > 0.2 ||
+		if (m_nodes[m_trees[i].m_index].waterDepth() > 0.0 ||
+			m_nodes[m_trees[i].m_index].getParticles() > 0.2 ||
 			rand() % 1000 == 0) { //Random Death Chance
 			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0);
 			m_trees.erase(m_trees.begin() + i);

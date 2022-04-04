@@ -1,0 +1,31 @@
+#include <functional>
+#include <GL/glew.h>
+#include <glm.hpp>
+#include <unordered_map>
+
+class Node;
+
+class Drop {
+    Drop(glm::vec2 pos);
+    Drop(glm::vec2 p, glm::ivec2 dim, float v);
+
+    int m_age = 0;
+    glm::vec2 m_pos;
+    glm::vec2 m_speed = glm::vec2(0.0);
+    float m_volume = 1.0; 
+    float m_sediment = 0.0;
+
+    const float m_density = 1.0;
+    const float m_evapRate = 0.001;
+    const float m_depositionRate = 1.2 * 0.08;
+    const float m_minVol = 0.01;
+    const float m_friction = 0.25;
+    const float m_volumeFactor = 0.5; 
+
+    int m_remainingSpills = 0;
+
+    bool descend(glm::vec3 norm, Node* n, std::vector<float>* track, glm::ivec2 dim, float scale);
+    bool flood(Node* n, glm::ivec2 dim);
+    static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* n);
+
+};

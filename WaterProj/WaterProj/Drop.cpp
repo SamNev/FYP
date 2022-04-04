@@ -1,95 +1,73 @@
-#include <functional>
-#include <GL/glew.h>
-#include <glm.hpp>
-#include <unordered_map>
+#include "Drop.h"
 
-struct Drop {
-    //Construct Particle at Position
-    Drop(glm::vec2 _pos) { m_pos = _pos; }
-    Drop(glm::vec2 _p, glm::ivec2 dim, float v) {
-        m_pos = _p;
-        m_volume = v;
-    }
+#include "Node.h"
 
-    //Properties
-    int m_age = 0;
-    glm::vec2 m_pos;
-    glm::vec2 m_speed = glm::vec2(0.0);
-    float m_volume = 1.0;   //This will vary in time
-    float m_sediment = 0.0; //Sediment concentration
+Drop::Drop(glm::vec2 pos) 
+{ 
+    m_pos = pos; 
+}
 
-    //Parameters
-    const float m_density = 1.0;  //This gives varying amounts of inertia and stuff...
-    const float m_evapRate = 0.001;
-    const float m_depositionRate = 1.2 * 0.08;
-    const float m_minVol = 0.01;
-    const float m_friction = 0.25;
-    const float m_volumeFactor = 0.5; //"Water Deposition Rate"
+Drop::Drop(glm::vec2 p, glm::ivec2 dim, float v) 
+{
+    m_pos = p;
+    m_volume = v;
+}
 
-    //Number of Spills Left
-    int m_remainingSpills = 0;
+void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* n)
+{
+    glm::ivec2 ipos = pos;
+    int ind = ipos.x * dim.y + ipos.y;
 
-    bool descend(glm::vec3 norm, Node* n, std::vector<float>* track, glm::ivec2 dim, float scale);
-    bool flood(Node* n, glm::ivec2 dim);
+    if (n[ind].waterDepth() > 0) return; //Don't do this with water
 
-    static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* n) {
+    //Neighbor Positions (8-Way)
+    const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
+    const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
 
-        glm::ivec2 ipos = pos;
-        int ind = ipos.x * dim.y + ipos.y;
+    const float maxdiff = 0.01f;
+    const float settling = 0.1f;
 
-        if (n[ind].waterDepth() > 0) return; //Don't do this with water
+    //Iterate over all Neighbors
+    for (int m = 0; m < 8; m++) {
 
-        //Neighbor Positions (8-Way)
-        const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
-        const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
+        glm::ivec2 npos = ipos + glm::ivec2(nx[m], ny[m]);
+        int nind = npos.x * dim.y + npos.y;
 
-        const float maxdiff = 0.01f;
-        const float settling = 0.1f;
+        if (npos.x >= dim.x || npos.y >= dim.y
+            || npos.x < 0 || npos.y < 0) continue;
 
-        //Iterate over all Neighbors
-        for (int m = 0; m < 8; m++) {
+        if (n[nind].waterDepth() > 0) continue; //Don't do this with water
 
-            glm::ivec2 npos = ipos + glm::ivec2(nx[m], ny[m]);
-            int nind = npos.x * dim.y + npos.y;
+        //Full Height-Different Between Positions!
+        float diff = (n[ind].topHeight() - n[nind].topHeight());
+        if (diff == 0)   //No Height Difference
+            continue;
 
-            if (npos.x >= dim.x || npos.y >= dim.y
-                || npos.x < 0 || npos.y < 0) continue;
+        //The Amount of Excess Difference!
+        float excess = abs(diff) - maxdiff;
+        if (excess <= 0)  //No Excess
+            continue;
 
-            if (n[nind].waterDepth() > 0) continue; //Don't do this with water
+        //Actual Amount Transferred
+        float transfer = settling * excess / 2.0f;
 
-            //Full Height-Different Between Positions!
-            float diff = (n[ind].topHeight() - n[nind].topHeight());
-            if (diff == 0)   //No Height Difference
-                continue;
-
-            //The Amount of Excess Difference!
-            float excess = abs(diff) - maxdiff;
-            if (excess <= 0)  //No Excess
-                continue;
-
-            //Actual Amount Transferred
-            float transfer = settling * excess / 2.0f;
-
-            NodeMarker marker;
-            //Cap by Maximum Transferrable Amount
-            if (diff > 0) {
-                //TODO: this needs to take into account different kinds of sediment!
-                n[ind].setHeight(n[ind].topHeight() - transfer, marker);
-                n[nind].setHeight(n[nind].topHeight() + transfer, marker);
-            }
-            else {
-                n[ind].setHeight(n[ind].topHeight() + transfer, marker);
-                n[nind].setHeight(n[nind].topHeight() - transfer, marker);
-            }
-
+        NodeMarker marker;
+        //Cap by Maximum Transferrable Amount
+        if (diff > 0) {
+            //TODO: this needs to take into account different kinds of sediment!
+            n[ind].setHeight(n[ind].topHeight() - transfer, marker);
+            n[nind].setHeight(n[nind].topHeight() + transfer, marker);
+        }
+        else {
+            n[ind].setHeight(n[ind].topHeight() + transfer, marker);
+            n[nind].setHeight(n[nind].topHeight() - transfer, marker);
         }
 
     }
-
-};
+}
 
 // b is pool here, no clue why
-//while(drop.descend(normal((int)drop.pos.x * dim.y + (int)drop.pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
+//while(drop.descend(normal((int)drop.m_pos.x * dim.y + (int)drop.m_pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
 bool Drop::descend(glm::vec3 norm, Node* n, std::vector<float>* track, glm::ivec2 dim, float scale) {
 
     if (m_volume < m_minVol)
@@ -210,7 +188,7 @@ bool Drop::flood(Node* n, glm::ivec2 dim) {
             //No Drain yet
             if (!drainfound)
                 drain = i;
-            
+
             //Lower Drain
             else if (n[ind].topHeight() + n[ind].waterDepth() < n[drain.x * dim.y + drain.y].topHeight() + n[drain.x * dim.y + drain.y].waterDepth())
                 drain = i;
