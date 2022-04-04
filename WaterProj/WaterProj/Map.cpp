@@ -333,11 +333,15 @@ Map::~Map()
 ===================================================
 		  HYDRAULIC EROSION FUNCTIONS
 ===================================================
+*/
 
 void Map::erode(int cycles) {
 
 	//Track the Movement of all Particles
-	float track[m_width * m_height] = { 0.0f };
+	std::vector<float> track;
+	glm::vec2 dim = glm::vec2(m_width, m_height);
+	track.reserve(m_width * m_height);
+	std::fill(track.begin(), track.end(), 0.0f);
 
 	//Do a series of iterations!
 	for (int i = 0; i < cycles; i++) {
@@ -347,8 +351,8 @@ void Map::erode(int cycles) {
 
 		while (true) {
 
-			while (drop.descend(normal((int)drop.m_pos.x * m_height + (int)drop.m_pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
-			if (!drop.flood(heightmap, waterpool, dim))
+			while (drop.descend(normal((int)drop.m_pos.x * m_height + (int)drop.m_pos.y), m_nodes, &track, dim, m_scale));
+			if (!drop.flood(m_nodes, dim))
 				break;
 
 		}
@@ -358,7 +362,7 @@ void Map::erode(int cycles) {
 	//Update Path
 	float lrate = 0.01;
 	for (int i = 0; i < m_width * m_height; i++)
-		waterpath[i] = (1.0 - lrate) * waterpath[i] + lrate * 50.0f * track[i] / (1.0f + 50.0f * track[i]);
+		m_nodes[i].setParticles((1.0 - lrate) * m_nodes[i].getParticles() + lrate * 50.0f * track[i] / (1.0f + 50.0f * track[i]));
 
 }
 
@@ -369,50 +373,50 @@ bool Map::grow() {
 		int i = rand() % (m_width * m_height);
 		glm::vec3 n = normal(i);
 
-		if (waterpool[i] == 0.0 &&
-			waterpath[i] < 0.2 &&
+		if (m_nodes[i].waterDepth() == 0.0 &&
+			m_nodes[i].getParticles() < 0.2 &&
 			n.y > 0.8) {
 
-			Plant ntree(i, dim);
-			ntree.root(plantdensity, dim, 1.0);
-			trees.push_back(ntree);
+			Plant ntree(i, glm::vec2(m_width, m_height));
+			ntree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
+			m_trees.push_back(ntree);
 		}
 	}
 
 	//Loop over all Trees
-	for (int i = 0; i < trees.size(); i++) {
+	for (int i = 0; i < m_trees.size(); i++) {
 
 		//Grow the Tree
-		trees[i].grow();
+		m_trees[i].grow();
 
 		//Spawn a new Tree!
 		if (rand() % 50 == 0) {
 			//Find New Position
-			glm::vec2 npos = trees[i].m_pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
+			glm::vec2 npos = m_trees[i].pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
 
 			//Check for Out-Of-Bounds
-			if (npos.x >= 0 && npos.x < dim.x &&
-				npos.y >= 0 && npos.y < dim.y) {
+			if (npos.x >= 0 && npos.x < m_width &&
+				npos.y >= 0 && npos.y < m_height) {
 
-				Plant ntree(npos, dim);
-				glm::vec3 n = normal(ntree.m_index);
+				Plant ntree(npos, glm::vec2(m_width, m_height));
+				glm::vec3 n = normal(ntree.index);
 
-				if (waterpool[ntree.m_index] == 0.0 &&
-					waterpath[ntree.m_index] < 0.2 &&
+				if (m_nodes[ntree.index].waterDepth() == 0.0 &&
+					m_nodes[ntree.index].getParticles() < 0.2 &&
 					n.y > 0.8 &&
-					(float)(rand() % 1000) / 1000.0 > plantdensity[ntree.m_index]) {
-					ntree.root(plantdensity, dim, 1.0);
-					trees.push_back(ntree);
+					(float)(rand() % 1000) / 1000.0 > m_nodes[ntree.index].getFoliageDensity()) {
+					ntree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
+					m_trees.push_back(ntree);
 				}
 			}
 		}
 
 		//If the tree is in a pool or in a stream, kill it
-		if (waterpool[trees[i].m_index] > 0.0 ||
-			waterpath[trees[i].m_index] > 0.2 ||
+		if (m_nodes[m_trees[i].index].waterDepth() > 0.0 ||
+			m_nodes[m_trees[i].index].getParticles() > 0.2 ||
 			rand() % 1000 == 0) { //Random Death Chance
-			trees[i].root(plantdensity, dim, -1.0);
-			trees.erase(trees.begin() + i);
+			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0);
+			m_trees.erase(m_trees.begin() + i);
 			i--;
 		}
 	}
@@ -420,4 +424,3 @@ bool Map::grow() {
 	return true;
 
 };
-*/

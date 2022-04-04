@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "Node.h"
+#include "Vegetation.h"
 #include "SDL2/SDL.h"
 
 class PerlinNoise;
@@ -109,4 +110,5 @@ protected:
 	int m_width;
 	int m_height;
 	float m_maxHeight;
+	std::vector<Plant> m_trees;
 };

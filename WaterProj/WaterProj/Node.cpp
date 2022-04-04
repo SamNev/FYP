@@ -227,3 +227,23 @@ void Node::setHeight(float height, NodeMarker fillerData)
 		addMarker(fillerData);
 	}
 }
+
+float Node::getParticles()
+{
+	return m_waterData.particles;
+}
+
+void Node::setParticles(float particles)
+{
+	m_waterData.particles = particles;
+}
+
+float Node::getFoliageDensity()
+{
+	return m_waterData.particles;
+}
+
+void Node::setFoliageDensity(float foliageDensity)
+{
+	m_vegetationData.density = foliageDensity;
+}

@@ -7,6 +7,12 @@
 struct WaterData
 {
 	float height;
+	float particles;
+};
+
+struct VegetationData
+{
+	float density;
 };
 
 struct NodeMarker
@@ -36,7 +42,12 @@ public:
 	void setWaterDepth(float waterDepth);
 	bool hasWater() const;
 	void setHeight(float height, NodeMarker fillerValue);
+	float getParticles();
+	void setParticles(float particles);
+	void setFoliageDensity(float density);
+	float getFoliageDensity();
 protected:
 	std::vector<NodeMarker> m_nodeData;
 	WaterData m_waterData;
+	VegetationData m_vegetationData;
 };

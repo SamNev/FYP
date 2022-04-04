@@ -29,7 +29,7 @@ struct Drop {
     //Number of Spills Left
     int m_remainingSpills = 0;
 
-    bool descend(glm::vec3 norm, Node* n, float* path, float* track, float* pd, glm::ivec2 dim, float scale);
+    bool descend(glm::vec3 norm, Node* n, std::vector<float>* track, glm::ivec2 dim, float scale);
     bool flood(Node* n, glm::ivec2 dim);
 
     static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* n) {
@@ -90,7 +90,7 @@ struct Drop {
 
 // b is pool here, no clue why
 //while(drop.descend(normal((int)drop.pos.x * dim.y + (int)drop.pos.y), heightmap, waterpath, waterpool, track, plantdensity, dim, SCALE));
-bool Drop::descend(glm::vec3 norm, Node* n, float* p, float* track, float* pd, glm::ivec2 dim, float scale) {
+bool Drop::descend(glm::vec3 norm, Node* n, std::vector<float>* track, glm::ivec2 dim, float scale) {
 
     if (m_volume < m_minVol)
         return false;
@@ -100,18 +100,18 @@ bool Drop::descend(glm::vec3 norm, Node* n, float* p, float* track, float* pd, g
     int ind = ipos.x * dim.y + ipos.y;
 
     //Add to Path
-    track[ind] += m_volume;
+    track->at(ind) += m_volume;
 
     //Effective Parameter Set
     /* Higher plant density means less erosion */
-    float effD = m_depositionRate * 1.0 - pd[ind];//max(0.0, );
+    float effD = m_depositionRate * 1.0 - n[ind].getFoliageDensity();//max(0.0, );
     if (effD < 0) effD = 0;
 
     /* Higher Friction, Lower Evaporation in Streams
     makes particles prefer established streams -> "curvy" */
 
-    float effF = m_friction * (1.0 - p[ind]);
-    float effR = m_evapRate * (1.0 - 0.2 * p[ind]);
+    float effF = m_friction * (1.0 - n[ind].getParticles());
+    float effR = m_evapRate * (1.0 - 0.2 * n[ind].getParticles());
 
     //Particle is Not Accelerated
     if (glm::length(glm::vec2(norm.x, norm.z)) * effF < 1E-5)

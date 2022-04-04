@@ -1,7 +1,10 @@
+#pragma once
 #include <glm.hpp>
 
 //temporary
 #define WSIZE 1000
+
+class Node;
 
 struct Plant {
     Plant(int i, glm::ivec2 d) {
@@ -21,7 +24,7 @@ struct Plant {
     const float rate = 0.05;
 
     void grow();
-    void root(float* density, glm::ivec2 dim, float factor);
+    void root(Node* nodes, glm::ivec2 dim, float factor);
 
     Plant& operator=(const Plant& o) {
         if (this != &o) {  //Self Check
@@ -32,42 +35,3 @@ struct Plant {
         return *this;
     };
 };
-
-
-void Plant::grow() {
-    size += rate * (maxsize - size);
-};
-
-void Plant::root(float* density, glm::ivec2 dim, float f) {
-
-    //Can always do this one
-    density[index] += f * 1.0;
-
-    if (pos.x > 0) {
-        //
-        density[index - WSIZE] += f * 0.6;      //(-1, 0)
-
-        if (pos.y > 0)
-            density[index - WSIZE - 1] += f * 0.4;    //(-1, -1)
-
-        if (pos.y < WSIZE - 1)
-            density[index - WSIZE + 1] += f * 0.4;    //(-1, 1)
-    }
-
-    if (pos.x < WSIZE - 1) {
-        //
-        density[index + WSIZE] += f * 0.6;    //(1, 0)
-
-        if (pos.y > 0)
-            density[index + WSIZE - 1] += f * 0.4;    //(1, -1)
-
-        if (pos.y < WSIZE - 1)
-            density[index + WSIZE + 1] += f * 0.4;    //(1, 1)
-    }
-
-    if (pos.y > 0)
-        density[index - 1] += f * 0.6;    //(0, -1)
-
-    if (pos.y < WSIZE - 1)
-        density[index + 1] += f * 0.6;    //(0, 1)
-}
