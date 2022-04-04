@@ -18,12 +18,9 @@ void Plant::grow() {
 
 void Plant::root(Node* nodes, glm::ivec2 dim, float f) {
 
-    //Can always do this one
     nodes[m_index].setFoliageDensity(nodes[m_index].getFoliageDensity() + f);
 
     if (m_pos.x > 0) {
-        //
-
         nodes[m_index - WSIZE].setFoliageDensity(nodes[m_index - WSIZE].getFoliageDensity() + f * 0.6); //(-1, 0)
 
         if (m_pos.y > 0)
@@ -34,7 +31,6 @@ void Plant::root(Node* nodes, glm::ivec2 dim, float f) {
     }
 
     if (m_pos.x < WSIZE - 1) {
-        //
         nodes[m_index + WSIZE].setFoliageDensity(nodes[m_index + WSIZE].getFoliageDensity() + f * 0.6);    //(1, 0)
 
         if (m_pos.y > 0)
