@@ -13,6 +13,7 @@ Drop::Drop(glm::vec2 pos, glm::ivec2 dim, float volume)
     m_volume = volume;
 }
 
+//TODO: change the awful nx/ny thing
 void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 {
     int ind = pos.x * dim.y + pos.y;
