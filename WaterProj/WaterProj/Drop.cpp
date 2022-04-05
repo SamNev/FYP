@@ -24,7 +24,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
     const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
 
-    const float maxdiff = 0.01f;
+    const float maxDiff = 0.01f;
     const float settling = 0.1f;
 
     for (int i = 0; i < 8; i++) 
@@ -40,7 +40,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
         if (diff == 0)   
             continue;
 
-        float excess = abs(diff) - maxdiff;
+        float excess = abs(diff) - maxDiff;
         if (excess <= 0)
             continue;
 
