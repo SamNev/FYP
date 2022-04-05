@@ -344,16 +344,18 @@ void Map::erode(int cycles) {
 
 	for (int i = 0; i < cycles; i++) 
 	{
+		std::cout << "creating drop " << i;
 		// spawn particle
 		glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
 		Drop drop(newpos);
 
-		while (true) 
+		do
 		{
 			while (drop.descend(normal((int)drop.getPosition().x * m_height + (int)drop.getPosition().y), m_nodes, &track, dim, m_scale));
-			if (!drop.flood(m_nodes, dim))
-				break;
-		}
+		} 
+		while (drop.flood(m_nodes, dim));
+
+		std::cout << "drop simulation done" << std::endl;
 	}
 
 	float lossRate = 0.01;

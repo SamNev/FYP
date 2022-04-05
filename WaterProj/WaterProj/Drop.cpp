@@ -1,5 +1,5 @@
 #include "Drop.h"
-
+#include <iostream>
 #include "Node.h"
 
 Drop::Drop(glm::vec2 pos) 
@@ -73,7 +73,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
     if (modifiedDeposition < 0) modifiedDeposition = 0;
 
     // TODO: investigate representation of friction
-    float modifiedFriction = m_friction * (1.0 - nodes[index].getParticles());
+    float modifiedFriction = m_friction * 1.0 - nodes[index].getParticles();
     float modifiedEvaporationRate = m_evapRate * (1.0 - 0.2 * nodes[index].getParticles());
 
     // was 1e-5
@@ -128,6 +128,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 {
+    std::cout << "trying to flood...";
     if (m_volume < m_minVol/*|| m_remainingSpills-- <= 0*/)
         return false;
 
@@ -174,6 +175,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
         floodset.push_back(pos);
 
+        std::cout << "Flooding pos " << pos.x << "," << pos.y << std::endl;
         if (!findset(pos + glm::ivec2(1, 0), plane)) return false;
         if (!findset(pos - glm::ivec2(1, 0), plane)) return false;
         if (!findset(pos + glm::ivec2(0, 1), plane)) return false;
