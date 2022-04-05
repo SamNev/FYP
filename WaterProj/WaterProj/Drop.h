@@ -6,9 +6,16 @@
 class Node;
 
 class Drop {
+public:
     Drop(glm::vec2 pos);
     Drop(glm::vec2 p, glm::ivec2 dim, float v);
 
+    bool descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::ivec2 dim, float scale);
+    bool flood(Node* nodes, glm::ivec2 dim);
+    static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes);
+    glm::vec2 getPosition() { return m_pos; }
+
+protected:
     int m_age = 0;
     glm::vec2 m_pos;
     glm::vec2 m_speed = glm::vec2(0.0);
@@ -23,9 +30,5 @@ class Drop {
     const float m_volumeFactor = 0.5; 
 
     int m_remainingSpills = 0;
-
-    bool descend(glm::vec3 norm, Node* n, std::vector<float>* track, glm::ivec2 dim, float scale);
-    bool flood(Node* n, glm::ivec2 dim);
-    static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* n);
 
 };

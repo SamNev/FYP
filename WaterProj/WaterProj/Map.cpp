@@ -337,90 +337,75 @@ Map::~Map()
 
 void Map::erode(int cycles) {
 
-	//Track the Movement of all Particles
+	// all particle movement
 	std::vector<float> track;
 	glm::vec2 dim = glm::vec2(m_width, m_height);
 	track.reserve(m_width * m_height);
 	std::fill(track.begin(), track.end(), 0.0f);
 
-	//Do a series of iterations!
-	for (int i = 0; i < cycles; i++) {
-		//Spawn New Particle
+	for (int i = 0; i < cycles; i++) 
+	{
+		// spawn particle
 		glm::vec2 newpos = glm::vec2(rand() % (int)m_width, rand() % (int)m_height);
 		Drop drop(newpos);
 
-		while (true) {
-
-			while (drop.descend(normal((int)drop.m_pos.x * m_height + (int)drop.m_pos.y), m_nodes, &track, dim, m_scale));
+		while (true) 
+		{
+			while (drop.descend(normal((int)drop.getPosition().x * m_height + (int)drop.getPosition().y), m_nodes, &track, dim, m_scale));
 			if (!drop.flood(m_nodes, dim))
 				break;
-
 		}
-
 	}
 
-	//Update Path
-	float lrate = 0.01;
+	float lossRate = 0.01;
 	for (int i = 0; i < m_width * m_height; i++)
-		m_nodes[i].setParticles((1.0 - lrate) * m_nodes[i].getParticles() + lrate * 50.0f * track[i] / (1.0f + 50.0f * track[i]));
+		m_nodes[i].setParticles((1.0 - lossRate) * m_nodes[i].getParticles() + lossRate * 50.0f * track[i] / (1.0f + 50.0f * track[i]));
 
 }
 
-bool Map::grow() {
+void Map::grow()
+{
+	//TODO: all these chances should be map properties
+	// spawn a tree randomly on the map (long-distance fertilization)
+	int i = rand() % (m_width * m_height);
+	glm::vec3 n = normal(i);
 
-	//Random Position
+	if (m_nodes[i].waterDepth() == 0.0 && m_nodes[i].getParticles() < 0.2 && n.y > 0.8) 
 	{
-		int i = rand() % (m_width * m_height);
-		glm::vec3 n = normal(i);
-
-		if (m_nodes[i].waterDepth() == 0.0 &&
-			m_nodes[i].getParticles() < 0.2 &&
-			n.y > 0.8) {
-
-			Plant ntree(i, glm::vec2(m_width, m_height));
-			ntree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
-			m_trees.push_back(ntree);
-		}
+		Plant newPlant(i, glm::vec2(m_width, m_height));
+		newPlant.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
+		m_trees.push_back(newPlant);
 	}
 
-	//Loop over all Trees
-	for (int i = 0; i < m_trees.size(); i++) {
-
-		//Grow the Tree
+	for (int i = 0; i < m_trees.size(); i++) 
+	{
 		m_trees[i].grow();
 
-		//Spawn a new Tree!
-		if (rand() % 50 == 0) {
-			//Find New Position
-			glm::vec2 npos = m_trees[i].m_pos + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
+		// tree spawns a new tree (low chance)
+		if (rand() % 50 == 0) 
+		{
+			glm::vec2 newPlantPos = m_trees[i].getPosition() + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
 
-			//Check for Out-Of-Bounds
-			if (npos.x >= 0 && npos.x < m_width &&
-				npos.y >= 0 && npos.y < m_height) {
+			// OOB check
+			if (newPlantPos.x >= 0 && newPlantPos.x < m_width && newPlantPos.y >= 0 && newPlantPos.y < m_height) 
+			{
+				Plant newTree(newPlantPos, glm::vec2(m_width, m_height));
+				glm::vec3 norm = normal(newTree.getIndex());
 
-				Plant ntree(npos, glm::vec2(m_width, m_height));
-				glm::vec3 n = normal(ntree.m_index);
-
-				if (m_nodes[ntree.m_index].waterDepth() == 0.0 &&
-					m_nodes[ntree.m_index].getParticles() < 0.2 &&
-					n.y > 0.8 &&
-					(float)(rand() % 1000) / 1000.0 > m_nodes[ntree.m_index].getFoliageDensity()) {
-					ntree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
-					m_trees.push_back(ntree);
+				if (m_nodes[newTree.getIndex()].waterDepth() == 0.0 && m_nodes[newTree.getIndex()].getParticles() < 0.2 && norm.y > 0.8 && (float)(rand() % 1000) / 1000.0 > m_nodes[newTree.getIndex()].getFoliageDensity()) 
+				{
+					newTree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
+					m_trees.push_back(newTree);
 				}
 			}
 		}
 
-		//If the tree is in a pool or in a stream, kill it
-		if (m_nodes[m_trees[i].m_index].waterDepth() > 0.0 ||
-			m_nodes[m_trees[i].m_index].getParticles() > 0.2 ||
-			rand() % 1000 == 0) { //Random Death Chance
+		// trees die in water & sometimes die randomly
+		if (m_nodes[m_trees[i].getIndex()].waterDepth() > 0.0 || m_nodes[m_trees[i].getIndex()].getParticles() > 0.2 || rand() % 1000 == 0) 
+		{ 
 			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0);
 			m_trees.erase(m_trees.begin() + i);
 			i--;
 		}
 	}
-
-	return true;
-
 };

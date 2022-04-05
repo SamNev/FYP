@@ -2,22 +2,26 @@
 
 #include "Node.h"
 
-Plant::Plant(int i, glm::ivec2 d) {
+Plant::Plant(int i, glm::ivec2 d) 
+{
     m_index = i;
     m_pos = glm::vec2(i / d.y, i % d.y);
 };
 
-Plant::Plant(glm::vec2 p, glm::ivec2 d) {
+Plant::Plant(glm::vec2 p, glm::ivec2 d) 
+{
     m_pos = p;
     m_index = (int)p.x * d.y + (int)p.y;
 };
 
-void Plant::grow() {
+void Plant::grow() 
+{
     m_size += m_rate * (m_maxSize - m_size);
 };
 
-void Plant::root(Node* nodes, glm::ivec2 dim, float f) {
-
+//TODO: Messy code!
+void Plant::root(Node* nodes, glm::ivec2 dim, float f) 
+{
     nodes[m_index].setFoliageDensity(nodes[m_index].getFoliageDensity() + f);
 
     if (m_pos.x > 0) {

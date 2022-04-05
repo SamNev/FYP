@@ -88,7 +88,7 @@ public:
 
 	//Simple Hydrology Functions
 	void erode(int cycles);
-	bool grow();
+	void grow();
 
 	glm::vec3 normal(int index){
 
