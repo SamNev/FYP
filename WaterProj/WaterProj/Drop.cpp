@@ -16,7 +16,7 @@ Drop::Drop(glm::vec2 pos, glm::ivec2 dim, float volume)
 //TODO: change the awful nx/ny thing
 void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 {
-    int ind = pos.x * dim.y + pos.y;
+    int ind = floor(pos.y) * dim.x + floor(pos.x);
 
     if (nodes[ind].waterDepth() > 0) return;
 
@@ -30,7 +30,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
     for (int i = 0; i < 8; i++) 
     {
         glm::ivec2 offsetPos = (glm::ivec2)pos + glm::ivec2(nx[i], ny[i]);
-        int offsetIndex = offsetPos.x * dim.y + offsetPos.y;
+        int offsetIndex = offsetPos.y * dim.x + offsetPos.x;
         float diff = (nodes[ind].topHeight() - nodes[offsetIndex].topHeight());
 
         if (offsetPos.x >= dim.x || offsetPos.y >= dim.y || offsetPos.x < 0 || offsetPos.y < 0)
@@ -64,7 +64,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
     if (m_volume < m_minVol)
         return false;
     
-    int index = m_pos.x * dim.y + m_pos.y;
+    int index = floor(m_pos.y) * dim.x + floor(m_pos.x);
     // add volume to current node
     track->at(index) += m_volume;
 
@@ -76,6 +76,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
     float modifiedFriction = m_friction * (1.0 - nodes[index].getParticles());
     float modifiedEvaporationRate = m_evapRate * (1.0 - 0.2 * nodes[index].getParticles());
 
+    // was 1e-5
     if (glm::length(glm::vec2(norm.x, norm.z)) * modifiedFriction < 1E-5)
         return false;
 
@@ -83,7 +84,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
     m_speed = sqrt(2.0f) * normalize(m_speed);
     m_pos += m_speed;
 
-    int newPos = (int)m_pos.x * dim.y + (int)m_pos.y;
+    int newPos = floor(m_pos.y) * dim.x + floor(m_pos.x);
 
     // OOB check
     if (!glm::all(glm::greaterThanEqual(m_pos, glm::vec2(0))) || !glm::all(glm::lessThan((glm::ivec2)m_pos, dim))) 
@@ -127,11 +128,10 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 {
-    if (m_volume < m_minVol || m_remainingSpills-- <= 0)
+    if (m_volume < m_minVol/*|| m_remainingSpills-- <= 0*/)
         return false;
 
-    std::vector<bool> tried;
-    tried.reserve(dim.x * dim.y);
+    std::vector<bool> tried(dim.x * dim.y);
     std::fill(tried.begin(), tried.end(), false);
 
     std::unordered_map<int, float> boundary;
@@ -144,11 +144,11 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
     {
         // bounds check
         if (pos.x < 0 || pos.y < 0 || pos.x >= dim.x || pos.y >= dim.y)
-            return false;
+            return true;
 
-        int index = pos.x * dim.y + pos.y;
+        int index = pos.y * dim.x + pos.x;
 
-        if (tried[index]) return true;
+        if (tried.at(index)) return true;
         tried[index] = true;
 
         // check wall/boundary
@@ -165,7 +165,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             if (!drainFound)
                 drain = pos;
 
-            else if (nodes[index].topHeight() + nodes[index].waterDepth() < nodes[drain.x * dim.y + drain.y].topHeight() + nodes[drain.x * dim.y + drain.y].waterDepth())
+            else if (nodes[index].topHeight() + nodes[index].waterDepth() < nodes[drain.y * dim.x + drain.x].topHeight() + nodes[drain.y * dim.x + drain.x].waterDepth())
                 drain = pos;
 
             drainFound = true;
@@ -187,7 +187,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
     };
 
     glm::ivec2 pos = m_pos;
-    int index = pos.x * dim.y + pos.y;
+    int index = floor(pos.y) * dim.x + floor(pos.x);
     float plane = nodes[index].topHeight() + nodes[index].waterDepth();
 
     std::pair<int, float> minBound = std::pair<int, float>(index, plane);
@@ -214,7 +214,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
 
         for (auto& s : floodset)
-            nodes[s.x * dim.y + s.y].setWaterDepth(plane - nodes[s.x * dim.y + s.y].topHeight());
+            nodes[s.y * dim.x + s.x].setWaterDepth(plane - nodes[s.y * dim.x + s.x].topHeight());
 
         boundary.erase(minBound.first);
         tried[minBound.first] = false;
@@ -230,16 +230,16 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             if (i.x < 0 || i.y < 0 || i.x >= dim.x || i.y >= dim.y)
                 return;
 
-            if (nodes[i.x * dim.y + i.y].waterDepth() == 0)
+            if (nodes[i.y * dim.x + i.x].waterDepth() == 0)
                 return;
 
-            if (nodes[i.x * dim.y + drain.y].topHeight() + nodes[i.x * dim.y + drain.y].waterDepth() < nodes[drain.x * dim.y + drain.y].topHeight() + nodes[drain.x * dim.y + drain.y].waterDepth())
+            if (nodes[i.y * dim.x + drain.x].topHeight() + nodes[i.y * dim.x + drain.x].waterDepth() < nodes[drain.y * dim.x + drain.x].topHeight() + nodes[drain.y * dim.x + drain.x].waterDepth())
                 return;
 
-            if (nodes[i.x * dim.y + i.y].topHeight() + nodes[i.x * dim.y + i.y].waterDepth() >= plane)
+            if (nodes[i.y * dim.x + i.x].topHeight() + nodes[i.y * dim.x + i.x].waterDepth() >= plane)
                 return;
 
-            plane = nodes[i.x * dim.y + i.y].topHeight() + nodes[i.x * dim.y + i.y].waterDepth();
+            plane = nodes[i.y * dim.x + i.x].topHeight() + nodes[i.y * dim.x + i.x].waterDepth();
 
         };
 
@@ -253,7 +253,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         lowBound(drain - glm::ivec2(-1, 1));
 
         for (auto& s : floodset) {
-            int j = s.x * dim.y + s.y;
+            int j = s.y * dim.x + s.x;
             nodes[j].setWaterDepth((plane > nodes[j].topHeight()) ? (plane - nodes[j].topHeight()) : 0.0);
         }
 

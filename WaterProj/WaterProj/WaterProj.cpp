@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -63,12 +64,13 @@ int main()
 
 	MapParams params;
 	params.randomize(seed);
-	Map* currentMap = new Map(2000, 2000, params, seed);
+	Map* currentMap = new Map(1000, 1000, params, seed);
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
 
 	float height = 0.2f;
 	bool exit = false;
+	bool erodeMe = false;
 	bool heightMode = false;
 	while (!exit)
 	{
@@ -85,7 +87,7 @@ int main()
 					delete(currentMap);
 					seed = getSeed();
 					params.randomize(seed);
-					currentMap = new Map(2000, 2000, params, seed);
+					currentMap = new Map(1000, 1000, params, seed);
 					renderer.setMap(currentMap);
 					heightMode = false;
 					height = 0.2f;
@@ -140,12 +142,27 @@ int main()
 				{
 					exit = true;
 				}
+				else if (event.key.keysym.sym == SDLK_p)
+				{
+					erodeMe = !erodeMe;
+				}
 
 				heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;
 			default:
 				break;
 			}
+		}
+
+		if (erodeMe)
+		{
+			auto start = std::chrono::system_clock::now();
+			currentMap->erode(100);
+			auto end = std::chrono::system_clock::now();
+			std::chrono::duration<double> elapsed_seconds = end - start;
+			std::cout << "Tick took " << elapsed_seconds.count() << "s" << std::endl;
+			currentMap->grow();
+			heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 		}
 	}
 }

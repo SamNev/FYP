@@ -63,12 +63,12 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 				const float mountSteep = getMountainSteepness(&mountainNoise, x, y, 1.0f, params.mountainRarity);
 				const float hillSteep = getHillSteepness(&hillNoise, x, y, 1.0f, params.hillRarity);
 				float currThreshold = params.cliffThreshold + (0.0001f * (mountainNoise.noise(x, y, 5.0f) - 0.5f));
-				if (mountSteep > currThreshold || hillSteep > currThreshold)
+				/*if (mountSteep > currThreshold || hillSteep > currThreshold)
 				{
 					float modif = -(pow(1.0f + (glm::max(0.0f, mountSteep - currThreshold) + glm::max(0.0f, hillSteep - currThreshold)), 2)) * 10.0f;
 					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total + modif), 3.5f, true, glm::vec3(0.8f, 0.8f, 0.8f), m_maxHeight);
 				}
-				else 
+				else */
 				{
 					// sand (1.8g/cm3)
 					// this is slightly hack-y. We know this is going to be low, so we set the color to >1.0f so it'll render brighter.
@@ -338,15 +338,14 @@ Map::~Map()
 void Map::erode(int cycles) {
 
 	// all particle movement
-	std::vector<float> track;
+	std::vector<float> track(m_width * m_height);
 	glm::vec2 dim = glm::vec2(m_width, m_height);
-	track.reserve(m_width * m_height);
 	std::fill(track.begin(), track.end(), 0.0f);
 
 	for (int i = 0; i < cycles; i++) 
 	{
 		// spawn particle
-		glm::vec2 newpos = glm::vec2(rand() % (int)m_width, rand() % (int)m_height);
+		glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
 		Drop drop(newpos);
 
 		while (true) 

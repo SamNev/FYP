@@ -1,6 +1,7 @@
 #include "Node.h"
 
 #include <ext.hpp>
+#include <iostream>
 
 NodeMarker* Node::top()
 {
@@ -218,6 +219,9 @@ bool Node::hasWater() const
 
 void Node::setHeight(float height, NodeMarker fillerData)
 {
+	if (height > 1000.0f)
+		std::cout << "Height is " << height << "???" << std::endl;
+
 	if (height < topHeight())
 	{
 		erodeByValue(topHeight() - height);
