@@ -46,6 +46,8 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
             continue;
 
         float transfer = settling * excess / 2.0f;
+        if (transfer > 100)
+            std::cout << "lots of transfer?";
 
         NodeMarker marker;
         if (diff > 0) {
@@ -133,6 +135,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
     double plane = nodes[index].waterHeight(nodes[index].topHeight());
     double initialplane = plane;
 
+    std::stack<int> toTry;
     //Floodset
     std::vector<int> set;
     int fail = 10;
@@ -143,28 +146,28 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         set.clear();
         const int size = (int)dim.x * dim.y;
         bool* tried = new bool[size];
+
         for (int i = 0; i < size; ++i) {
             tried[i] = false;
         }
         int drain;
         bool drainfound = false;
 
-        std::stack<int> toTry;
+        std::function<bool(int)> inBounds = [&](int i)
+        {
+            if (i < 0 || i >= size)
+                return false;
+
+            if (tried[i])
+                return false;
+
+            tried[i] = true;
+
+            return true;
+        };
 
         std::function<void(int)> fill = [&](int i) {
 
-            //Out of Bounds
-            if (i < 0 || i >= size) {
-                return;
-            }
-
-            //Position has been tried
-            if (tried[i]) {
-                return;
-            }
-            tried[i] = true;
-
-            //Wall / Boundary
             if (plane < nodes[i].waterHeight(nodes[i].topHeight())) {
                 return;
             }
@@ -186,14 +189,23 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
             //Part of the Pool
             set.push_back(i);
-            toTry.push(i + dim.x);    //Fill Neighbors
-            toTry.push(i - dim.x);
-            toTry.push(i + 1);
-            toTry.push(i - 1);
-            toTry.push(i + dim.x + 1);  //Diagonals (Improves Drainage)
-            toTry.push(i - dim.x - 1);
-            toTry.push(i + dim.x - 1);
-            toTry.push(i - dim.x + 1);
+
+            if(inBounds(i + dim.x))
+                toTry.push(i + dim.x);
+            if (inBounds(i - dim.x))
+                toTry.push(i - dim.x);
+            if (inBounds(i + 1))
+                toTry.push(i + 1);
+            if (inBounds(i - 1))
+                toTry.push(i - 1);
+            if (inBounds(i + dim.x + 1))
+                toTry.push(i + dim.x + 1);
+            if (inBounds(i - dim.x - 1))
+                toTry.push(i - dim.x - 1);
+            if (inBounds(i + dim.x - 1))
+                toTry.push(i + dim.x - 1);
+            if (inBounds(i - dim.x + 1))
+                toTry.push(i - dim.x + 1);
         };
 
         //Perform Flood

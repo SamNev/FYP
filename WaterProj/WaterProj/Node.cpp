@@ -219,9 +219,6 @@ bool Node::hasWater() const
 
 void Node::setHeight(float height, NodeMarker fillerData)
 {
-	if (height > 1000.0f)
-		std::cout << "Height is " << height << "???" << std::endl;
-
 	if (height < topHeight())
 	{
 		erodeByValue(topHeight() - height);
