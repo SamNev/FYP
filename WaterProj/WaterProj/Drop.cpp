@@ -1,5 +1,6 @@
 #include "Drop.h"
 #include <iostream>
+#include <stack>
 #include "Node.h"
 
 Drop::Drop(glm::vec2 pos) 
@@ -106,6 +107,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
     //TODO: proper sediment values;
     NodeMarker node;
     nodes[index].setHeight(nodes[index].topHeight() - (modifiedDeposition * modifiedDiff), node);
+    nodes[index].top()->color = glm::vec3(1.0f, 0.0f, 0.0f);
 
     /*
     //Mass-Transfer (in MASS)
@@ -126,150 +128,132 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
 }
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
-{
-    std::cout << "trying to flood...";
-    if (m_volume < m_minVol/*|| m_remainingSpills-- <= 0*/)
-        return false;
+{ //Current Height
+    int index = (int)m_pos.y * dim.x + (int)m_pos.x;
+    double plane = nodes[index].waterHeight(nodes[index].topHeight());
+    double initialplane = plane;
 
-    std::vector<bool> tried(dim.x * dim.y);
-    std::fill(tried.begin(), tried.end(), false);
+    //Floodset
+    std::vector<int> set;
+    int fail = 10;
 
-    std::unordered_map<int, float> boundary;
-    std::vector<glm::ivec2> floodset;
+    //Iterate
+    while (m_volume > m_minVol && fail) {
 
-    bool drainFound = false;
-    glm::ivec2 drain;
-
-    const std::function<bool(glm::ivec2, float)> findset = [&](glm::ivec2 pos, float plane) 
-    {
-        // bounds check
-        if (pos.x < 0 || pos.y < 0 || pos.x >= dim.x || pos.y >= dim.y)
-            return true;
-
-        int index = pos.y * dim.x + pos.x;
-
-        if (tried.at(index)) return true;
-        tried[index] = true;
-
-        // check wall/boundary
-        if ((nodes[index].topHeight() + nodes[index].waterDepth()) > plane) 
-        {
-            boundary[index] = nodes[index].topHeight() + nodes[index].waterDepth();
-            return true;
+        set.clear();
+        const int size = (int)dim.x * dim.y;
+        bool* tried = new bool[size];
+        for (int i = 0; i < size; ++i) {
+            tried[i] = false;
         }
+        int drain;
+        bool drainfound = false;
 
-        // find drain point
-        if ((nodes[index].topHeight() + nodes[index].waterDepth()) < plane) 
-        {
+        std::stack<int> toTry;
 
-            if (!drainFound)
-                drain = pos;
+        std::function<void(int)> fill = [&](int i) {
 
-            else if (nodes[index].topHeight() + nodes[index].waterDepth() < nodes[drain.y * dim.x + drain.x].topHeight() + nodes[drain.y * dim.x + drain.x].waterDepth())
-                drain = pos;
-
-            drainFound = true;
-            return false;
-        }
-
-        floodset.push_back(pos);
-
-        std::cout << "Flooding pos " << pos.x << "," << pos.y << std::endl;
-        if (!findset(pos + glm::ivec2(1, 0), plane)) return false;
-        if (!findset(pos - glm::ivec2(1, 0), plane)) return false;
-        if (!findset(pos + glm::ivec2(0, 1), plane)) return false;
-        if (!findset(pos - glm::ivec2(0, 1), plane)) return false;
-        if (!findset(pos + glm::ivec2(1, 1), plane)) return false;
-        if (!findset(pos - glm::ivec2(1, 1), plane)) return false;
-        if (!findset(pos + glm::ivec2(-1, 1), plane)) return false;
-        if (!findset(pos - glm::ivec2(-1, 1), plane)) return false;
-
-        return true;
-    };
-
-    glm::ivec2 pos = m_pos;
-    int index = floor(pos.y) * dim.x + floor(pos.x);
-    float plane = nodes[index].topHeight() + nodes[index].waterDepth();
-
-    std::pair<int, float> minBound = std::pair<int, float>(index, plane);
-
-    while (m_volume > m_minVol && findset(pos, plane)) 
-    {
-        minBound = (*boundary.begin());
-        for (auto& boundaryLocation : boundary)
-        {
-            if (boundaryLocation.second < minBound.second)
-                minBound = boundaryLocation;
-        }
-
-        float height = m_volume * m_volumeFactor / (float)floodset.size();
-
-        if (plane + height < minBound.second)
-        {
-            plane += height;
-        }
-        else 
-        {
-            m_volume -= (minBound.second - plane) / m_volumeFactor * (float)floodset.size();
-            plane = minBound.second;
-        }
-
-        for (auto& s : floodset)
-            nodes[s.y * dim.x + s.x].setWaterDepth(plane - nodes[s.y * dim.x + s.x].topHeight());
-
-        boundary.erase(minBound.first);
-        tried[minBound.first] = false;
-        pos = glm::ivec2(minBound.first / dim.y, minBound.first % dim.y);
-
-    }
-
-    if (drainFound) 
-    {
-        // if we have a drain, cap water height to the level at that drain
-        const std::function<void(glm::ivec2)> lowBound = [&](glm::ivec2 i) 
-        {
-            if (i.x < 0 || i.y < 0 || i.x >= dim.x || i.y >= dim.y)
+            //Out of Bounds
+            if (i < 0 || i >= size) {
                 return;
+            }
 
-            if (nodes[i.y * dim.x + i.x].waterDepth() == 0)
+            //Position has been tried
+            if (tried[i]) {
                 return;
+            }
+            tried[i] = true;
 
-            if (nodes[i.y * dim.x + drain.x].topHeight() + nodes[i.y * dim.x + drain.x].waterDepth() < nodes[drain.y * dim.x + drain.x].topHeight() + nodes[drain.y * dim.x + drain.x].waterDepth())
+            //Wall / Boundary
+            if (plane < nodes[i].waterHeight(nodes[i].topHeight())) {
                 return;
+            }
 
-            if (nodes[i.y * dim.x + i.x].topHeight() + nodes[i.y * dim.x + i.x].waterDepth() >= plane)
+            //Drainage Point
+            if (initialplane > nodes[i].waterHeight(nodes[i].topHeight())) {
+
+                //No Drain yet
+                if (!drainfound)
+                    drain = i;
+
+                //Lower Drain
+                else if (nodes[drain].waterHeight(nodes[drain].topHeight()) < nodes[i].waterHeight(nodes[i].topHeight()))
+                    drain = i;
+
+                drainfound = true;
                 return;
+            }
 
-            plane = nodes[i.y * dim.x + i.x].topHeight() + nodes[i.y * dim.x + i.x].waterDepth();
-
+            //Part of the Pool
+            set.push_back(i);
+            toTry.push(i + dim.x);    //Fill Neighbors
+            toTry.push(i - dim.x);
+            toTry.push(i + 1);
+            toTry.push(i - 1);
+            toTry.push(i + dim.x + 1);  //Diagonals (Improves Drainage)
+            toTry.push(i - dim.x - 1);
+            toTry.push(i + dim.x - 1);
+            toTry.push(i - dim.x + 1);
         };
 
-        lowBound(drain + glm::ivec2(1, 0));
-        lowBound(drain - glm::ivec2(1, 0));
-        lowBound(drain + glm::ivec2(0, 1));
-        lowBound(drain - glm::ivec2(0, 1));
-        lowBound(drain + glm::ivec2(1, 1));
-        lowBound(drain - glm::ivec2(1, 1));
-        lowBound(drain + glm::ivec2(-1, 1));
-        lowBound(drain - glm::ivec2(-1, 1));
-
-        for (auto& s : floodset) {
-            int j = s.y * dim.x + s.x;
-            nodes[j].setWaterDepth((plane > nodes[j].topHeight()) ? (plane - nodes[j].topHeight()) : 0.0);
+        //Perform Flood
+        toTry.push(index);
+        while (!toTry.empty())
+        {
+            fill(toTry.top());
+            toTry.pop();
         }
 
-        for (auto& b : boundary) {
-            int j = b.first;
-            nodes[j].setWaterDepth((plane > nodes[j].topHeight()) ? (plane - nodes[j].topHeight()) : 0.0);
+        fill(index);
+        delete[] tried;
+
+        //Drainage Point
+        if (drainfound) {
+
+            //Set the Drop Position and Evaporate
+            glm::vec2 pos = glm::vec2(drain / dim.y, drain % dim.y);
+
+            //Set the New Waterlevel (Slowly)
+            double drainage = 0.001;
+            plane = (1.0 - drainage) * initialplane + drainage * (nodes[drain].waterHeight(nodes[drain].topHeight()));
+
+            
+            //Compute the New Height
+            for (auto& s : set)
+                nodes[s].setWaterDepth((plane > nodes[s].topHeight()) ? (plane - nodes[s].topHeight()) : 0.0);
+
+            //Remove Sediment
+            m_sediment *= 0.1;
+            break;
         }
 
-        // TODO: distribute sediment
-        m_sediment /= (float)floodset.size();
-        m_pos = drain;
+        //Get Volume under Plane
+        double tVol = 0.0;
+        for (auto& s : set)
+            tVol += m_volumeFactor * (plane - (nodes[s].waterHeight(nodes[s].topHeight())));
 
-        return true;
+        //We can partially fill this volume
+        if (tVol <= m_volume && initialplane < plane) {
+
+            //Raise water level to plane height
+            for (auto& s : set)
+                nodes[s].setWaterDepth(plane - nodes[s].topHeight());
+
+            //Adjust Drop Volume
+            m_volume -= tVol;
+            tVol = 0.0;
+        }
+
+        //Plane was too high.
+        else fail--;
+
+        //Adjust Planes
+        initialplane = (plane > initialplane) ? plane : initialplane;
+        plane += 0.5 * (m_volume - tVol) / (double)set.size() / m_volumeFactor;
     }
 
-    return false;
+    //Couldn't place the volume (for some reason)- so ignore this drop.
+    if (fail == 0)
+        m_volume = 0.0;
 
 }

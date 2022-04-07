@@ -157,7 +157,7 @@ int main()
 		if (erodeMe)
 		{
 			auto start = std::chrono::system_clock::now();
-			currentMap->erode(100);
+			currentMap->erode(10);
 			auto end = std::chrono::system_clock::now();
 			std::chrono::duration<double> elapsed_seconds = end - start;
 			std::cout << "Tick took " << elapsed_seconds.count() << "s" << std::endl;

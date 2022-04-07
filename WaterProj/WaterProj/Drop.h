@@ -14,11 +14,14 @@ public:
     bool flood(Node* nodes, glm::ivec2 dim);
     static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes);
     glm::vec2 getPosition() { return m_pos; }
+    float getVolume() { return m_volume; }
+    float getMinVolume() { return m_minVol; }
 
 protected:
     int m_age = 0;
     glm::vec2 m_pos;
     glm::vec2 m_speed = glm::vec2(0.0);
+    //1.0
     float m_volume = 1.0; 
     float m_sediment = 0.0;
 
