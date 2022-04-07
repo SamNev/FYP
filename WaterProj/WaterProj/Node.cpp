@@ -199,7 +199,7 @@ float Node::waterHeight(float valIfNoWater) const
 	if (!hasWater())
 		return valIfNoWater;
 
-	return topHeight() + m_waterData.height;
+	return topHeight() + m_waterData.height + m_waterData.particles;
 }
 
 void Node::setWaterDepth(float waterDepth)
@@ -219,6 +219,8 @@ bool Node::hasWater() const
 
 void Node::setHeight(float height, NodeMarker fillerData)
 {
+	fillerData.height = height;
+
 	if (height < topHeight())
 	{
 		erodeByValue(topHeight() - height);

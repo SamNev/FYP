@@ -30,7 +30,8 @@ protected:
     const float m_depositionRate = 1.2 * 0.08;
     const float m_minVol = 0.01;
     const float m_friction = 0.25;
-    const float m_volumeFactor = 0.5; 
+    //1.0
+    const float m_volumeFactor = 1.0; 
 
     int m_remainingSpills = 0;
 

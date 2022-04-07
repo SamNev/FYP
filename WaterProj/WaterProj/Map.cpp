@@ -352,7 +352,7 @@ void Map::erode(int cycles) {
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
 
-			drop.descend(normal((int)drop.getPosition().x * m_height + (int)drop.getPosition().y), m_nodes, &track, dim, m_scale);
+			drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, &track, dim, m_scale);
 
 			if (drop.getVolume() > drop.getMinVolume())
 				drop.flood(m_nodes, dim);
@@ -360,8 +360,6 @@ void Map::erode(int cycles) {
 			spill--;
 		}
 	}
-
-	std::cout << "erode pass complete" << std::endl;
 
 	float lossRate = 0.01;
 	for (int i = 0; i < m_width * m_height; i++)

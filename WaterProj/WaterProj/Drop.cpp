@@ -15,6 +15,7 @@ Drop::Drop(glm::vec2 pos, glm::ivec2 dim, float volume)
 }
 
 //TODO: change the awful nx/ny thing
+#pragma optimize("", off);
 void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
@@ -26,18 +27,21 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
     const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
 
     const float maxDiff = 0.01f;
+    //0.1f
     const float settling = 0.1f;
 
     for (int i = 0; i < 8; i++) 
     {
         glm::ivec2 offsetPos = (glm::ivec2)pos + glm::ivec2(nx[i], ny[i]);
         int offsetIndex = offsetPos.y * dim.x + offsetPos.x;
-        float diff = (nodes[ind].topHeight() - nodes[offsetIndex].topHeight());
 
         if (offsetPos.x >= dim.x || offsetPos.y >= dim.y || offsetPos.x < 0 || offsetPos.y < 0)
             continue;
         if (nodes[offsetIndex].waterDepth() > 0) 
             continue;
+
+        float diff = (nodes[ind].topHeight() - nodes[offsetIndex].topHeight());
+
         if (diff == 0)   
             continue;
 
@@ -46,8 +50,6 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
             continue;
 
         float transfer = settling * excess / 2.0f;
-        if (transfer > 100)
-            std::cout << "lots of transfer?";
 
         NodeMarker marker;
         if (diff > 0) {
@@ -61,6 +63,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
         }
     }
 }
+#pragma optimize("", on);
 
 bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::ivec2 dim, float scale) 
 {
@@ -229,7 +232,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             double drainage = 0.001;
             plane = (1.0 - drainage) * initialplane + drainage * (nodes[drain].waterHeight(nodes[drain].topHeight()));
 
-            
+            //std::cout << "Drain found, setting height to " << plane << ". Volume is " << m_volume << std::endl;
             //Compute the New Height
             for (auto& s : set)
                 nodes[s].setWaterDepth((plane > nodes[s].topHeight()) ? (plane - nodes[s].topHeight()) : 0.0);
