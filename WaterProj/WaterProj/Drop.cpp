@@ -69,8 +69,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
     track->at(index) += m_volume;
 
     // deposition rate modified by plant density. Higher plant density->less erosion
-    float modifiedDeposition = m_depositionRate * glm::max(1.0f - nodes[index].getFoliageDensity(), 0.0f);
-    if (modifiedDeposition < 0) modifiedDeposition = 0;
+    float modifiedDeposition = m_depositionRate * glm::max(1.0f - nodes[index].getFoliageDensity(), 0.01f);
 
     // TODO: investigate representation of friction
     float modifiedFriction = m_friction * 1.0 - nodes[index].getParticles();
