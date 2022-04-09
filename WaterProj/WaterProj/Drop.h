@@ -22,7 +22,7 @@ protected:
     glm::vec2 m_pos;
     glm::vec2 m_speed = glm::vec2(0.0);
     //1.0
-    float m_volume = 100.0; 
+    float m_volume = 1000.0; 
     float m_sediment = 0.0;
 
     const float m_density = 1.0;
