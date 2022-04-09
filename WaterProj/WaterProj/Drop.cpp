@@ -219,7 +219,6 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             toTry.pop();
         }
 
-        fill(index);
         delete[] tried;
 
         //Drainage Point
