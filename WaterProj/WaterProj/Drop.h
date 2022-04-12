@@ -35,4 +35,6 @@ protected:
 
     int m_remainingSpills = 0;
 
+    int m_prevIndex;
+
 };
