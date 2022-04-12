@@ -90,18 +90,15 @@ public:
 	void erode(int cycles);
 	void grow();
 
-	glm::vec3 normal(int index){
-
-	//Two large triangels adjacent to the plane (+Y -> +X) (-Y -> -X)
-	glm::vec3 n = glm::cross(glm::vec3(0.0, m_scale*(getHeightAt(index+1)-getHeightAt(index)+getDepthAt(index+1)-getDepthAt(index)), 1.0), glm::vec3(1.0, m_scale*(getHeightAt(index+m_height)+getDepthAt(index+m_height)-getHeightAt(index)-getDepthAt(index)), 0.0));
-	n += glm::cross(glm::vec3(0.0, m_scale*(getHeightAt(index-1)- getHeightAt(index) + getDepthAt(index-1)-getDepthAt(index)), -1.0), glm::vec3(-1.0, m_scale*(getHeightAt(index-m_height)-getHeightAt(index)+getDepthAt(index-m_height)-getDepthAt(index)), 0.0));
-
-	//Two Alternative Planes (+X -> -Y) (-X -> +Y)
-	n += glm::cross(glm::vec3(1.0, m_scale*(getHeightAt(index+m_height)-getHeightAt(index)+getDepthAt(index+m_height)-getDepthAt(index)), 0.0), glm::vec3(0.0, m_scale*(getHeightAt(index-1)-getHeightAt(index)+getDepthAt(index-1)-getDepthAt(index)), -1.0));
-	n += glm::cross(glm::vec3(-1.0, m_scale*(getHeightAt(index+m_height)-getHeightAt(index)+getDepthAt(index+m_height)-getDepthAt(index)), 0.0), glm::vec3(0.0, m_scale*(getHeightAt(index+1)-getHeightAt(index)+getDepthAt(index+1)-getDepthAt(index)), 1.0));
-
-	return glm::normalize(n);
-  }
+	glm::vec3 normal(int index)
+	{
+		glm::vec2 pos = glm::vec2(index % m_width, index / m_width);
+		float left = getNodeAt(pos.x + 1, pos.y)->waterHeight(getNodeAt(pos.x + 1, pos.y)->topHeight());
+		float right = getNodeAt(pos.x - 1, pos.y)->waterHeight(getNodeAt(pos.x - 1, pos.y)->topHeight());
+		float up = getNodeAt(pos.x, pos.y + 1)->waterHeight(getNodeAt(pos.x, pos.y + 1)->topHeight());
+		float down = getNodeAt(pos.x, pos.y - 1)->waterHeight(getNodeAt(pos.x, pos.y - 1)->topHeight());
+		return glm::normalize(glm::vec3(2 * (right - left), 2 * (down - up), -4));
+	}
 	
 
 protected:

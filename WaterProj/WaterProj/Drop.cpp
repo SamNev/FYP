@@ -72,20 +72,20 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     
     int index = floor(m_pos.y) * dim.x + floor(m_pos.x);
     // add volume to current node
-    track->at(index) = true;
+    nodes[index].setWaterDepth(m_volume);
 
     // deposition rate modified by plant density. Higher plant density->less erosion
     float modifiedDeposition = m_depositionRate * glm::max(1.0f - nodes[index].getFoliageDensity(), 0.01f);
 
     // TODO: investigate representation of friction
-    float modifiedFriction = m_friction * 1.0 - nodes[index].getParticles();
+    float modifiedFriction = m_friction;
     float modifiedEvaporationRate = m_evapRate * (1.0 - 0.2 * nodes[index].getParticles());
 
     // was 1e-5
-    if (glm::length(glm::vec2(norm.x, norm.z)) * modifiedFriction < 1E-5)
+    if (glm::length(glm::vec2(norm.x, norm.y)) * modifiedFriction < 1E-5)
         return false;
 
-    m_speed = glm::mix(glm::vec2(norm.x, norm.z), m_speed, modifiedFriction);
+    m_speed = glm::mix(glm::vec2(norm.x, norm.y), m_speed, modifiedFriction);
     m_speed = sqrt(2.0f) * normalize(m_speed);
     m_pos += m_speed;
 
@@ -169,22 +169,6 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             return true;
         };
 
-        std::function<bool(int)> isValidDrain = [&](int i)
-        {
-            if (std::find(set.begin(), set.end(), i + dim.x) != set.end() &&
-                std::find(set.begin(), set.end(), i - dim.x) != set.end() &&
-                std::find(set.begin(), set.end(), i + 1) != set.end() &&
-                std::find(set.begin(), set.end(), i - 1) != set.end() &&
-                std::find(set.begin(), set.end(), i + dim.x + 1) != set.end() &&
-                std::find(set.begin(), set.end(), i - dim.x - 1) != set.end() &&
-                std::find(set.begin(), set.end(), i + dim.x - 1) != set.end() &&
-                std::find(set.begin(), set.end(), i - dim.x + 1) != set.end())
-            {
-                return false;
-            }
-            return true;
-        };
-
         std::function<void(int)> fill = [&](int i) {
 
             if (plane < nodes[i].waterHeight(nodes[i].topHeight())) {
@@ -239,16 +223,11 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
         delete[] tried;
 
-        if (!isValidDrain(drain)) 
-        {
-            std::cout << "drain's fucked";
-        }
-
         //Drainage Point
         if (drainfound) {
 
             //Set the Drop Position and Evaporate
-            glm::vec2 pos = glm::vec2(drain / dim.y, drain % dim.y);
+            glm::vec2 pos = glm::vec2(drain % dim.x, drain / dim.x);
 
             //Set the New Waterlevel (Slowly)
             double drainage = 0.001;

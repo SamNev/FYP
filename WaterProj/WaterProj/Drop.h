@@ -22,16 +22,16 @@ protected:
     glm::vec2 m_pos;
     glm::vec2 m_speed = glm::vec2(0.0);
     //1.0
-    float m_volume = 100; 
+    float m_volume = 1; 
     float m_sediment = 0.0;
 
     const float m_density = 1.0;
     const float m_evapRate = 0.001;
     const float m_depositionRate = 1.2 * 0.08;
     const float m_minVol = 0.01;
-    const float m_friction = 0.5;
-    //1.0
-    const float m_volumeFactor = 1.0; 
+    const float m_friction = 0.25;
+    //0.5
+    const float m_volumeFactor = 0.5; 
 
     int m_remainingSpills = 0;
 

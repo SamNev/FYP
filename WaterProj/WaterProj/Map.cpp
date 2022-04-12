@@ -49,7 +49,8 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			const float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;
+			float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;
+			val = 0;
 			const float base = (lieNoise.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
 			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight / 20.0f, params.divetRarity);
@@ -361,10 +362,13 @@ void Map::erode(int cycles) {
 	}
 
 	//0.01
-	float lossRate = 0.5;
+	float rate = 0.1;
 	for (int i = 0; i < m_width * m_height; i++)
 	{
-		m_nodes[i].setParticles((1.0 - lossRate) * m_nodes[i].getParticles() + track[i] ? lossRate : 0.0f);
+		if (track[i])
+			m_nodes[i].setParticles(m_nodes[i].waterDepth() + rate);
+		else
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() - (rate/10.0f)));
 	}
 
 }
