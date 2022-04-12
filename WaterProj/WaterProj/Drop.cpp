@@ -89,15 +89,15 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
         particleEffect.x += nodes[index + 1].getParticles();
 
     m_speed *= 0.5f;
+
     if (particleEffect != glm::vec2(0.0f))
     {
-        glm::normalize(particleEffect);
-        m_speed += particleEffect;
+        particleEffect = glm::normalize(particleEffect);
+        m_speed += particleEffect * 2.0f;
     }
-    m_speed += dir;
-    glm::normalize(m_speed);
+    m_speed += dir * 2.0f;
 
-    if (glm::length(m_speed) < 0.1f)
+    if (glm::length(m_speed) < 0.01f)
         return false;
 
     m_pos += glm::normalize(m_speed) * (float)sqrt(2);
@@ -112,26 +112,20 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
 #pragma optimize("", on);
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
-{ //Current Height
+{
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
-    double plane = nodes[index].waterHeight(nodes[index].topHeight());
-    double initialplane = plane;
+    double plane = nodes[index].waterHeight(nodes[index].topHeight()) + 0.005f;
     
     std::stack<int> toTry;
-    //Floodset
     std::vector<int> set;
-    int fail = 10;
 
-    //Iterate
-    while (m_volume > m_minVol && fail) {
-
+    while (m_volume > 0)
+    {
         set.clear();
         const int size = (int)dim.x * dim.y;
         bool* tried = new bool[size];
 
         std::fill(tried, tried + size, false);
-        int drain;
-        bool drainfound = false;
 
         std::function<bool(int)> inBounds = [&](int i)
         {
@@ -146,31 +140,17 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             return true;
         };
 
-        std::function<void(int)> fill = [&](int i) {
-
+        std::function<void(int, float&)> fill = [&](int i, float& vol) 
+        {
             if (plane < nodes[i].waterHeight(nodes[i].topHeight())) {
                 return;
             }
 
-            //Drainage Point
-            if (initialplane > nodes[i].waterHeight(nodes[i].topHeight())) {
-
-                //No Drain yet
-                if (!drainfound)
-                    drain = i;
-
-                //Lower Drain
-                else if (nodes[drain].waterHeight(nodes[drain].topHeight()) > nodes[i].waterHeight(nodes[i].topHeight()))
-                    drain = i;
-
-                //drainfound = true;
-                //return;
-            }
-
             //Part of the Pool
             set.push_back(i);
+            vol += plane - nodes[i].waterHeight(nodes[i].topHeight());
 
-            if(inBounds(i + dim.x))
+            if (inBounds(i + dim.x))
                 toTry.push(i + dim.x);
             if (inBounds(i - dim.x))
                 toTry.push(i - dim.x);
@@ -189,71 +169,35 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         };
 
         //Perform Flood
-        if(inBounds(index))
+        if (inBounds(index))
             toTry.push(index);
+        else
+            break;
 
+        float currVolume = 0.0f;
         while (!toTry.empty())
         {
-            fill(toTry.top());
+            fill(toTry.top(), currVolume);
             toTry.pop();
         }
 
-        delete[] tried;
+        if (!set.empty() && set.size() * 0.005f < m_volume)
+        {
+            std::cout << "flooding" << std::endl;
+            m_volume -= set.size() * 0.005f;
 
-        //Drainage Point
-        if (drainfound) {
-
-            //Set the Drop Position and Evaporate
-            glm::vec2 pos = glm::vec2(drain % dim.x, drain / dim.x);
-
-            //Set the New Waterlevel (Slowly)
-            double drainage = 0.001;
-            plane = (1.0 - drainage) * initialplane + drainage * (nodes[drain].waterHeight(nodes[drain].topHeight()));
-            
-            if (plane > nodes[index].topHeight())
+            for (int s : set)
             {
-                std::cout << "Drain found, setting " << set.size() << " nodes to water level " << plane << " was " << nodes[index].topHeight() << ". Volume is " << m_volume << ". Spawning particle at " << pos.x << ", " << pos.y << std::endl;
-                initialplane = (plane > initialplane) ? plane : initialplane;
+                nodes[s].setWaterDepth(nodes[s].waterDepth() + 0.005f);
             }
-
-            m_pos = pos;
-            //Compute the New Height
-            for (auto& s : set)
-                nodes[s].setWaterDepth((plane > nodes[s].topHeight()) ? (plane - nodes[s].topHeight()) : 0.0);
-
-            //Remove Sediment
-            m_sediment *= 0.1;
-            break;
+        }
+        else 
+        {
+            std::cout << "should spawn particle with vol " << m_volume << std::endl;
+            return false;
         }
 
-        //Get Volume under Plane
-        double tVol = 0.0;
-        for (auto& s : set)
-            tVol += m_volumeFactor * (plane - (nodes[s].waterHeight(nodes[s].topHeight())));
-
-        //We can partially fill this volume
-        if (tVol <= m_volume && initialplane < plane) {
-            std::cout << "Filling volume of " << set.size() << " nodes to water level " << plane << " was " << nodes[index].waterHeight(nodes[index].topHeight());
-            //Raise water level to plane height
-            for (auto& s : set)
-                nodes[s].setWaterDepth(plane - nodes[s].topHeight());
-
-            //Adjust Drop Volume
-            m_volume -= tVol;
-            tVol = 0.0;
-        }
-
-        //Plane was too high.
-        else fail--;
-
-        //Adjust Planes
-        initialplane = (plane > initialplane) ? plane : initialplane;
-        plane += 0.5 * (m_volume - tVol) / (double)set.size() / m_volumeFactor;
+        delete[] tried;
     }
-
-    //Couldn't place the volume (for some reason)- so ignore this drop.
-    if (fail == 0)
-        m_volume = 0.0;
-        
     return false;
 }
