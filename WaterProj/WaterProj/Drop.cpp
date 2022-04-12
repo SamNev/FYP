@@ -65,14 +65,14 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 }
 #pragma optimize("", on);
 
-bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::ivec2 dim, float scale) 
+bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::ivec2 dim, float scale) 
 {
     if (m_volume < m_minVol)
         return false;
     
     int index = floor(m_pos.y) * dim.x + floor(m_pos.x);
     // add volume to current node
-    track->at(index) += m_volume;
+    track->at(index) = true;
 
     // deposition rate modified by plant density. Higher plant density->less erosion
     float modifiedDeposition = m_depositionRate * glm::max(1.0f - nodes[index].getFoliageDensity(), 0.01f);
@@ -111,7 +111,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<float>* track, glm::
     m_sediment += modifiedDeposition * modifiedDiff;
     //TODO: proper sediment values;
     NodeMarker node;
-    nodes[index].setHeight(nodes[index].topHeight() - (modifiedDeposition * modifiedDiff), node);
+    if(modifiedDeposition * modifiedDiff > 0)
+        nodes[index].setHeight(nodes[index].topHeight() - (modifiedDeposition * modifiedDiff), node);
 
     /*
     //Mass-Transfer (in MASS)
@@ -136,7 +137,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
     double plane = nodes[index].waterHeight(nodes[index].topHeight());
     double initialplane = plane;
-
+    
     std::stack<int> toTry;
     //Floodset
     std::vector<int> set;
@@ -165,6 +166,22 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
             tried[i] = true;
 
+            return true;
+        };
+
+        std::function<bool(int)> isValidDrain = [&](int i)
+        {
+            if (std::find(set.begin(), set.end(), i + dim.x) != set.end() &&
+                std::find(set.begin(), set.end(), i - dim.x) != set.end() &&
+                std::find(set.begin(), set.end(), i + 1) != set.end() &&
+                std::find(set.begin(), set.end(), i - 1) != set.end() &&
+                std::find(set.begin(), set.end(), i + dim.x + 1) != set.end() &&
+                std::find(set.begin(), set.end(), i - dim.x - 1) != set.end() &&
+                std::find(set.begin(), set.end(), i + dim.x - 1) != set.end() &&
+                std::find(set.begin(), set.end(), i - dim.x + 1) != set.end())
+            {
+                return false;
+            }
             return true;
         };
 
@@ -211,7 +228,9 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         };
 
         //Perform Flood
-        toTry.push(index);
+        if(inBounds(index))
+            toTry.push(index);
+
         while (!toTry.empty())
         {
             fill(toTry.top());
@@ -219,6 +238,11 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
 
         delete[] tried;
+
+        if (!isValidDrain(drain)) 
+        {
+            std::cout << "drain's fucked";
+        }
 
         //Drainage Point
         if (drainfound) {
@@ -229,8 +253,14 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             //Set the New Waterlevel (Slowly)
             double drainage = 0.001;
             plane = (1.0 - drainage) * initialplane + drainage * (nodes[drain].waterHeight(nodes[drain].topHeight()));
+            
+            if (plane > nodes[index].topHeight())
+            {
+                std::cout << "Drain found, setting " << set.size() << " nodes to water level " << plane << " was " << nodes[index].topHeight() << ". Volume is " << m_volume << ". Spawning particle at " << pos.x << ", " << pos.y << std::endl;
+                initialplane = (plane > initialplane) ? plane : initialplane;
+            }
 
-            std::cout << "Drain found, setting height to " << plane << ". Volume is " << m_volume << std::endl;
+            m_pos = pos;
             //Compute the New Height
             for (auto& s : set)
                 nodes[s].setWaterDepth((plane > nodes[s].topHeight()) ? (plane - nodes[s].topHeight()) : 0.0);
@@ -247,7 +277,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
         //We can partially fill this volume
         if (tVol <= m_volume && initialplane < plane) {
-
+            std::cout << "Filling volume of " << set.size() << " nodes to water level " << plane << " was " << nodes[index].waterHeight(nodes[index].topHeight());
             //Raise water level to plane height
             for (auto& s : set)
                 nodes[s].setWaterDepth(plane - nodes[s].topHeight());
@@ -268,5 +298,6 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
     //Couldn't place the volume (for some reason)- so ignore this drop.
     if (fail == 0)
         m_volume = 0.0;
-
+        
+    return false;
 }

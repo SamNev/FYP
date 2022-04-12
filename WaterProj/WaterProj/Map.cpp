@@ -338,11 +338,11 @@ Map::~Map()
 void Map::erode(int cycles) {
 
 	// all particle movement
-	std::vector<float> track(m_width * m_height);
+	std::vector<bool> track(m_width * m_height);
 	glm::vec2 dim = glm::vec2(m_width, m_height);
 	std::fill(track.begin(), track.end(), 0.0f);
 
-	for (int i = 0; i < cycles; i++) 
+	for (int i = 0; i < cycles; i++)
 	{
 		// spawn particle
 		//glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
@@ -353,18 +353,19 @@ void Map::erode(int cycles) {
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
 
-			drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, &track, dim, m_scale);
-
-			if (drop.getVolume() > drop.getMinVolume())
+			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, &track, dim, m_scale) && drop.getVolume() > drop.getMinVolume())
 				drop.flood(m_nodes, dim);
 
 			spill--;
 		}
 	}
 
-	float lossRate = 0.01;
+	//0.01
+	float lossRate = 0.5;
 	for (int i = 0; i < m_width * m_height; i++)
-		m_nodes[i].setParticles((1.0 - lossRate) * m_nodes[i].getParticles() + lossRate * 50.0f * track[i] / (1.0f + 50.0f * track[i]));
+	{
+		m_nodes[i].setParticles((1.0 - lossRate) * m_nodes[i].getParticles() + track[i] ? lossRate : 0.0f);
+	}
 
 }
 

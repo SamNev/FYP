@@ -199,6 +199,14 @@ float Node::waterHeight(float valIfNoWater) const
 	if (!hasWater())
 		return valIfNoWater;
 
+	return topHeight() + m_waterData.height;
+}
+
+float Node::waterHeightWithStreams(float valIfNoWater) const
+{
+	if (!hasWater() && m_waterData.particles == 0)
+		return valIfNoWater;
+
 	return topHeight() + m_waterData.height + m_waterData.particles;
 }
 

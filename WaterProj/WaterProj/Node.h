@@ -37,6 +37,7 @@ public:
 	NodeMarker* top();
 	void skim();
 	float waterHeight(float valIfNoWater) const;
+	float waterHeightWithStreams(float valIfNoWater) const;
 	float waterDepth() const;
 	void setWaterHeight(float waterHeight);
 	void setWaterDepth(float waterDepth);
