@@ -350,25 +350,21 @@ void Map::erode(int cycles) {
 		glm::vec2 newpos = glm::vec2(500, 500);
 		Drop drop(newpos);
 
-		int spill = 50;
+		int spill = 5000;
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
 
 			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, &track, dim, m_scale) && drop.getVolume() > drop.getMinVolume())
-				drop.flood(m_nodes, dim);
+				break; // drop.flood(m_nodes, dim);
 
 			spill--;
 		}
 	}
 
 	//0.01
-	float rate = 0.1;
 	for (int i = 0; i < m_width * m_height; i++)
 	{
-		if (track[i])
-			m_nodes[i].setParticles(m_nodes[i].waterDepth() + rate);
-		else
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() - (rate/10.0f)));
+		m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
 	}
 
 }

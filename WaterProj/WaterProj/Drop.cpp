@@ -63,74 +63,53 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
         }
     }
 }
-#pragma optimize("", on);
 
 bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::ivec2 dim, float scale) 
 {
     if (m_volume < m_minVol)
         return false;
-    
-    int index = floor(m_pos.y) * dim.x + floor(m_pos.x);
-    // add volume to current node
-    nodes[index].setWaterDepth(m_volume);
 
-    // deposition rate modified by plant density. Higher plant density->less erosion
-    float modifiedDeposition = m_depositionRate * glm::max(1.0f - nodes[index].getFoliageDensity(), 0.01f);
+    int index = (int)m_pos.y * dim.x + (int)m_pos.x;
 
-    // TODO: investigate representation of friction
-    float modifiedFriction = m_friction;
-    float modifiedEvaporationRate = m_evapRate * (1.0 - 0.2 * nodes[index].getParticles());
-
-    // was 1e-5
-    if (glm::length(glm::vec2(norm.x, norm.y)) * modifiedFriction < 1E-5)
+    if (index < 0 || index >= dim.x * dim.y)
         return false;
 
-    m_speed = glm::mix(glm::vec2(norm.x, norm.y), m_speed, modifiedFriction);
-    m_speed = sqrt(2.0f) * normalize(m_speed);
-    m_pos += m_speed;
+    glm::vec2 dir = glm::vec2(norm.x, norm.y);
 
-    int newPos = floor(m_pos.y) * dim.x + floor(m_pos.x);
+    nodes[index].setParticles(nodes[index].getParticles() + m_volume);
 
-    // OOB check
-    if (!glm::all(glm::greaterThanEqual(m_pos, glm::vec2(0))) || !glm::all(glm::lessThan((glm::ivec2)m_pos, dim))) 
+    glm::vec2 particleEffect(0.0f);
+    if(index - dim.x > 0)
+        particleEffect.y -= nodes[index - dim.x].getParticles();
+    if (index + dim.x < dim.x * dim.y)
+        particleEffect.y += nodes[index + dim.x].getParticles();
+    if(index - 1 > 0)
+        particleEffect.x -= nodes[index - 1].getParticles();
+    if (index + 1 < dim.x * dim.y)
+        particleEffect.x += nodes[index + 1].getParticles();
+
+    m_speed *= 0.5f;
+    if (particleEffect != glm::vec2(0.0f))
     {
-        m_volume = 0.0;
-        return false;
+        glm::normalize(particleEffect);
+        m_speed += particleEffect;
     }
+    m_speed += dir;
+    glm::normalize(m_speed);
 
-    // ignore if in pool
-    if (nodes[newPos].waterDepth() > 0.0) 
-    {
+    if (glm::length(m_speed) < 0.1f)
         return false;
-    }
 
-    // sediment transfer
-    float heightDiff = nodes[index].topHeight() - nodes[newPos].topHeight();
-    if (heightDiff < 0) heightDiff = 0;
-    float modifiedDiff = heightDiff - m_sediment;
-    m_sediment += modifiedDeposition * modifiedDiff;
-    //TODO: proper sediment values;
-    NodeMarker node;
-    if(modifiedDeposition * modifiedDiff > 0)
-        nodes[index].setHeight(nodes[index].topHeight() - (modifiedDeposition * modifiedDiff), node);
+    m_pos += glm::normalize(m_speed) * (float)sqrt(2);
 
-    /*
-    //Mass-Transfer (in MASS)
-    float heightDiff = h[index] - h[nind];
-    if (heightDiff < 0) heightDiff = 0;//max(0.0, (h[index]-h[nind]));
-    float modifiedDiff = heightDiff - sediment;
-    sediment += effD * modifiedDiff;
-    h[index] -= effD * modifiedDiff;
-    */
-
-    m_sediment /= (1.0 - modifiedEvaporationRate);
-    m_volume *= (1.0 - modifiedEvaporationRate);
-
-    cascade(m_pos, dim, nodes);
+    if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
+        return false;
 
     m_age++;
+    cascade(m_pos, dim, nodes);
     return true;
 }
+#pragma optimize("", on);
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 { //Current Height
@@ -150,9 +129,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         const int size = (int)dim.x * dim.y;
         bool* tried = new bool[size];
 
-        for (int i = 0; i < size; ++i) {
-            tried[i] = false;
-        }
+        std::fill(tried, tried + size, false);
         int drain;
         bool drainfound = false;
 
@@ -186,8 +163,8 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 else if (nodes[drain].waterHeight(nodes[drain].topHeight()) > nodes[i].waterHeight(nodes[i].topHeight()))
                     drain = i;
 
-                drainfound = true;
-                return;
+                //drainfound = true;
+                //return;
             }
 
             //Part of the Pool
