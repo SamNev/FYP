@@ -22,6 +22,7 @@ public:
 	void makeMapTile();
 	void transformCam(glm::vec2 transformation);
 	void setMap(Map* map);
+	void setCamPos(glm::vec3 camPos) { m_camPos = camPos; }
 	void zoomIn();
 	void zoomOut();
 	float getCullDist();

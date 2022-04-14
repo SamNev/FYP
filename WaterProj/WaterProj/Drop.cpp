@@ -26,7 +26,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
     const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
 
-    const float maxDiff = 0.01f;
+    const float maxDiff = 0.001f;
     //0.1f
     const float settling = 0.1f;
 
@@ -40,10 +40,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
         if (nodes[offsetIndex].waterDepth() > 0) 
             continue;
 
-        float diff = (nodes[ind].topHeight() - nodes[offsetIndex].topHeight());
-
-        if (diff == 0)   
-            continue;
+        float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.01f);
 
         float excess = abs(diff) - maxDiff;
         if (excess <= 0)
@@ -206,38 +203,51 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         float currVolume = 0.0f;
         while (!toTry.empty())
         {
-            fill(toTry.top(), currVolume);
+            int current = toTry.top();
             toTry.pop();
+            fill(current, currVolume);
         }
 
         if (!set.empty() && set.size() * 0.005f < m_volume)
         {
-            std::cout << "flooding set of " << set.size() << " nodes" << std::endl;
+            std::cout << "flooding set of " << set.size() << " nodes at " << m_pos.x << ", " << m_pos.y << std::endl;
             m_volume -= set.size() * 0.005f;
 
             for (int s : set)
             {
-                nodes[s].setWaterDepth(nodes[s].waterDepth() + 0.005f);
+                nodes[s].setWaterHeight(plane);
             }
         }
         else if(!set.empty())
         {
-            float drainHeight = FLT_MAX;
+            if (nodes[index].waterDepth() == 0.0f)
+                break;
 
+            set.clear();
+            toTry.push(index); 
+            currVolume = 0.0f;
+            plane = nodes[index].waterHeight(nodes[index].topHeight());
+            while (!toTry.empty())
+            {
+                int current = toTry.top();
+                toTry.pop();
+                fill(current, currVolume);
+            }
+
+            float drainHeight = FLT_MAX;
             for (int s : set)
             {
                 isValidDrain(s, drainHeight);
             }
+
+            for (int s : set)
+            {
+                nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()));
+            }
             
             glm::vec2 drainPos = glm::vec2(drain % dim.x, drain / dim.x);
-            if (m_pos == drainPos)
-            {
-                std::cout << "looping so ending drain." << std::endl;
-                return false;
-            }
-
-            m_pos = glm::vec2(drain % dim.x, drain / dim.x);
-            std::cout << "overflowing particle from set of " << set.size() << "nodes" << std::endl;
+            m_pos = drainPos;
+            std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << std::endl;
         }
 
         delete[] tried;

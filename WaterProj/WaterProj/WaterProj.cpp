@@ -108,6 +108,10 @@ int main()
 				{
 					renderer.transformCam(glm::vec2(-speed, speed));
 				}
+				else if (event.key.keysym.sym == SDLK_z)
+				{
+					renderer.setCamPos(glm::vec3(500, 10, 500));
+				}
 				else if (event.key.keysym.sym == SDLK_q)
 				{
 					renderer.zoomIn();

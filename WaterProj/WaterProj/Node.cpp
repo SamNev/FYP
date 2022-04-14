@@ -222,7 +222,7 @@ float Node::waterDepth() const
 
 bool Node::hasWater() const
 {
-	return m_waterData.height > 0.02f;
+	return m_waterData.height > 0.00f;
 }
 
 void Node::setHeight(float height, NodeMarker fillerData)

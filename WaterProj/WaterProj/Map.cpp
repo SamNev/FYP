@@ -350,7 +350,7 @@ void Map::erode(int cycles) {
 		glm::vec2 newpos = glm::vec2(500, 500);
 		Drop drop(newpos);
 
-		int spill = 500;
+		int spill = 5000;
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
 
