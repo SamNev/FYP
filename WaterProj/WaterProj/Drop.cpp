@@ -40,7 +40,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
         if (nodes[offsetIndex].waterDepth() > 0) 
             continue;
 
-        float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.01f);
+        float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.001f);
 
         float excess = abs(diff) - maxDiff;
         if (excess <= 0)
@@ -120,6 +120,8 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
     while (m_volume > 0)
     {
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
+        if (index < 0 || index >= dim.x * dim.y)
+            return false;
         double plane = nodes[index].waterHeight(nodes[index].topHeight()) + 0.005f;
 
         std::stack<int> toTry;
@@ -246,8 +248,19 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             }
             
             glm::vec2 drainPos = glm::vec2(drain % dim.x, drain / dim.x);
+            if (m_pos == drainPos)
+            {
+                // this is going to stagnate! Not ideal...
+
+                for (int s : set)
+                {
+                    nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()) + 0.001);
+                }
+                std::cout << "cheating..." << std::endl;
+                break;
+            }
             m_pos = drainPos;
-            std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << std::endl;
+            std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << ". plane = " << plane << " drain = " << drainHeight << std::endl;
         }
 
         delete[] tried;

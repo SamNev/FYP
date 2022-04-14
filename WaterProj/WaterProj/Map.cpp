@@ -346,8 +346,8 @@ void Map::erode(int cycles) {
 	for (int i = 0; i < cycles; i++)
 	{
 		// spawn particle
-		//glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
-		glm::vec2 newpos = glm::vec2(500, 500);
+		glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
+		//glm::vec2 newpos = glm::vec2(500, 500);
 		Drop drop(newpos);
 
 		int spill = 5000;
