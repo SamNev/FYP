@@ -20,15 +20,16 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
 
+    //nodes[ind].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
     if (nodes[ind].waterDepth() > 0) return;
 
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
     const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
 
-    const float maxDiff = 0.001f;
+    const float maxDiff = 0.01f;
     //0.1f
-    const float settling = 0.1f;
+    const float settling = 1.0f;
 
     for (int i = 0; i < 8; i++) 
     {
@@ -37,7 +38,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 
         if (offsetPos.x >= dim.x || offsetPos.y >= dim.y || offsetPos.x < 0 || offsetPos.y < 0)
             continue;
-        if (nodes[offsetIndex].waterDepth() > 0) 
+        if (nodes[offsetIndex].waterDepth() > 0.1) 
             continue;
 
         float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.001f);
@@ -86,7 +87,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (index + 1 < dim.x * dim.y)
         particleEffect.x += nodes[index + 1].getParticles();
 
-    m_speed *= 0.5f;
+    m_speed *= 0.9f;
 
     if (particleEffect != glm::vec2(0.0f))
     {
@@ -101,8 +102,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     m_pos += glm::normalize(m_speed) * (float)sqrt(2);
     index = (int)m_pos.y * dim.x + (int)m_pos.x;
 
-    if (index == m_prevIndex)
-        return false;
+    //if (index == m_prevIndex)
+    //    return false;
 
     m_prevIndex = prevIndex;
 
@@ -256,7 +257,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 {
                     nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()) + 0.001);
                 }
-                std::cout << "cheating..." << std::endl;
+                std::cout << "cheating... particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << " height = " << nodes[drain].waterHeight(nodes[drain].topHeight()) << std::endl;
                 break;
             }
             m_pos = drainPos;
