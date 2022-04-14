@@ -92,11 +92,11 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (particleEffect != glm::vec2(0.0f))
     {
         particleEffect = glm::normalize(particleEffect);
-        m_speed += particleEffect * 2.0f;
+        m_speed += particleEffect;
     }
     m_speed += dir * 2.0f;
 
-    if (glm::length(m_speed) < 0.01f)
+    if (glm::length(m_speed) < 0.001f)
         return false;
 
     m_pos += glm::normalize(m_speed) * (float)sqrt(2);
@@ -211,10 +211,10 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             fill(current, currVolume);
         }
 
-        if (!set.empty() && set.size() * 0.005f < m_volume)
+        if (!set.empty() && currVolume < m_volume)
         {
-            std::cout << "flooding set of " << set.size() << " nodes at " << m_pos.x << ", " << m_pos.y << std::endl;
-            m_volume -= set.size() * 0.005f;
+            std::cout << "flooding set of " << set.size() << " nodes at " << m_pos.x << ", " << m_pos.y << " to height " << plane << std::endl;
+            m_volume -= currVolume;
 
             for (int s : set)
             {
@@ -243,22 +243,16 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 isValidDrain(s, drainHeight);
             }
 
-            for (int s : set)
-            {
-                nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()));
-            }
-            
             glm::vec2 drainPos = glm::vec2(drain % dim.x, drain / dim.x);
             if (m_pos == drainPos)
             {
-                // this is going to stagnate! Not ideal...
-
-                for (int s : set)
-                {
-                    nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()) + 0.001);
-                }
-                std::cout << "cheating... particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << " height = " << nodes[drain].waterHeight(nodes[drain].topHeight()) << std::endl;
+                nodes[drain].erodeByValue(0.005f);
                 break;
+            }
+
+            for (int s : set)
+            {
+                nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()));
             }
             m_pos = drainPos;
             std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << ". plane = " << plane << " drain = " << drainHeight << std::endl;

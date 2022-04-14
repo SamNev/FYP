@@ -55,7 +55,9 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
 			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight / 20.0f, params.divetRarity);
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
-			const float total = (base + val + hill + mount + div);
+			float total = (base + val + hill + mount + div);
+
+			// total = (x + y)/20.0f;
 
 			const float sandThreshold = sandNoise.noise(x, y, 0.5f) * 0.5f;
 
@@ -362,6 +364,9 @@ void Map::erode(int cycles) {
 
 			spill--;
 		}
+
+		if (spill == 0)
+			drop.flood(m_nodes, dim);
 	}
 
 	//0.01
