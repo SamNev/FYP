@@ -16,7 +16,7 @@ Drop::Drop(glm::vec2 pos, glm::ivec2 dim, float volume)
 
 //TODO: change the awful nx/ny thing
 #pragma optimize("", off);
-void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
+void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>* track)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
 
@@ -38,6 +38,8 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 
         if (offsetPos.x >= dim.x || offsetPos.y >= dim.y || offsetPos.x < 0 || offsetPos.y < 0)
             continue;
+
+        track->at(offsetIndex) = true;
         //if (nodes[offsetIndex].waterDepth() > 0.1) 
          //   continue;
 
@@ -70,7 +72,6 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
     int prevIndex = index;
     //nodes[index].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
-    track->at(index) = true;
 
     if (index < 0 || index >= dim.x * dim.y)
         return false;
@@ -113,7 +114,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
         return false;
 
     m_age++;
-    cascade(m_pos, dim, nodes);
+    cascade(m_pos, dim, nodes, track);
     return true;
 }
 #pragma optimize("", on);

@@ -352,7 +352,7 @@ void Map::erode(int cycles) {
 	// all particle movement
 	std::vector<bool> track(m_width * m_height);
 	glm::vec2 dim = glm::vec2(m_width, m_height);
-	std::fill(track.begin(), track.end(), 0.0f);
+	std::fill(track.begin(), track.end(), false);
 
 	for (int i = 0; i < cycles; i++)
 	{
@@ -380,7 +380,8 @@ void Map::erode(int cycles) {
 
 	for (int i = 0; i < m_width * m_height; i++)
 	{
-		m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
+		if(!track[i])
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
 	}
 
 }

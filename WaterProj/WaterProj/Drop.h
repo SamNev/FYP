@@ -12,7 +12,7 @@ public:
 
     bool descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::ivec2 dim, float scale);
     bool flood(Node* nodes, glm::ivec2 dim);
-    static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes);
+    static void cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>* track);
     glm::vec2 getPosition() { return m_pos; }
     float getVolume() { return m_volume; }
     float getMinVolume() { return m_minVol; }

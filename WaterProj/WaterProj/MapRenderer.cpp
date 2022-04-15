@@ -226,7 +226,7 @@ void MapRenderer::render(SDL_Window* window)
 		{
 			// calc model matrix here
 			const float height = m_map->getHeightAt(x, y);
-			const glm::vec3 color = m_map->getNodeAt(x, y)->topColor();
+			glm::vec3 color = m_map->getNodeAt(x, y)->topColor();
 			const glm::vec3 current = { x, height, y };
 			if (cullDist < distFromCamera(current))
 				continue;
@@ -255,6 +255,10 @@ void MapRenderer::render(SDL_Window* window)
 			const glm::vec3 bottomLeftColor = ((down->topColor() + left->topColor() + leftDown->topColor() + color) / 4.0f);
 			const glm::vec3 topLeftColor = ((up->topColor() + left->topColor() + leftUp->topColor() + color) / 4.0f);
 			const float colors[12] = { topRightColor.x, topRightColor.y, topRightColor.z, bottomLeftColor.x, bottomLeftColor.y, bottomLeftColor.z, topLeftColor.x, topLeftColor.y, topLeftColor.z, bottomRightColor.x, bottomRightColor.y, bottomRightColor.z};
+			if (m_map->getNodeAt(x, y)->getParticles() > 1.0f)
+			{
+				color = glm::vec3(1.0f, 0.0f, 0.0f);
+			}
 
 			float waterHeight = m_map->getNodeAt(x, y)->waterHeightWithStreams(-100.0f);
 			if (waterHeight == -100.0f)
