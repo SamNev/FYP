@@ -21,7 +21,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
     int ind = floor(pos.y) * dim.x + floor(pos.x);
 
     //nodes[ind].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
-    if (nodes[ind].waterDepth() > 0) return;
+    //if (nodes[ind].waterDepth() > 0) return;
 
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
@@ -29,7 +29,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 
     const float maxDiff = 0.01f;
     //0.1f
-    const float settling = 1.0f;
+    const float settling = 0.1f;
 
     for (int i = 0; i < 8; i++) 
     {
@@ -38,8 +38,8 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes)
 
         if (offsetPos.x >= dim.x || offsetPos.y >= dim.y || offsetPos.x < 0 || offsetPos.y < 0)
             continue;
-        if (nodes[offsetIndex].waterDepth() > 0.1) 
-            continue;
+        //if (nodes[offsetIndex].waterDepth() > 0.1) 
+         //   continue;
 
         float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.001f);
 
@@ -69,6 +69,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
 
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
     int prevIndex = index;
+    //nodes[index].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     if (index < 0 || index >= dim.x * dim.y)
         return false;
@@ -91,8 +92,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
 
     if (particleEffect != glm::vec2(0.0f))
     {
-        particleEffect = glm::normalize(particleEffect);
-        m_speed += particleEffect;
+        //particleEffect = glm::normalize(particleEffect);
+        //m_speed += particleEffect * 0.5f;
     }
     m_speed += dir * 2.0f;
 
@@ -102,8 +103,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     m_pos += glm::normalize(m_speed) * (float)sqrt(2);
     index = (int)m_pos.y * dim.x + (int)m_pos.x;
 
-    //if (index == m_prevIndex)
-    //    return false;
+    if (index == m_prevIndex)
+        return false;
 
     m_prevIndex = prevIndex;
 

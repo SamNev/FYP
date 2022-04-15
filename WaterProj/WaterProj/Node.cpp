@@ -207,7 +207,7 @@ float Node::waterHeightWithStreams(float valIfNoWater) const
 	if (!hasWater() && m_waterData.particles == 0)
 		return valIfNoWater;
 
-	return topHeight() + m_waterData.height + m_waterData.particles;
+	return topHeight() + m_waterData.height + glm::min(1.0f, m_waterData.particles);
 }
 
 void Node::setWaterDepth(float waterDepth)
