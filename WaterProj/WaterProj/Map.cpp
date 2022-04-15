@@ -3,6 +3,7 @@
 #include <glm.hpp>
 #include <ext.hpp>
 #include <iostream>
+#include <sstream>
 
 #include "MapRenderer.h"
 #include "Node.h"
@@ -332,6 +333,14 @@ Map::~Map()
 {
 	delete[m_width * m_height] m_nodes;
 }
+
+std::string Map::stats(glm::vec2 pos)
+{
+	std::ostringstream oss;
+	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight() << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity() << std::endl;
+	return oss.str();
+}
+
 /*
 ===================================================
 		  HYDRAULIC EROSION FUNCTIONS
@@ -369,7 +378,6 @@ void Map::erode(int cycles) {
 			drop.flood(m_nodes, dim);
 	}
 
-	//0.01
 	for (int i = 0; i < m_width * m_height; i++)
 	{
 		m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));

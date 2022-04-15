@@ -70,6 +70,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
     int prevIndex = index;
     //nodes[index].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
+    track->at(index) = true;
 
     if (index < 0 || index >= dim.x * dim.y)
         return false;

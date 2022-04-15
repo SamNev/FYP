@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <time.h>
 
 #include "Node.h"
@@ -85,6 +86,7 @@ public:
 	float getHillSteepness(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	void skimTop();
 	void erodeAllByValue(float amount);
+	std::string stats(glm::vec2 pos);
 
 	//Simple Hydrology Functions
 	void erode(int cycles);

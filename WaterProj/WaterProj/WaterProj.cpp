@@ -150,6 +150,23 @@ int main()
 				{
 					erodeMe = !erodeMe;
 				}
+				else if (event.key.keysym.sym == SDLK_i)
+				{
+					std::cout << "Which node? (x,y)" << std::endl;
+					std::string choice;
+					std::getline(std::cin, choice);
+					
+					int choicePos = choice.find(',');
+					try {
+						int locationY = stoi(choice.substr(choicePos + 1));
+						int locationX = stoi(choice.substr(0, choicePos));
+						std::cout << currentMap->stats(glm::vec2(locationX, locationY));
+					}
+					catch (std::exception e)
+					{
+						std::cout << "invalid input" << std::endl;
+					}
+				}
 
 				heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;
