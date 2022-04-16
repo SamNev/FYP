@@ -68,7 +68,7 @@ public:
 	Map(int width, int height, MapParams params, unsigned int seed = 0);
 	~Map();
 
-	void addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity);
+	void addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity, PerlinNoise* densityNoise, PerlinNoise* rockNoise);
 	glm::vec2 calculateXYFromRarity(int x, int y, float rarity);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
@@ -87,6 +87,7 @@ public:
 	void skimTop();
 	void erodeAllByValue(float amount);
 	std::string stats(glm::vec2 pos);
+	bool trySpawnTree(glm::vec2 pos);
 
 	//Simple Hydrology Functions
 	void erode(int cycles);

@@ -216,7 +216,9 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
         if (!set.empty() && currVolume < m_volume)
         {
+#ifdef WATERDEBUG
             std::cout << "flooding set of " << set.size() << " nodes at " << m_pos.x << ", " << m_pos.y << " to height " << plane << std::endl;
+#endif // WATERDEBUG
             m_volume -= currVolume;
 
             for (int s : set)
@@ -258,7 +260,9 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()));
             }
             m_pos = drainPos;
+#ifdef WATERDEBUG
             std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << ". plane = " << plane << " drain = " << drainHeight << std::endl;
+#endif // WATERDEBUG
         }
 
         delete[] tried;

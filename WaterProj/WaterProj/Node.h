@@ -46,7 +46,7 @@ public:
 	float getParticles();
 	void setParticles(float particles);
 	void setFoliageDensity(float density);
-	float getFoliageDensity();
+	float getFoliageDensity() const;
 protected:
 	std::vector<NodeMarker> m_nodeData;
 	WaterData m_waterData;

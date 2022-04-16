@@ -3,6 +3,8 @@
 #include <glm.hpp>
 #include <unordered_map>
 
+//#define WATERDEBUG
+
 class Node;
 
 class Drop {

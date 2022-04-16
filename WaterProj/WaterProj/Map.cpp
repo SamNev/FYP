@@ -37,6 +37,8 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	generatedSeed = rand() % 99999;
 	PerlinNoise rockNoise(generatedSeed);
 	generatedSeed = rand() % 99999;
+	PerlinNoise densityNoise(generatedSeed);
+	generatedSeed = rand() % 99999;
 	PerlinNoise sandNoise(generatedSeed);
 
 	// Ensure our values are valid-  rarity must be a multiple of scale
@@ -82,8 +84,8 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			else
 			{
 				// topsoil (2.3g/cm3)
-				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, colorVary, m_maxHeight);
-				m_nodes[y * width + x].top()->foliage = 1.0f;
+				float topNoise = densityNoise.noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), glm::max(-1.9f, total));
+				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), m_maxHeight);
 			}
 			// bedrock (7.0g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
@@ -96,15 +98,11 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	}
 
 	std::cout << "Populating World Nodes: 100%" << std::endl;
-	addRocksAndDirt(params.rockVerticalScaling, params.rockDensityVariance, params.densityVariance, params.densityChangeRate, params.rockRarity);
+	addRocksAndDirt(params.rockVerticalScaling, params.rockDensityVariance, params.densityVariance, params.densityChangeRate, params.rockRarity, &densityNoise, &rockNoise);
 }
 
-void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity)
+void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity, PerlinNoise* densityNoise, PerlinNoise* rockNoise)
 {
-	float seed = rand() % 99999;
-	PerlinNoise densityNoise(seed); 
-	seed = rand() % 99999;
-	PerlinNoise rockNoise(seed);
 	float completion = 0.0f;
 
 	for (int x = 0; x < m_width; ++x)
@@ -113,19 +111,23 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 		{
 			bool isRock = false;
 			float maxHeightScaled = getHeightAt(x, y) / m_maxHeight;
+
+			if (rand() % 2 == 0)
+				trySpawnTree(glm::vec2(x, y));
+
 			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.05f)
 			{
 				const float scaledDensHeight = densHeight * rockVerticalScaling;
 				if (!isRock)
 				{
 					// soil density (2.5-2.8g/cm3)
-					float noise = densityNoise.noise(x / (densityChangeRate / m_scale), y / (densityChangeRate / m_scale), scaledDensHeight);
+					float noise = densityNoise->noise(x / (densityChangeRate / m_scale), y / (densityChangeRate / m_scale), scaledDensHeight);
 					float density = 2.5f + noise * densityVariance;
 					glm::vec3 col = glm::vec3(0.2f + noise * 0.4f, 0.3f, 0.0f);
 					m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, false, col, m_maxHeight);
 
 					// rock density (3.8-4.2g/cm3)
-					float currVal = rockNoise.noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
+					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal > 0.6f)
 					{
 						float density = 3.8f + (currVal - 0.6f) * rockDensityVariance;
@@ -135,7 +137,7 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 				}
 				else
 				{
-					float currVal = rockNoise.noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
+					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal < 0.6f)
 					{
 						m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, m_maxHeight);
@@ -408,19 +410,7 @@ void Map::grow()
 		if (rand() % 50 == 0) 
 		{
 			glm::vec2 newPlantPos = m_trees[i].getPosition() + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
-
-			// OOB check
-			if (newPlantPos.x >= 0 && newPlantPos.x < m_width && newPlantPos.y >= 0 && newPlantPos.y < m_height) 
-			{
-				Plant newTree(newPlantPos, glm::vec2(m_width, m_height));
-				glm::vec3 norm = normal(newTree.getIndex());
-
-				if (m_nodes[newTree.getIndex()].waterDepth() == 0.0 && m_nodes[newTree.getIndex()].getParticles() < 0.2 && norm.y > 0.8 && (float)(rand() % 1000) / 1000.0 > m_nodes[newTree.getIndex()].getFoliageDensity()) 
-				{
-					newTree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
-					m_trees.push_back(newTree);
-				}
-			}
+			trySpawnTree(newPlantPos);
 		}
 
 		// trees die in water & sometimes die randomly
@@ -432,3 +422,27 @@ void Map::grow()
 		}
 	}
 };
+
+bool Map::trySpawnTree(glm::vec2 pos)
+{
+	if (pos.x < 0 || pos.x >= m_width || pos.y < 0 || pos.y >= m_height)
+		return false;
+
+	Plant newTree(pos, glm::vec2(m_width, m_height));
+	if (m_nodes[newTree.getIndex()].top()->hardStop)
+		return false;
+
+	if (m_nodes[newTree.getIndex()].hasWater())
+		return false;
+
+	if(m_nodes[newTree.getIndex()].getParticles() > 0.2f)
+		return false;
+
+	glm::vec3 norm = normal(newTree.getIndex());
+	//if (abs(norm.y) < 0.1)
+	//	return false;
+
+	newTree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
+	m_trees.push_back(newTree);
+	return true;
+}
