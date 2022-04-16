@@ -393,7 +393,7 @@ void Map::grow()
 	int i = rand() % (m_width * m_height);
 	glm::vec3 n = normal(i);
 
-	if (m_nodes[i].waterDepth() == 0.0 && m_nodes[i].getParticles() < 0.2 && n.y > 0.8) 
+	if (m_nodes[i].waterDepth() == 0.0 /*&& m_nodes[i].getParticles() < 0.2 && n.y > 0.8*/) 
 	{
 		Plant newPlant(i, glm::vec2(m_width, m_height));
 		newPlant.root(m_nodes, glm::vec2(m_width, m_height), 1.0);

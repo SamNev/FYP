@@ -29,7 +29,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
 
     const float maxDiff = 0.01f;
     //0.1f
-    const float settling = 0.1f;
+    const float settling = 0.2f;
 
     for (int i = 0; i < 8; i++) 
     {
