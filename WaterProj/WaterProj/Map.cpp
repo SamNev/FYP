@@ -442,7 +442,7 @@ bool Map::trySpawnTree(glm::vec2 pos)
 	//if (abs(norm.y) < 0.1)
 	//	return false;
 
-	newTree.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
+	newTree.root(m_nodes, glm::vec2(m_width, m_height), 0.5f);
 	m_trees.push_back(newTree);
 	return true;
 }
