@@ -7,6 +7,8 @@
 #include "Plant.h"
 #include "SDL2/SDL.h"
 
+//#define FLOODTESTMAP
+
 class PerlinNoise;
 
 struct MapParams

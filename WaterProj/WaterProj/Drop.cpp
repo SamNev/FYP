@@ -110,6 +110,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
         return false;
 
+    m_volume *= 0.99f;
     m_age++;
     cascade(m_pos, dim, nodes, track);
     return true;
@@ -122,7 +123,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
         if (index < 0 || index >= dim.x * dim.y)
             return false;
-        float plane = nodes[index].waterHeight(nodes[index].topHeight()) + 0.005f;
+        float plane = nodes[index].waterHeight(nodes[index].topHeight()) + 0.0001f;
 
         std::stack<int> toTry;
         std::vector<int> set;

@@ -3,7 +3,7 @@
 #include <glm.hpp>
 #include <unordered_map>
 
-//#define WATERDEBUG
+#define WATERDEBUG
 
 class Node;
 

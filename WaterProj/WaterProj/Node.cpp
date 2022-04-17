@@ -12,10 +12,10 @@ void Node::addMarker(NodeMarker marker)
 {
 	float val = 0;
 	//TODO: this needs to use the map max val
-	addMarker(marker.height, marker.density, marker.hardStop, marker.color, val);
+	addMarker(marker.height, marker.resistiveForce, marker.hardStop, marker.color, val);
 }
 
-void Node::addMarker(float height, float density, bool hardStop, glm::vec3 color, float& maxHeight)
+void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float& maxHeight)
 {
 	if (height > maxHeight)
 	{
@@ -27,7 +27,7 @@ void Node::addMarker(float height, float density, bool hardStop, glm::vec3 color
 	{
 		NodeMarker marker;
 		marker.height = height;
-		marker.density = density;
+		marker.resistiveForce = resistiveForce;
 		marker.hardStop = hardStop;
 		marker.color = color;
 
@@ -43,7 +43,7 @@ void Node::addMarker(float height, float density, bool hardStop, glm::vec3 color
 
 		NodeMarker marker;
 		marker.height = height;
-		marker.density = density;
+		marker.resistiveForce = resistiveForce;
 		marker.hardStop = hardStop;
 		marker.color = color;
 		m_nodeData.insert(m_nodeData.begin() + i, marker);
@@ -51,14 +51,14 @@ void Node::addMarker(float height, float density, bool hardStop, glm::vec3 color
 	}
 }
 
-float Node::getDensityAtHeight(float height) const
+float Node::getResistiveForceAtHeight(float height) const
 {
 	if (m_nodeData.size() == 0)
 		return 0;
 
-	float prevDensity = 0.0f;
+	float prevResist = 0.0f;
 	float prevHeight = 0.0f;
-	float rockDensity = 0.0f;
+	float rockResist = 0.0f;
 	bool isRock = false;
 
 	for (int i = 0; i < m_nodeData.size(); ++i)
@@ -67,28 +67,28 @@ float Node::getDensityAtHeight(float height) const
 		{
 			if (!m_nodeData[i].hardStop) 
 			{
-				prevDensity = m_nodeData[i].density;
+				prevResist = m_nodeData[i].resistiveForce;
 				prevHeight = m_nodeData[i].height;
 			}
 			else
 			{
 				if(!isRock)
-					rockDensity = m_nodeData[i].density;
+					rockResist = m_nodeData[i].resistiveForce;
 				isRock = !isRock;
 			}
 			continue;
 		}
 
 		if (isRock)
-			return rockDensity;
+			return rockResist;
 
 		float currHeight = m_nodeData[i].height;
-		float currDens = m_nodeData[i].density;
+		float currDens = m_nodeData[i].resistiveForce;
 		float downScaledDist = (height - currHeight) / (prevHeight - currHeight);
-		return (currDens + downScaledDist * (prevDensity - currDens));
+		return (currDens + downScaledDist * (prevResist - currDens));
 	}
 
-	return m_nodeData[m_nodeData.size() - 1].density;
+	return m_nodeData[m_nodeData.size() - 1].resistiveForce;
 }
 
 glm::vec3 Node::getColorAtHeight(float height) const
@@ -151,7 +151,7 @@ void Node::erodeByValue(float amount)
 		if (i == 0)
 		{
 			m_nodeData[i].color = getColorAtHeight(newVal);
-			m_nodeData[i].density = getDensityAtHeight(newVal);
+			m_nodeData[i].resistiveForce = getResistiveForceAtHeight(newVal);
 			m_nodeData[i].height = newVal;
 			return;
 		}
@@ -159,7 +159,7 @@ void Node::erodeByValue(float amount)
 		if (m_nodeData[i].height >= newVal)
 		{
 			m_nodeData[i].color = getColorAtHeight(newVal);
-			m_nodeData[i].density = getDensityAtHeight(newVal);
+			m_nodeData[i].resistiveForce = getResistiveForceAtHeight(newVal);
 			m_nodeData[i].height = newVal;
 			m_nodeData.erase(m_nodeData.begin() + (i - 1));
 			return;

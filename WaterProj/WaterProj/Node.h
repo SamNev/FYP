@@ -18,7 +18,7 @@ struct VegetationData
 struct NodeMarker
 {
 	float height = -2.0f;
-	float density = 6.0f;
+	float resistiveForce = 6.0f;
 	bool hardStop = false;
 	float foliage = 0.0f;
 	glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
@@ -28,9 +28,9 @@ class Node {
 public:
 	void addWater(float height);
 	void addMarker(NodeMarker marker);
-	void addMarker(float height, float density, bool hardStop, glm::vec3 color, float& maxHeight);
+	void addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float& maxHeight);
 	void erodeByValue(float amount);
-	float getDensityAtHeight(float height) const;
+	float getResistiveForceAtHeight(float height) const;
 	glm::vec3 getColorAtHeight(float height) const;
 	float topHeight() const;
 	glm::vec3 topColor() const;

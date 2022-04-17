@@ -60,7 +60,9 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
 			float total = (base + val + hill + mount + div);
 
-			// total = (x + y)/20.0f;
+#ifdef FLOODTESTMAP
+			total = (abs(x-500) + abs(y-500))/20.0f;
+#endif
 
 			const float sandThreshold = sandNoise.noise(x, y, 0.5f) * 0.5f;
 
@@ -120,13 +122,13 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 				const float scaledDensHeight = densHeight * rockVerticalScaling;
 				if (!isRock)
 				{
-					// soil density (2.5-2.8g/cm3)
+					// soil resistiveForce (2.5-2.8g/cm3)
 					float noise = densityNoise->noise(x / (densityChangeRate / m_scale), y / (densityChangeRate / m_scale), scaledDensHeight);
 					float density = 2.5f + noise * densityVariance;
 					glm::vec3 col = glm::vec3(0.2f + noise * 0.4f, 0.3f, 0.0f);
 					m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, false, col, m_maxHeight);
 
-					// rock density (3.8-4.2g/cm3)
+					// rock resistiveForce (3.8-4.2g/cm3)
 					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal > 0.6f)
 					{
@@ -303,10 +305,10 @@ float Map::getDepthAt(int index)
 
 float Map::getDensityAt(int x, int y, float height)
 {
-	return getNodeAt(x, y)->getDensityAtHeight(height);
+	return getNodeAt(x, y)->getResistiveForceAtHeight(height);
 }
 
-// Debug function. Removes top layer of every node, to test density values etc. without erosion
+// Debug function. Removes top layer of every node, to test resistiveForce values etc. without erosion
 void Map::skimTop()
 {
 	for (int x = 0; x < m_width; ++x)

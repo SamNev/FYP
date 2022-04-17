@@ -179,10 +179,10 @@ int main()
 		{
 			auto start = std::chrono::system_clock::now();
 			currentMap->erode(10);
+			currentMap->grow();
 			auto end = std::chrono::system_clock::now();
 			std::chrono::duration<double> elapsed_seconds = end - start;
 			std::cout << "Tick took " << elapsed_seconds.count() << "s" << std::endl;
-			currentMap->grow();
 			heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 		}
 	}
