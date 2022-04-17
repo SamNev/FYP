@@ -19,34 +19,33 @@ void Plant::grow()
     m_size += m_rate * (m_maxSize - m_size);
 };
 
-//TODO: Messy code!
 void Plant::root(Node* nodes, glm::ivec2 dim, float f) 
 {
     nodes[m_index].setFoliageDensity(nodes[m_index].getFoliageDensity() + f);
 
     if (m_pos.x > 0) {
-        nodes[m_index - WSIZE].setFoliageDensity(nodes[m_index - WSIZE].getFoliageDensity() + f * 0.6); //(-1, 0)
+        nodes[m_index - dim.x].setFoliageDensity(nodes[m_index - dim.x].getFoliageDensity() + f * 0.6); //(-1, 0)
 
         if (m_pos.y > 0)
-            nodes[m_index - WSIZE - 1].setFoliageDensity(nodes[m_index - WSIZE - 1].getFoliageDensity() + f * 0.4);    //(-1, -1)
+            nodes[m_index - dim.x - 1].setFoliageDensity(nodes[m_index - dim.x - 1].getFoliageDensity() + f * 0.4);    //(-1, -1)
 
-        if (m_pos.y < WSIZE - 1)
-            nodes[m_index - WSIZE + 1].setFoliageDensity(nodes[m_index - WSIZE + 1].getFoliageDensity() + f * 0.4);    //(-1, 1)
+        if (m_pos.y < dim.x - 1)
+            nodes[m_index - dim.x + 1].setFoliageDensity(nodes[m_index - dim.x + 1].getFoliageDensity() + f * 0.4);    //(-1, 1)
     }
 
-    if (m_pos.x < WSIZE - 1) {
-        nodes[m_index + WSIZE].setFoliageDensity(nodes[m_index + WSIZE].getFoliageDensity() + f * 0.6);    //(1, 0)
+    if (m_pos.x < dim.x - 1) {
+        nodes[m_index + dim.x].setFoliageDensity(nodes[m_index + dim.x].getFoliageDensity() + f * 0.6);    //(1, 0)
 
         if (m_pos.y > 0)
-            nodes[m_index + WSIZE - 1].setFoliageDensity(nodes[m_index + WSIZE - 1].getFoliageDensity() + f * 0.4);    //(1, -1)
+            nodes[m_index + dim.x - 1].setFoliageDensity(nodes[m_index + dim.x - 1].getFoliageDensity() + f * 0.4);    //(1, -1)
 
-        if (m_pos.y < WSIZE - 1)
-            nodes[m_index + WSIZE + 1].setFoliageDensity(nodes[m_index + WSIZE + 1].getFoliageDensity() + f * 0.4);    //(1, 1)
+        if (m_pos.y < dim.x - 1)
+            nodes[m_index + dim.x + 1].setFoliageDensity(nodes[m_index + dim.x + 1].getFoliageDensity() + f * 0.4);    //(1, 1)
     }
 
     if (m_pos.y > 0)
         nodes[m_index - 1].setFoliageDensity(nodes[m_index - 1].getFoliageDensity() + f * 0.6);    //(0, -1)
 
-    if (m_pos.y < WSIZE - 1)
+    if (m_pos.y < dim.x - 1)
         nodes[m_index + 1].setFoliageDensity(nodes[m_index + 1].getFoliageDensity() + f * 0.6);    //(0, 1)
 }

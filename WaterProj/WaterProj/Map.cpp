@@ -392,15 +392,10 @@ void Map::grow()
 {
 	//TODO: all these chances should be map properties
 	// spawn a tree randomly on the map (long-distance fertilization)
-	int i = rand() % (m_width * m_height);
-	glm::vec3 n = normal(i);
+	int newTreePos = rand() % (m_width * m_height);
+	glm::vec3 n = normal(newTreePos);
 
-	if (m_nodes[i].waterDepth() == 0.0 /*&& m_nodes[i].getParticles() < 0.2 && n.y > 0.8*/) 
-	{
-		Plant newPlant(i, glm::vec2(m_width, m_height));
-		newPlant.root(m_nodes, glm::vec2(m_width, m_height), 1.0);
-		m_trees.push_back(newPlant);
-	}
+	trySpawnTree(glm::vec2(newTreePos % m_width, newTreePos / m_width));
 
 	for (int i = 0; i < m_trees.size(); i++) 
 	{

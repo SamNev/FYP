@@ -29,7 +29,7 @@ public:
 protected:
     glm::vec2 m_pos;
     int m_index;
-    float m_size = 0.5;
-    const float m_maxSize = 1.0;
-    const float m_rate = 0.05;
+    float m_size = 0.5f;
+    const float m_maxSize = 1.0f;
+    const float m_rate = 0.05f;
 };

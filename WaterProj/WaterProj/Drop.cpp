@@ -14,14 +14,11 @@ Drop::Drop(glm::vec2 pos, glm::ivec2 dim, float volume)
     m_volume = volume;
 }
 
-//TODO: change the awful nx/ny thing
-#pragma optimize("", off);
 void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>* track)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
 
     //nodes[ind].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
-    //if (nodes[ind].waterDepth() > 0) return;
 
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
@@ -41,7 +38,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
 
         track->at(offsetIndex) = true;
         //if (nodes[offsetIndex].waterDepth() > 0.1) 
-         //   continue;
+        //   continue;
 
         float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.001f);
 
@@ -94,8 +91,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
 
     if (particleEffect != glm::vec2(0.0f))
     {
-        //particleEffect = glm::normalize(particleEffect);
-        //m_speed += particleEffect * 0.5f;
+        particleEffect = glm::normalize(particleEffect);
+        m_speed += particleEffect * 0.1f;
     }
     m_speed += dir * 2.0f;
 
@@ -117,7 +114,6 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     cascade(m_pos, dim, nodes, track);
     return true;
 }
-#pragma optimize("", on);
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 {
@@ -126,7 +122,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
         if (index < 0 || index >= dim.x * dim.y)
             return false;
-        double plane = nodes[index].waterHeight(nodes[index].topHeight()) + 0.005f;
+        float plane = nodes[index].waterHeight(nodes[index].topHeight()) + 0.005f;
 
         std::stack<int> toTry;
         std::vector<int> set;
@@ -178,7 +174,6 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 return;
             }
 
-            //Part of the Pool
             set.push_back(i);
             vol += plane - nodes[i].waterHeight(nodes[i].topHeight());
 
@@ -200,7 +195,6 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 toTry.push(i - dim.x + 1);
         };
 
-        //Perform Flood
         if (inBounds(index))
             toTry.push(index);
         else

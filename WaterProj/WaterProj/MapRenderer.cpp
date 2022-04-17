@@ -265,7 +265,7 @@ void MapRenderer::render(SDL_Window* window)
 			{
 				waterHeight = 0.0f;
 
-				const float max = max(up->waterHeightWithStreams(waterHeight), down->waterHeightWithStreams(waterHeight), left->waterHeightWithStreams(waterHeight), right->waterHeightWithStreams(waterHeight));
+				const float max = max(max(up->waterHeightWithStreams(waterHeight), down->waterHeightWithStreams(waterHeight)), max(left->waterHeightWithStreams(waterHeight), right->waterHeightWithStreams(waterHeight)));
 				glUniform4f(surrWaterHeightLoc, max, max, max, max);
 			}
 

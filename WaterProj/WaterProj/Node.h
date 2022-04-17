@@ -17,11 +17,11 @@ struct VegetationData
 
 struct NodeMarker
 {
-	float height;
-	float density;
-	bool hardStop;
+	float height = -2.0f;
+	float density = 6.0f;
+	bool hardStop = false;
 	float foliage = 0.0f;
-	glm::vec3 color;
+	glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
 };
 
 class Node {

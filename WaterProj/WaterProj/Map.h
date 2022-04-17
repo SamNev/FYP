@@ -19,7 +19,7 @@ struct MapParams
 	void randomize(unsigned int seed = 0)
 	{
 		if (seed == 0)
-			srand(time(NULL));
+			srand((unsigned int)time(NULL));
 		else
 			srand(seed);
 
@@ -38,10 +38,10 @@ struct MapParams
 
 	void tweak(float amount)
 	{
-		liePeak *= (1.0 + amount);
-		lieModif *= (1.0 + amount);
-		hillHeight *= (1.0 + amount);
-		mountainHeight *= (1.0 + amount);
+		liePeak *= (1.0f + amount);
+		lieModif *= (1.0f + amount);
+		hillHeight *= (1.0f + amount);
+		mountainHeight *= (1.0f + amount);
 	}
 
 	int scale = 10;
