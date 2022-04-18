@@ -178,7 +178,7 @@ int main()
 		if (erodeMe)
 		{
 			auto start = std::chrono::system_clock::now();
-			currentMap->erode(10);
+			currentMap->erode(50);
 			auto erodeEnd = std::chrono::system_clock::now();
 			currentMap->grow();
 			auto growEnd = std::chrono::system_clock::now();

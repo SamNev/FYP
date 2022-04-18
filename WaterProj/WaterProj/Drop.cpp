@@ -118,12 +118,13 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 {
+    float increaseAmount = 0.001f;
     while (m_volume > 0)
     {
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
         if (index < 0 || index >= dim.x * dim.y)
             return false;
-        float plane = nodes[index].waterHeight(nodes[index].topHeight()) + 0.0001f;
+        float plane = nodes[index].waterHeight(nodes[index].topHeight()) + increaseAmount;
 
         std::stack<int> toTry;
         std::vector<int> set;
@@ -223,6 +224,12 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
         else if(!set.empty())
         {
+            if (increaseAmount == 0.001f)
+            {
+                increaseAmount /= 10.0f;
+                continue;
+            }
+
             if (nodes[index].waterDepth() == 0.0f)
                 break;
 
