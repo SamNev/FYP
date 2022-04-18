@@ -87,6 +87,7 @@ public:
 	float getMountainSteepness(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
 	float getHillSteepness(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	void skimTop();
+	void addSpring(int x, int y);
 	void erodeAllByValue(float amount);
 	std::string stats(glm::vec2 pos);
 	bool trySpawnTree(glm::vec2 pos);
@@ -113,4 +114,5 @@ protected:
 	int m_height;
 	float m_maxHeight;
 	std::vector<Plant> m_trees;
+	std::vector<glm::vec2> m_springs;
 };

@@ -117,6 +117,11 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 			if (rand() % 2 == 0)
 				trySpawnTree(glm::vec2(x, y));
 
+			//TODO: make this a param
+			// peak heights can be springs, spawning water constantly
+			if (maxHeightScaled >= 0.99f && rand() % 500 == 0)
+				addSpring(x, y);
+
 			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.05f)
 			{
 				const float scaledDensHeight = densHeight * rockVerticalScaling;
@@ -155,6 +160,11 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 			std::cout << "Placing Rocks and Dirt: " << completion << "%" << std::endl;
 	}
 	std::cout << "Placing Rocks and Dirt: 100%" << std::endl;
+}
+
+void Map::addSpring(int x, int y)
+{
+	m_springs.push_back(glm::vec2(x, y));
 }
 
 float Map::getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity)
@@ -357,12 +367,21 @@ void Map::erode(int cycles) {
 	std::vector<bool> track(m_width * m_height);
 	glm::vec2 dim = glm::vec2(m_width, m_height);
 	std::fill(track.begin(), track.end(), false);
+	int springIndex = 0;
 
 	for (int i = 0; i < cycles; i++)
 	{
 		// spawn particle
 		glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
 		//glm::vec2 newpos = glm::vec2(500, 500);
+
+		// spawn at spring if possible
+		if (springIndex < m_springs.size())
+		{
+			newpos = m_springs.at(springIndex);
+			springIndex++;
+		}
+
 		Drop drop(newpos);
 
 		int spill = 5000;
@@ -424,7 +443,7 @@ void Map::grow()
 		}
 
 		// trees die in water & sometimes die randomly
-		if (m_nodes[m_trees[i].getIndex()].waterDepth() > 0.0 || m_nodes[m_trees[i].getIndex()].getParticles() > 0.2 || rand() % 1000 == 0) 
+		if (m_nodes[m_trees[i].getIndex()].waterDepth() > 0.0 || m_nodes[m_trees[i].getIndex()].getParticles() > 0.2 || rand() % 10000 == 0) 
 		{ 
 			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0);
 			m_trees.erase(m_trees.begin() + i);
