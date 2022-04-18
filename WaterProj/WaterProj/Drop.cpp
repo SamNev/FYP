@@ -26,7 +26,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
 
     const float maxDiff = 0.01f;
     //0.1f
-    const float settling = 0.2f;
+    const float settling = 0.5f;
 
     for (int i = 0; i < 8; i++) 
     {
@@ -118,7 +118,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 {
-    float increaseAmount = 0.001f;
+    float increaseAmount = 0.01f;
     while (m_volume > 0)
     {
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
@@ -224,7 +224,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
         else if(!set.empty())
         {
-            if (increaseAmount == 0.001f)
+            if (increaseAmount >= 0.001f)
             {
                 increaseAmount /= 10.0f;
                 continue;
