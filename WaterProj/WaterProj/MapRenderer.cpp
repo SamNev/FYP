@@ -227,6 +227,7 @@ void MapRenderer::render(SDL_Window* window)
 			// calc model matrix here
 			const float height = m_map->getHeightAt(x, y);
 			glm::vec3 color = m_map->getNodeAt(x, y)->topColor();
+
 			const glm::vec3 current = { x, height, y };
 			if (cullDist < distFromCamera(current))
 				continue;
@@ -260,20 +261,20 @@ void MapRenderer::render(SDL_Window* window)
 			//	color = glm::vec3(1.0f, 0.0f, 0.0f);
 			//}
 
-			float waterHeight = m_map->getNodeAt(x, y)->waterHeightWithStreams(-100.0f);
+			float waterHeight = m_map->getNodeAt(x, y)->waterHeight(-100.0f);
 			if (waterHeight == -100.0f)
 			{
 				waterHeight = 0.0f;
 
-				const float max = max(max(up->waterHeightWithStreams(waterHeight), down->waterHeightWithStreams(waterHeight)), max(left->waterHeightWithStreams(waterHeight), right->waterHeightWithStreams(waterHeight)));
+				const float max = max(max(up->waterHeight(waterHeight), down->waterHeight(waterHeight)), max(left->waterHeight(waterHeight), right->waterHeight(waterHeight)));
 				glUniform4f(surrWaterHeightLoc, max, max, max, max);
 			}
 
 			{
-				const float topRightWater = ((up->waterHeightWithStreams(waterHeight) + right->waterHeightWithStreams(waterHeight) + rightUp->waterHeightWithStreams(waterHeight) + waterHeight) / 4.0f);
-				const float bottomRightWater = ((down->waterHeightWithStreams(waterHeight) + right->waterHeightWithStreams(waterHeight) + rightDown->waterHeightWithStreams(waterHeight) + waterHeight) / 4.0f);
-				const float bottomLeftWater = ((down->waterHeightWithStreams(waterHeight) + left->waterHeightWithStreams(waterHeight) + leftDown->waterHeightWithStreams(waterHeight) + waterHeight) / 4.0f);
-				const float topLeftWater = ((up->waterHeightWithStreams(waterHeight) + left->waterHeightWithStreams(waterHeight) + leftUp->waterHeightWithStreams(waterHeight) + waterHeight) / 4.0f);
+				const float topRightWater = ((up->waterHeight(waterHeight) + right->waterHeight(waterHeight) + rightUp->waterHeight(waterHeight) + waterHeight) / 4.0f);
+				const float bottomRightWater = ((down->waterHeight(waterHeight) + right->waterHeight(waterHeight) + rightDown->waterHeight(waterHeight) + waterHeight) / 4.0f);
+				const float bottomLeftWater = ((down->waterHeight(waterHeight) + left->waterHeight(waterHeight) + leftDown->waterHeight(waterHeight) + waterHeight) / 4.0f);
+				const float topLeftWater = ((up->waterHeight(waterHeight) + left->waterHeight(waterHeight) + leftUp->waterHeight(waterHeight) + waterHeight) / 4.0f);
 				glUniform4f(surrWaterHeightLoc, topRightWater, bottomLeftWater, topLeftWater, bottomRightWater);
 			}
 			

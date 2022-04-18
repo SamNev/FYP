@@ -384,7 +384,20 @@ void Map::erode(int cycles) {
 
 	for (int i = 0; i < m_width * m_height; i++)
 	{
-		if(!track[i])
+		if (track[i])
+		{
+			m_nodes[i].setParticles(m_nodes[i].getParticles() + 1.0f);
+			float h = m_nodes[i].topHeight() + 1.0f;
+
+			for (int yOffset = 0; yOffset < 9; yOffset++)
+			{
+				for (int xOffset = 0; xOffset < 9; xOffset++)
+				{
+					getNodeAt(i % m_width - 4, i / m_width - 4)->setParticles(glm::min(1.0f, glm::max(0.0f, h - getNodeAt(i % m_width, i / m_width)->topHeight())));
+				}
+			}
+		}
+		else
 			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
 	}
 

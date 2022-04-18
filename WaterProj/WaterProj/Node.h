@@ -43,7 +43,7 @@ public:
 	void setWaterDepth(float waterDepth);
 	bool hasWater() const;
 	void setHeight(float height, NodeMarker fillerValue);
-	float getParticles();
+	float getParticles() const;
 	void setParticles(float particles);
 	void setFoliageDensity(float density);
 	float getFoliageDensity() const;
