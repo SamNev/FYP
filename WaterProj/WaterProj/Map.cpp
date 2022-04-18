@@ -398,7 +398,7 @@ void Map::erode(int cycles) {
 			}
 		}
 		else
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.01f));
 	}
 
 }
@@ -416,8 +416,8 @@ void Map::grow()
 	{
 		m_trees[i].grow();
 
-		// tree spawns a new tree (low chance)
-		if (rand() % 50 == 0) 
+		// tree spawns a new tree
+		if (rand() % 5 == 0) 
 		{
 			glm::vec2 newPlantPos = m_trees[i].getPosition() + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
 			trySpawnTree(newPlantPos);
@@ -440,6 +440,9 @@ bool Map::trySpawnTree(glm::vec2 pos)
 
 	Plant newTree(pos, glm::vec2(m_width, m_height));
 	if (m_nodes[newTree.getIndex()].top()->hardStop)
+		return false;
+
+	if (m_nodes[newTree.getIndex()].getFoliageDensity() >= 0.8f)
 		return false;
 
 	if (m_nodes[newTree.getIndex()].hasWater())
