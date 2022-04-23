@@ -351,7 +351,8 @@ Map::~Map()
 std::string Map::stats(glm::vec2 pos)
 {
 	std::ostringstream oss;
-	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight() << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity() << std::endl;
+	glm::vec3 norm = normal(pos.y * m_width + pos.x);
+	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight() << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity() << " Normal is " << norm.x << ", " << norm.y << ", " << norm.z << std::endl;
 	return oss.str();
 }
 
@@ -471,8 +472,8 @@ bool Map::trySpawnTree(glm::vec2 pos)
 		return false;
 
 	glm::vec3 norm = normal(newTree.getIndex());
-	//if (abs(norm.y) < 0.1)
-	//	return false;
+	if (abs(norm.z) < 0.985f)
+		return false;
 
 	newTree.root(m_nodes, glm::vec2(m_width, m_height), 0.5f);
 	m_trees.push_back(newTree);
