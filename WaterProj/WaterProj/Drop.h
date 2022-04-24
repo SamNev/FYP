@@ -6,6 +6,7 @@
 //#define WATERDEBUG
 
 class Node;
+class NodeMarker;
 
 class Drop {
 public:
@@ -26,7 +27,6 @@ protected:
     glm::vec2 m_lastVelocity = glm::vec2(0.0);
     //1.0
     float m_volume = 1; 
-    float m_sediment = 0.0;
 
     const float m_density = 1.0;
     const float m_evapRate = 0.001;
@@ -35,6 +35,9 @@ protected:
     const float m_friction = 0.25;
     //0.5
     const float m_volumeFactor = 0.5; 
+
+    float m_sedimentAmount = 0.0f;
+    NodeMarker m_sediment;
 
     int m_remainingSpills = 0;
 

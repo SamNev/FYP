@@ -22,6 +22,18 @@ struct NodeMarker
 	bool hardStop = false;
 	float foliage = 0.0f;
 	glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+
+	NodeMarker mix(NodeMarker marker, float weight)
+	{
+		NodeMarker newMarker;
+		float invWeight = (1.0f - weight);
+		newMarker.height = height * invWeight + marker.height * weight;
+		newMarker.resistiveForce = resistiveForce * invWeight + marker.resistiveForce * weight;
+		newMarker.hardStop = false;
+		newMarker.foliage = foliage * invWeight + marker.foliage * weight;
+		newMarker.color = color * invWeight + marker.color * weight;
+		return newMarker;
+	}
 };
 
 class Node {
@@ -31,6 +43,7 @@ public:
 	void addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float& maxHeight);
 	void erodeByValue(float amount);
 	float getResistiveForceAtHeight(float height) const;
+	NodeMarker getDataAboveHeight(float height) const;
 	glm::vec3 getColorAtHeight(float height) const;
 	float topHeight() const;
 	glm::vec3 topColor() const;

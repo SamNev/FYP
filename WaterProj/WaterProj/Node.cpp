@@ -245,6 +245,32 @@ void Node::setHeight(float height, NodeMarker fillerData)
 	}
 }
 
+NodeMarker Node::getDataAboveHeight(float height) const
+{
+	NodeMarker marker = m_nodeData[0];
+	float currentAmount = 0.0f;
+
+	for (int i = 1; i < m_nodeData.size(); i++)
+	{
+		if (height < m_nodeData[i - 1].height && height < m_nodeData[i].height)
+		{
+			float amount = m_nodeData[i - 1].height - m_nodeData[i].height;
+			currentAmount += amount;
+			marker.mix(m_nodeData[i], amount / currentAmount);
+		}
+		else if (height < m_nodeData[i - 1].height)
+		{
+			float amount = m_nodeData[i - 1].height - height;
+			currentAmount += amount;
+			marker.mix(m_nodeData[i], amount / currentAmount);
+		}
+		else
+			break;
+	}
+
+	return marker;
+}
+
 float Node::getParticles() const
 {
 	return glm::min(1.0f, m_waterData.particles);

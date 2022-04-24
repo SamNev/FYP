@@ -17,6 +17,7 @@ Drop::Drop(glm::vec2 pos, glm::ivec2 dim, float volume)
 void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>* track)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
+    float initialSediment = m_sedimentAmount;
 
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
@@ -56,13 +57,16 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
             std::cout << "ERROR: transfer really high? force error?";
 
         NodeMarker marker;
-        if (diff > 0) {
-            //TODO: this needs to take into account different kinds of sediment!
+        if (diff > 0) 
+        {
+            m_sedimentAmount += transfer;
+            m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), transfer / m_sedimentAmount);
             nodes[ind].setHeight(nodes[ind].topHeight() - transfer, marker);
-            //nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + transfer, marker);
         }
-        else {
-            //nodes[ind].setHeight(nodes[ind].topHeight() + transfer, marker);
+        else 
+        {
+            m_sedimentAmount += transfer;
+            m_sediment.mix(nodes[offsetIndex].getDataAboveHeight(nodes[offsetIndex].topHeight() - transfer), transfer / m_sedimentAmount);
             nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() - transfer, marker);
         }
     }
