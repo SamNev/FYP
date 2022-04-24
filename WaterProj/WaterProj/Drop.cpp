@@ -1,4 +1,4 @@
-#include "Drop.h"
+﻿#include "Drop.h"
 #include <iostream>
 #include <stack>
 #include "Node.h"
@@ -18,15 +18,11 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
 
-    //nodes[ind].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
-
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
     const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
 
     const float maxDiff = 0.01f;
-    //0.1f
-    const float settling = 0.5f;
 
     for (int i = 0; i < 8; i++) 
     {
@@ -42,11 +38,22 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
 
         float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.001f);
 
-        float excess = abs(diff) - maxDiff;
-        if (excess <= 0)
+        // assuming verticality change. Really steep changes are capped, to prevent absurd force values that would be unsustainable IRL.
+        float actingForce = 997.0f * m_volume * glm::min(1.0f, (glm::distance(m_lastVelocity, m_velocity) + diff));
+        actingForce -= nodes[ind].top()->resistiveForce;
+        
+        // very low velocity change! Likely that we're not really moving at all.
+        if (actingForce <= 0.0f)
             continue;
 
-        float transfer = settling * excess / 2.0f;
+        // van Rijn calculations for sediment transfer
+        // qb = 0.053 * [(s-1)*g]0.5 * d501.5 * [T∗2.1 / D∗0.3]
+        // cohesionless and size assumed to be similar to dirt/sand (30000 microns)
+        float transportRate = 0.053f * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f) * 0.000519f;
+        float transfer = actingForce * transportRate;
+
+        if (transfer >= 10.0f)
+            std::cout << "ERROR: transfer really high? force error?";
 
         NodeMarker marker;
         if (diff > 0) {
@@ -66,6 +73,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (m_volume < m_minVol)
         return false;
 
+    m_lastVelocity = m_velocity;
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
     int prevIndex = index;
     //nodes[index].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -87,19 +95,19 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (index + 1 < dim.x * dim.y)
         particleEffect.x += nodes[index + 1].getParticles();
 
-    m_speed *= 0.9f;
+    m_velocity *= 0.9f;
 
     if (particleEffect != glm::vec2(0.0f))
     {
         particleEffect = glm::normalize(particleEffect);
-        m_speed += particleEffect * 0.1f;
+        m_velocity += particleEffect * 0.1f;
     }
-    m_speed += dir * 2.0f;
+    m_velocity += dir * 2.0f;
 
-    if (glm::length(m_speed) < 0.001f)
+    if (glm::length(m_velocity) < 0.001f)
         return false;
 
-    m_pos += glm::normalize(m_speed) * (float)sqrt(2);
+    m_pos += glm::normalize(m_velocity) * (float)sqrt(2);
     index = (int)m_pos.y * dim.x + (int)m_pos.x;
 
     if (index == m_prevIndex)
