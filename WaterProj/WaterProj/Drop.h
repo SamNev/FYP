@@ -3,10 +3,9 @@
 #include <glm.hpp>
 #include <unordered_map>
 
-//#define WATERDEBUG
+#include "Node.h"
 
-class Node;
-class NodeMarker;
+//#define WATERDEBUG
 
 class Drop {
 public:

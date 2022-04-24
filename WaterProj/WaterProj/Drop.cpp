@@ -56,18 +56,27 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
         if (transfer >= 10.0f)
             std::cout << "ERROR: transfer really high? force error?";
 
-        NodeMarker marker;
         if (diff > 0) 
         {
             m_sedimentAmount += transfer;
             m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), transfer / m_sedimentAmount);
-            nodes[ind].setHeight(nodes[ind].topHeight() - transfer, marker);
+
+            nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment);
+
+            float deposit = initialSediment / 10.0f;
+            m_sedimentAmount -= deposit;
+            nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment);
+            
         }
         else 
         {
             m_sedimentAmount += transfer;
             m_sediment.mix(nodes[offsetIndex].getDataAboveHeight(nodes[offsetIndex].topHeight() - transfer), transfer / m_sedimentAmount);
-            nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() - transfer, marker);
+            nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() - transfer, m_sediment);
+
+            float deposit = initialSediment / 20.0f;
+            m_sedimentAmount -= deposit;
+            nodes[ind].setHeight(nodes[ind].topHeight() + deposit, m_sediment);
         }
     }
 }
@@ -80,7 +89,6 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     m_lastVelocity = m_velocity;
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
     int prevIndex = index;
-    //nodes[index].top()->color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     if (index < 0 || index >= dim.x * dim.y)
         return false;
@@ -99,14 +107,12 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (index + 1 < dim.x * dim.y)
         particleEffect.x += nodes[index + 1].getParticles();
 
-    m_velocity *= 0.9f;
-
     if (particleEffect != glm::vec2(0.0f))
     {
         particleEffect = glm::normalize(particleEffect);
         m_velocity += particleEffect * 0.1f;
     }
-    m_velocity += dir * 2.0f;
+    m_velocity += 2.0f * dir;
 
     if (glm::length(m_velocity) < 0.001f)
         return false;
@@ -122,7 +128,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
         return false;
 
-    m_volume *= 0.99f;
+    m_volume *= 0.98f;
     m_age++;
     cascade(m_pos, dim, nodes, track);
     return true;
