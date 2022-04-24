@@ -418,7 +418,7 @@ void Map::erode(int cycles) {
 			}
 		}
 		else
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.01f));
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
 	}
 
 }
@@ -448,7 +448,6 @@ void Map::grow()
 		{ 
 			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0);
 			m_trees.erase(m_trees.begin() + i);
-			i--;
 		}
 	}
 };

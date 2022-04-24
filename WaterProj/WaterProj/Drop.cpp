@@ -56,28 +56,12 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
         if (transfer >= 10.0f)
             std::cout << "ERROR: transfer really high? force error?";
 
-        if (diff > 0) 
-        {
-            m_sedimentAmount += transfer;
-            m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), transfer / m_sedimentAmount);
-
-            nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment);
-
-            float deposit = initialSediment / 10.0f;
-            m_sedimentAmount -= deposit;
-            nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment);
-            
-        }
-        else 
-        {
-            m_sedimentAmount += transfer;
-            m_sediment.mix(nodes[offsetIndex].getDataAboveHeight(nodes[offsetIndex].topHeight() - transfer), transfer / m_sedimentAmount);
-            nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() - transfer, m_sediment);
-
-            float deposit = initialSediment / 20.0f;
-            m_sedimentAmount -= deposit;
-            nodes[ind].setHeight(nodes[ind].topHeight() + deposit, m_sediment);
-        }
+        m_sedimentAmount += transfer;
+        m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), transfer / m_sedimentAmount);
+        nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment);
+        float deposit = initialSediment / 10.0f;
+        m_sedimentAmount -= deposit;
+        nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment);
     }
 }
 
@@ -106,6 +90,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
         particleEffect.x -= nodes[index - 1].getParticles();
     if (index + 1 < dim.x * dim.y)
         particleEffect.x += nodes[index + 1].getParticles();
+
+    m_velocity *= 0.8f;
 
     if (particleEffect != glm::vec2(0.0f))
     {
