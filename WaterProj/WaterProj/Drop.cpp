@@ -1,7 +1,6 @@
 ﻿#include "Drop.h"
 #include <iostream>
 #include <stack>
-#include "Node.h"
 
 Drop::Drop(glm::vec2 pos) 
 { 
@@ -57,7 +56,8 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
             std::cout << "ERROR: transfer really high? force error?";
 
         m_sedimentAmount += transfer;
-        m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), transfer / m_sedimentAmount);
+        m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), glm::max(0.0f, glm::min(1.0f, transfer / m_sedimentAmount)));
+
         nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment);
         float deposit = initialSediment / 10.0f;
         m_sedimentAmount -= deposit;

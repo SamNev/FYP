@@ -167,6 +167,10 @@ int main()
 						std::cout << "invalid input" << std::endl;
 					}
 				}
+				else if (event.key.keysym.sym == SDLK_c)
+				{
+					std::cout << "Current position = " << renderer.getCamPos().x << ", " << renderer.getCamPos().z << std::endl;
+				}
 
 				heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;

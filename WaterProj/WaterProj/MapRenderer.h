@@ -23,6 +23,7 @@ public:
 	void transformCam(glm::vec2 transformation);
 	void setMap(Map* map);
 	void setCamPos(glm::vec3 camPos) { m_camPos = camPos; }
+	glm::vec3 getCamPos() { return m_camPos; }
 	void zoomIn();
 	void zoomOut();
 	float getCullDist();

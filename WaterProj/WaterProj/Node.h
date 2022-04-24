@@ -25,6 +25,7 @@ struct NodeMarker
 
 	void mix(NodeMarker marker, float weight)
 	{
+
 		float invWeight = (1.0f - weight);
 		height = height * invWeight + marker.height * weight;
 		resistiveForce = resistiveForce * invWeight + marker.resistiveForce * weight;

@@ -352,7 +352,8 @@ std::string Map::stats(glm::vec2 pos)
 {
 	std::ostringstream oss;
 	glm::vec3 norm = normal(pos.y * m_width + pos.x);
-	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight() << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity() << " Normal is " << norm.x << ", " << norm.y << ", " << norm.z << std::endl;
+	glm::vec3 col = getNodeAt(pos.x, pos.y)->topColor();
+	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight() << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity() << " Normal is " << norm.x << ", " << norm.y << ", " << norm.z << " Color is " << col.x << ", " << col.y << ", " << col.z << std::endl;
 	return oss.str();
 }
 
