@@ -12,10 +12,10 @@ void Node::addMarker(NodeMarker marker)
 {
 	float val = 0;
 	//TODO: this needs to use the map max val
-	addMarker(marker.height, marker.resistiveForce, marker.hardStop, marker.color, val);
+	addMarker(marker.height, marker.resistiveForce, marker.hardStop, marker.color, marker.fertility, val);
 }
 
-void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float& maxHeight)
+void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float& maxHeight)
 {
 	if (height > maxHeight)
 	{

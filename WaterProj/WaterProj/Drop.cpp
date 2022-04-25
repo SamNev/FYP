@@ -77,6 +77,9 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (index < 0 || index >= dim.x * dim.y)
         return false;
 
+    if (nodes[index].hasWater())
+        return false;
+
     glm::vec2 dir = glm::vec2(norm.x, norm.y);
 
     nodes[index].setParticles(nodes[index].getParticles() + m_volume);

@@ -79,18 +79,17 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 				else */
 				{
 					// sand (1.8g/cm3)
-					// this is slightly hack-y. We know this is going to be low, so we set the color to >1.0f so it'll render brighter.
-					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.8f, false, glm::vec3(3.0f, 3.0f, 0.8f), m_maxHeight);
+					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.8f, false, glm::vec3(0.5f, 0.5f, 0.2f), 0.1f, m_maxHeight);
 				}
 			}
 			else
 			{
 				// topsoil (2.3g/cm3)
 				float topNoise = densityNoise.noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), glm::max(-1.9f, total));
-				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), m_maxHeight);
+				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), 1.0f, m_maxHeight);
 			}
 			// bedrock (7.0g/cm3)
-			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), m_maxHeight);
+			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), 0.0f, m_maxHeight);
 			m_nodes[y * width + x].setWaterHeight(0.0f);
 		}
 		float prevCompletion = completion;
@@ -119,7 +118,7 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 
 			//TODO: make this a param
 			// peak heights can be springs, spawning water constantly
-			if (maxHeightScaled >= 0.99f && rand() % 500 == 0)
+			if (maxHeightScaled >= 0.99f && rand() % 200 == 0)
 				addSpring(x, y);
 
 			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.05f)
@@ -131,14 +130,14 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 					float noise = densityNoise->noise(x / (densityChangeRate / m_scale), y / (densityChangeRate / m_scale), scaledDensHeight);
 					float density = 2.5f + noise * densityVariance;
 					glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
-					m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, false, col, m_maxHeight);
+					m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, false, col, 1.0f, m_maxHeight);
 
 					// rock resistiveForce (3.8-4.2g/cm3)
 					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal > 0.6f)
 					{
 						float density = 3.8f + (currVal - 0.6f) * rockDensityVariance;
-						m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, m_maxHeight);
+						m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, 0.0f, m_maxHeight);
 						isRock = true;
 					}
 				}
@@ -147,7 +146,7 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal < 0.6f)
 					{
-						m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, m_maxHeight);
+						m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, 0.0f, m_maxHeight);
 						isRock = false;
 					}
 				}
