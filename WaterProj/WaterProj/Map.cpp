@@ -18,6 +18,7 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	m_height = height;
 	m_maxHeight = 0.0f;
 	m_scale = params.scale;
+	m_params = params;
 
 	if(seed == 0)
 		srand(time(NULL));
@@ -117,9 +118,8 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 			if (rand() % 2 == 0)
 				trySpawnTree(glm::vec2(x, y));
 
-			//TODO: make this a param
 			// peak heights can be springs, spawning water constantly
-			if (maxHeightScaled >= 0.99f && rand() % 200 == 0)
+			if (maxHeightScaled >= m_params.springThreshold && rand() % m_params.springRarity == 0)
 				addSpring(x, y);
 
 			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.05f)
@@ -427,7 +427,6 @@ void Map::erode(int cycles) {
 
 void Map::grow()
 {
-	//TODO: all these chances should be map properties
 	// spawn a tree randomly on the map (long-distance fertilization)
 	int newTreePos = rand() % (m_width * m_height);
 	glm::vec3 n = normal(newTreePos);
@@ -439,14 +438,14 @@ void Map::grow()
 		m_trees[i].grow();
 
 		// tree spawns a new tree
-		if (rand() % 5 == 0) 
+		if (rand() % m_params.treeSpreadChance == 0)
 		{
-			glm::vec2 newPlantPos = m_trees[i].getPosition() + glm::vec2(rand() % 9 - 4, rand() % 9 - 4);
+			glm::vec2 newPlantPos = m_trees[i].getPosition() + glm::vec2(rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius/2), rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2));
 			trySpawnTree(newPlantPos);
 		}
 
 		// trees die in water & sometimes die randomly
-		if (m_nodes[m_trees[i].getIndex()].waterDepth() > 0.0 || m_nodes[m_trees[i].getIndex()].getParticles() > 0.2 || rand() % 100000 == 0) 
+		if (m_nodes[m_trees[i].getIndex()].waterDepth() > 0.0 || m_nodes[m_trees[i].getIndex()].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0) 
 		{ 
 			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), 0.0f);
 			m_trees.erase(m_trees.begin() + i);
@@ -473,7 +472,7 @@ bool Map::trySpawnTree(glm::vec2 pos)
 		return false;
 
 	glm::vec3 norm = normal(newTree.getIndex());
-	if (abs(norm.z) < 0.985f)
+	if (abs(norm.z) < m_params.treeSlopeThreshold)
 		return false;
 
 	newTree.root(m_nodes, glm::vec2(m_width, m_height), 0.5f);

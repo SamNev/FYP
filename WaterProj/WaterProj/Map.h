@@ -62,6 +62,14 @@ struct MapParams
 	float rockDensityVariance = 0.6f;
 	float rockVerticalScaling = 5.0f;
 	float cliffThreshold = 0.0007f;
+	float springThreshold = 0.99f;
+	int springRarity = 200;
+	float treeParticleDeathThreshold = 0.2f;
+	float treeSlopeThreshold = 0.985f;
+	int treeSpreadChance = 5;
+	int treeSpreadRadius = 9;
+	int treeRandomDeathChance = 100000;
+
 };
 
 class Map 
@@ -115,4 +123,5 @@ protected:
 	float m_maxHeight;
 	std::vector<Plant> m_trees;
 	std::vector<glm::vec2> m_springs;
+	MapParams m_params;
 };
