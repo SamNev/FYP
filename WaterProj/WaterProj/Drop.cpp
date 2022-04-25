@@ -99,7 +99,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
     if (particleEffect != glm::vec2(0.0f))
     {
         particleEffect = glm::normalize(particleEffect);
-        m_velocity += particleEffect * 0.1f;
+        m_velocity += particleEffect * 0.05f;
     }
     m_velocity += 2.0f * dir;
 
