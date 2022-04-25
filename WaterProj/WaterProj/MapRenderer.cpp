@@ -255,11 +255,16 @@ void MapRenderer::render(SDL_Window* window)
 			const glm::vec3 bottomRightColor = ((down->topColor() + right->topColor() + rightDown->topColor() + color) / 4.0f);
 			const glm::vec3 bottomLeftColor = ((down->topColor() + left->topColor() + leftDown->topColor() + color) / 4.0f);
 			const glm::vec3 topLeftColor = ((up->topColor() + left->topColor() + leftUp->topColor() + color) / 4.0f);
-			const float colors[12] = { topRightColor.x, topRightColor.y, topRightColor.z, bottomLeftColor.x, bottomLeftColor.y, bottomLeftColor.z, topLeftColor.x, topLeftColor.y, topLeftColor.z, bottomRightColor.x, bottomRightColor.y, bottomRightColor.z};
-			//if (m_map->getNodeAt(x, y)->getParticles() > 1.0f)
-			//{
-			//	color = glm::vec3(1.0f, 0.0f, 0.0f);
-			//}
+			float colors[12] = { topRightColor.x, topRightColor.y, topRightColor.z, bottomLeftColor.x, bottomLeftColor.y, bottomLeftColor.z, topLeftColor.x, topLeftColor.y, topLeftColor.z, bottomRightColor.x, bottomRightColor.y, bottomRightColor.z};
+			
+			for (int i = 0; i < 12; ++i)
+			{
+				if (colors[i] < 0)
+					colors[i] = 0;
+
+				if (colors[i] > 1)
+					colors[i] = 1;
+			}
 
 			float waterHeight = m_map->getNodeAt(x, y)->waterHeight(-100.0f);
 			if (waterHeight == -100.0f)
