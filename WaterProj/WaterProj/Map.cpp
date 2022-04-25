@@ -447,7 +447,7 @@ void Map::grow()
 		// trees die in water & sometimes die randomly
 		if (m_nodes[m_trees[i].getIndex()].waterDepth() > 0.0 || m_nodes[m_trees[i].getIndex()].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0) 
 		{ 
-			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), 0.0f);
+			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0f);
 			m_trees.erase(m_trees.begin() + i);
 		}
 	}

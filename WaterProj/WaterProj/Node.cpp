@@ -289,5 +289,6 @@ float Node::getFoliageDensity() const
 
 void Node::setFoliageDensity(float foliageDensity)
 {
-	m_vegetationData.density = foliageDensity;
+	float modifDensity = glm::min(1.0f, glm::max(foliageDensity, 0.0f));
+	m_vegetationData.density = modifDensity;
 }
