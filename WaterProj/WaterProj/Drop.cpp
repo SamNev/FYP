@@ -49,7 +49,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
         // van Rijn calculations for sediment transfer
         // qb = 0.053 * [(s-1)*g]0.5 * d501.5 * [T∗2.1 / D∗0.3]
         // cohesionless and size assumed to be similar to dirt/sand (30000 microns)
-        float transportRate = 0.053f * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f) * 0.000519f;
+        float transportRate = 0.053f * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f) * 0.0000519f;
         float transfer = actingForce * transportRate;
 
         if (transfer >= 10.0f)

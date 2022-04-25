@@ -233,7 +233,8 @@ bool Node::hasWater() const
 
 void Node::setHeight(float height, NodeMarker fillerData)
 {
-	fillerData.height = height;
+	NodeMarker copy = fillerData;
+	copy.height = height;
 
 	if (height < topHeight())
 	{
@@ -241,7 +242,7 @@ void Node::setHeight(float height, NodeMarker fillerData)
 	}
 	else if (height > topHeight())
 	{
-		addMarker(fillerData);
+		addMarker(copy);
 	}
 }
 

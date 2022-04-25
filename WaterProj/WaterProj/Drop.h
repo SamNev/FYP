@@ -25,7 +25,7 @@ protected:
     glm::vec2 m_velocity = glm::vec2(0.0);
     glm::vec2 m_lastVelocity = glm::vec2(0.0);
     //1.0
-    float m_volume = 1; 
+    float m_volume = 2; 
 
     const float m_density = 1.0;
     const float m_evapRate = 0.001;

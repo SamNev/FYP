@@ -22,11 +22,10 @@ struct NodeMarker
 	bool hardStop = false;
 	float foliage = 0.0f;
 	float fertility = 1.0f;
-	glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
+	glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	void mix(NodeMarker marker, float weight)
 	{
-
 		float invWeight = (1.0f - weight);
 		height = height * invWeight + marker.height * weight;
 		resistiveForce = resistiveForce * invWeight + marker.resistiveForce * weight;

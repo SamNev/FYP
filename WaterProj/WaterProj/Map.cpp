@@ -79,7 +79,8 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 				else */
 				{
 					// sand (1.8g/cm3)
-					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.8f, false, glm::vec3(0.5f, 0.5f, 0.2f), 0.1f, m_maxHeight);
+					// this is slightly hack-y. We know this is going to be low, so we set the color to >1.0f so it'll render brighter.
+					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.8f, false, glm::vec3(3.0f, 3.0f, 0.8f), 0.1f, m_maxHeight);
 				}
 			}
 			else

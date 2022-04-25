@@ -171,6 +171,23 @@ int main()
 				{
 					std::cout << "Current position = " << renderer.getCamPos().x << ", " << renderer.getCamPos().z << std::endl;
 				}
+				else if (event.key.keysym.sym == SDLK_g)
+				{
+					std::cout << "Which node? (x,y)" << std::endl;
+					std::string choice;
+					std::getline(std::cin, choice);
+
+					int choicePos = choice.find(',');
+					try {
+						int locationY = stoi(choice.substr(choicePos + 1));
+						int locationX = stoi(choice.substr(0, choicePos));
+						renderer.setCamPos(glm::vec3(locationX, 10.0f, locationY));
+					}
+					catch (std::exception e)
+					{
+						std::cout << "invalid input" << std::endl;
+					}
+				}
 
 				heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;
