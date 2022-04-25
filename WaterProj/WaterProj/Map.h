@@ -25,7 +25,7 @@ struct MapParams
 		else
 			srand(seed);
 
-		scale = 3;
+		scale = 1;
 		baseVariance = 0.05f;
 		lieChangeRate = 3000.0f * getRandomModif();
 		liePeak = 25.0f * getRandomModif();
@@ -46,7 +46,7 @@ struct MapParams
 		mountainHeight *= (1.0f + amount);
 	}
 
-	int scale = 10;
+	int scale = 1;
 	float baseVariance = 0.05f;
 	float lieChangeRate = 3000.0f;
 	float liePeak = 25.0f;

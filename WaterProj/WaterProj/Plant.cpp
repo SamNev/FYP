@@ -21,7 +21,7 @@ void Plant::grow()
 
 void Plant::root(Node* nodes, glm::ivec2 dim, float f) 
 {
-    float fertility = nodes[m_index].top()->fertility;
+    float fertility = glm::max(0.0f, nodes[m_index].top()->fertility);
     nodes[m_index].setFoliageDensity(nodes[m_index].getFoliageDensity() + f * fertility);
 
     if (m_pos.x > 0) {
