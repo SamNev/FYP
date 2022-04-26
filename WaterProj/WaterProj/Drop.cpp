@@ -38,7 +38,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track)
 
         // assuming verticality change. Really steep changes are capped, to prevent absurd force values that would be unsustainable IRL.
         float actingForce = 997.0f * m_volume * glm::min(1.0f, (glm::distance(m_lastVelocity, m_velocity) + diff));
-        actingForce -= nodes[ind].top()->resistiveForce;
+        actingForce /= nodes[ind].top()->resistiveForce;
         
         // very low velocity change! Likely that we're not really moving at all.
         if (actingForce <= 0.0f)
@@ -47,7 +47,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track)
         // van Rijn calculations for sediment transfer
         // qb = 0.053 * [(s-1)*g]0.5 * d501.5 * [T∗2.1 / D∗0.3]
         // cohesionless and size assumed to be similar to dirt/sand (30000 microns)
-        float transportRate = 0.053f * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f) * 0.0000519f;
+        float transportRate = 0.053f * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f) * 0.000519f;
         float transfer = actingForce * transportRate;
 
         if (transfer >= 10.0f)
@@ -65,6 +65,9 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track)
 
 bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim) 
 {
+    if (m_terminated)
+        return false;
+
     if (m_volume < m_minVol)
         return false;
 
@@ -75,7 +78,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim)
         return false;
 
     if (nodes[index].hasWater())
-        return false;
+        m_terminated = true;
 
     nodes[index].setParticles(nodes[index].getParticles() + m_volume);
 
@@ -268,6 +271,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()));
             }
             m_pos = drainPos;
+            m_terminated = false;
 #ifdef WATERDEBUG
             std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << ". plane = " << plane << " drain = " << drainHeight << std::endl;
 #endif // WATERDEBUG

@@ -464,25 +464,26 @@ void Map::grow()
 
 	trySpawnTree(glm::vec2(newTreePos % m_width, newTreePos / m_width));
 
-	for (int i = 0; i < m_trees.size(); i++) 
+	for (int i = 0; i < m_width * m_height; i++)
 	{
-		m_trees[i].grow();
-
 		// tree spawns a new tree
-		if (rand() % m_params.treeSpreadChance == 0)
+		if (m_nodes[i].getFoliageDensity() > 0.5f)
 		{
-			glm::vec2 newPlantPos = m_trees[i].getPosition() + glm::vec2(rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius/2), rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2));
-			trySpawnTree(newPlantPos);
+			if (rand() % m_params.treeSpreadChance == 0)
+			{
+				glm::vec2 newPlantPos = glm::vec2(newTreePos % m_width, newTreePos / m_width) + glm::vec2(rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2), rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2));
+				trySpawnTree(newPlantPos);
+			}
+
+			// trees die in water & sometimes die randomly
+			if (m_nodes[i].waterDepth() > 0.0 || m_nodes[i].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0)
+			{
+				Plant::root(m_nodes, glm::vec2(m_width, m_height), glm::vec2(newTreePos % m_width, newTreePos / m_width), -1.0f);
+			}
 		}
 
-		// trees die in water & sometimes die randomly
-		if (m_nodes[m_trees[i].getIndex()].waterDepth() > 0.0 || m_nodes[m_trees[i].getIndex()].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0) 
-		{ 
-			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0f);
-			m_trees.erase(m_trees.begin() + i);
-		}
 		float prevCompletion = completion;
-		completion = (i / (float)m_trees.size()) * 100.0f;
+		completion = (i / (float)(m_width * m_height)) * 100.0f;
 		if ((int)completion % 10 < (int)prevCompletion % 10)
 		{
 			if (prevCompletion < 10.0f)
@@ -500,24 +501,24 @@ bool Map::trySpawnTree(glm::vec2 pos)
 	if (pos.x < 0 || pos.x >= m_width || pos.y < 0 || pos.y >= m_height)
 		return false;
 
-	Plant newTree(pos, glm::vec2(m_width, m_height));
-	if (m_nodes[newTree.getIndex()].top()->hardStop)
+	int index = pos.y * m_width + pos.x;
+
+	if (m_nodes[index].top()->hardStop)
 		return false;
 
-	if (m_nodes[newTree.getIndex()].getFoliageDensity() >= 0.8f)
+	if (m_nodes[index].getFoliageDensity() >= 0.8f)
 		return false;
 
-	if (m_nodes[newTree.getIndex()].hasWater())
+	if (m_nodes[index].hasWater())
 		return false;
 
-	if(m_nodes[newTree.getIndex()].getParticles() > 0.2f)
+	if(m_nodes[index].getParticles() > 0.2f)
 		return false;
 
-	glm::vec3 norm = normal(newTree.getIndex());
+	glm::vec3 norm = normal(index);
 	if (abs(norm.z) < m_params.treeSlopeThreshold)
 		return false;
 
-	newTree.root(m_nodes, glm::vec2(m_width, m_height), 0.5f);
-	m_trees.push_back(newTree);
+	Plant::root(m_nodes, glm::vec2(m_width, m_height), pos, 0.5f);
 	return true;
 }

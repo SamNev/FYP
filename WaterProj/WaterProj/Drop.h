@@ -34,4 +34,5 @@ protected:
     NodeMarker m_sediment;
 
     int m_prevIndex;
+    bool m_terminated = false;
 };

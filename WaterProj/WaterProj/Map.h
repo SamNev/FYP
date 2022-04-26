@@ -66,7 +66,7 @@ struct MapParams
 	int springRarity = 200;
 	float treeParticleDeathThreshold = 0.2f;
 	float treeSlopeThreshold = 0.985f;
-	int treeSpreadChance = 5;
+	int treeSpreadChance = 15;
 	int treeSpreadRadius = 9;
 	int treeRandomDeathChance = 100000;
 
@@ -121,7 +121,6 @@ protected:
 	int m_width;
 	int m_height;
 	float m_maxHeight;
-	std::vector<Plant> m_trees;
 	std::vector<glm::vec2> m_springs;
 	MapParams m_params;
 };

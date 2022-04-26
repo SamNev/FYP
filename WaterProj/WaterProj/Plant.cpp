@@ -2,51 +2,35 @@
 
 #include "Node.h"
 
-Plant::Plant(int i, glm::ivec2 d) 
+void Plant::root(Node* nodes, glm::ivec2 dim, glm::ivec2 pos, float f) 
 {
-    m_index = i;
-    m_pos = glm::vec2(i / d.y, i % d.y);
-};
+    int index = pos.y * dim.x + pos.x;
+    float fertility = glm::max(0.0f, nodes[index].top()->fertility);
+    nodes[index].setFoliageDensity(nodes[index].getFoliageDensity() + f * fertility);
 
-Plant::Plant(glm::vec2 p, glm::ivec2 d) 
-{
-    m_pos = p;
-    m_index = (int)p.x * d.y + (int)p.y;
-};
+    if (pos.y > 0) {
+        nodes[index - dim.x].setFoliageDensity(nodes[index - dim.x].getFoliageDensity() + f * 0.6 * fertility);
 
-void Plant::grow() 
-{
-    m_size += m_rate * (m_maxSize - m_size);
-};
+        if (pos.x > 0)
+            nodes[index - dim.x - 1].setFoliageDensity(nodes[index - dim.x - 1].getFoliageDensity() + f * 0.4 * fertility);
 
-void Plant::root(Node* nodes, glm::ivec2 dim, float f) 
-{
-    float fertility = glm::max(0.0f, nodes[m_index].top()->fertility);
-    nodes[m_index].setFoliageDensity(nodes[m_index].getFoliageDensity() + f * fertility);
-
-    if (m_pos.x > 0) {
-        nodes[m_index - dim.x].setFoliageDensity(nodes[m_index - dim.x].getFoliageDensity() + f * 0.6 * fertility); //(-1, 0)
-
-        if (m_pos.y > 0)
-            nodes[m_index - dim.x - 1].setFoliageDensity(nodes[m_index - dim.x - 1].getFoliageDensity() + f * 0.4 * fertility);    //(-1, -1)
-
-        if (m_pos.y < dim.x - 1)
-            nodes[m_index - dim.x + 1].setFoliageDensity(nodes[m_index - dim.x + 1].getFoliageDensity() + f * 0.4 * fertility);    //(-1, 1)
+        if (pos.x < dim.x - 1)
+            nodes[index - dim.x + 1].setFoliageDensity(nodes[index - dim.x + 1].getFoliageDensity() + f * 0.4 * fertility); 
     }
 
-    if (m_pos.x < dim.x - 1) {
-        nodes[m_index + dim.x].setFoliageDensity(nodes[m_index + dim.x].getFoliageDensity() + f * 0.6 * fertility);    //(1, 0)
+    if (pos.y < dim.y - 1) {
+        nodes[index + dim.x].setFoliageDensity(nodes[index + dim.x].getFoliageDensity() + f * 0.6 * fertility);
 
-        if (m_pos.y > 0)
-            nodes[m_index + dim.x - 1].setFoliageDensity(nodes[m_index + dim.x - 1].getFoliageDensity() + f * 0.4 * fertility);    //(1, -1)
+        if (pos.x > 0)
+            nodes[index + dim.x - 1].setFoliageDensity(nodes[index + dim.x - 1].getFoliageDensity() + f * 0.4 * fertility);
 
-        if (m_pos.y < dim.x - 1)
-            nodes[m_index + dim.x + 1].setFoliageDensity(nodes[m_index + dim.x + 1].getFoliageDensity() + f * 0.4 * fertility);    //(1, 1)
+        if (pos.x < dim.x - 1)
+            nodes[index + dim.x + 1].setFoliageDensity(nodes[index + dim.x + 1].getFoliageDensity() + f * 0.4 * fertility); 
     }
 
-    if (m_pos.y > 0)
-        nodes[m_index - 1].setFoliageDensity(nodes[m_index - 1].getFoliageDensity() + f * 0.6 * fertility);    //(0, -1)
+    if (pos.x > 0)
+        nodes[index - 1].setFoliageDensity(nodes[index - 1].getFoliageDensity() + f * 0.6 * fertility); 
 
-    if (m_pos.y < dim.x - 1)
-        nodes[m_index + 1].setFoliageDensity(nodes[m_index + 1].getFoliageDensity() + f * 0.6 * fertility);    //(0, 1)
+    if (pos.x < dim.x - 1)
+        nodes[index + 1].setFoliageDensity(nodes[index + 1].getFoliageDensity() + f * 0.6 * fertility);
 }
