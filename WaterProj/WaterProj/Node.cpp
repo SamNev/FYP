@@ -8,11 +8,9 @@ NodeMarker* Node::top()
 	return &m_nodeData[0];
 }
 
-void Node::addMarker(NodeMarker marker)
+void Node::addMarker(NodeMarker marker, float& maxHeight)
 {
-	float val = 0;
-	//TODO: this needs to use the map max val
-	addMarker(marker.height, marker.resistiveForce, marker.hardStop, marker.color, marker.fertility, val);
+	addMarker(marker.height, marker.resistiveForce, marker.hardStop, marker.color, marker.fertility, maxHeight);
 }
 
 void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float& maxHeight)
@@ -200,6 +198,14 @@ void Node::setWaterHeight(float waterHeight)
 		m_waterData.height = waterHeight - terrHeight;
 }
 
+float Node::waterHeight() const
+{
+	if (!hasWater())
+		return topHeight();
+
+	return topHeight() + m_waterData.height;
+}
+
 float Node::waterHeight(float valIfNoWater) const
 {
 	if (!hasWater())
@@ -231,7 +237,7 @@ bool Node::hasWater() const
 	return m_waterData.height > 0.00f;
 }
 
-void Node::setHeight(float height, NodeMarker fillerData)
+void Node::setHeight(float height, NodeMarker fillerData, float& maxHeight)
 {
 	NodeMarker copy = fillerData;
 	copy.height = height;
@@ -242,7 +248,7 @@ void Node::setHeight(float height, NodeMarker fillerData)
 	}
 	else if (height > topHeight())
 	{
-		addMarker(copy);
+		addMarker(copy, maxHeight);
 	}
 }
 

@@ -13,7 +13,7 @@ Drop::Drop(glm::vec2 pos, float volume)
     m_volume = volume;
 }
 
-void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track)
+void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, float& maxHeight)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
     float initialSediment = m_sedimentAmount;
@@ -56,14 +56,14 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track)
         m_sedimentAmount += transfer;
         m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), glm::max(0.0f, glm::min(1.0f, transfer / m_sedimentAmount)));
 
-        nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment);
+        nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment, maxHeight);
         float deposit = initialSediment / 10.0f;
         m_sedimentAmount -= deposit;
-        nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment);
+        nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment, maxHeight);
     }
 }
 
-bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim) 
+bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, float& maxHeight) 
 {
     if (m_terminated)
         return false;
@@ -121,7 +121,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim)
 
     m_volume *= 0.99f;
     m_age++;
-    cascade(m_pos, dim, nodes, track);
+    cascade(m_pos, dim, nodes, track, maxHeight);
     return true;
 }
 
@@ -133,20 +133,24 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
         if (index < 0 || index >= dim.x * dim.y)
             return false;
-        float plane = nodes[index].waterHeight(nodes[index].topHeight()) + increaseAmount;
+        float plane = nodes[index].waterHeight() + increaseAmount;
 
         std::stack<int> toTry;
         std::vector<int> set;
         std::vector<int> border;
         const int size = (int)dim.x * dim.y;
         bool* tried = new bool[size];
+        bool offMap = false;
 
         std::fill(tried, tried + size, false);
 
         std::function<bool(int)> inBounds = [&](int i)
         {
             if (i < 0 || i >= size)
+            {
+                offMap = true;
                 return false;
+            }
 
             if (tried[i])
                 return false;
@@ -158,13 +162,13 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
         std::function<void(int, float&)> fill = [&](int i, float& vol) 
         {
-            if (plane < nodes[i].waterHeight(nodes[i].topHeight())) {
+            if (plane < nodes[i].waterHeight()) {
                 border.push_back(i);
                 return;
             }
 
             set.push_back(i);
-            vol += plane - nodes[i].waterHeight(nodes[i].topHeight());
+            vol += plane - nodes[i].waterHeight();
 
             if (inBounds(i + dim.x))
                 toTry.push(i + dim.x);
@@ -217,7 +221,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 continue;
             }
 
-            if (nodes[index].waterDepth() == 0.0f)
+            if (!nodes[index].hasWater())
                 break;
 
             set.clear();
@@ -225,7 +229,8 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             toTry.push(index); 
             std::fill(tried, tried + size, false);
             currVolume = 0.0f;
-            plane = nodes[index].waterHeight(nodes[index].topHeight());
+            offMap = false;
+            plane = nodes[index].waterHeight();
             while (!toTry.empty())
             {
                 int current = toTry.top();
@@ -233,31 +238,39 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 fill(current, currVolume);
             }
 
-            int drain = 0;
-            float drainHeight = FLT_MAX;
-            for (int potentialDrain : border)
+            if (!offMap)
             {
-                float height = nodes[drain].waterHeight(nodes[index].topHeight());
-                if (height < drainHeight)
+                int drain = 0;
+                float drainHeight = FLT_MAX;
+                for (int potentialDrain : border)
                 {
-                    drain = potentialDrain;
-                    drainHeight = height;
+                    float height = nodes[drain].waterHeight();
+                    if (height < drainHeight)
+                    {
+                        drain = potentialDrain;
+                        drainHeight = height;
+                    }
                 }
-            }
 
-            glm::vec2 drainPos = glm::vec2(drain % dim.x, drain / dim.x);
-            if (m_pos == drainPos)
-            {
-                nodes[drain].erodeByValue(0.005f);
-                break;
-            }
+                glm::vec2 drainPos = glm::vec2(drain % dim.x, drain / dim.x);
+                if (m_pos == drainPos)
+                {
+                    nodes[drain].erodeByValue(0.005f);
+                    break;
+                }
 
-            for (int s : set)
-            {
-                nodes[s].setWaterHeight(plane);
+                for (int s : set)
+                {
+                    nodes[s].setWaterHeight(plane);
+                }
+                m_pos = drainPos;
+                m_terminated = false;
             }
-            m_pos = drainPos;
-            m_terminated = false;
+            else
+            {
+                // we're going to fill off the map, so "evaporate" and vanish
+                m_volume = 0.0f;
+            }
 #ifdef WATERDEBUG
             std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << ". plane = " << plane << " drain = " << drainHeight << std::endl;
 #endif // WATERDEBUG

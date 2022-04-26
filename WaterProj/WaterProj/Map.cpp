@@ -408,7 +408,7 @@ void Map::erode(int cycles) {
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
 
-			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, track, dim) && drop.getVolume() > drop.getMinVolume())
+			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, track, dim, m_maxHeight) && drop.getVolume() > drop.getMinVolume())
 			{
 				if (!drop.flood(m_nodes, dim))
 					break;

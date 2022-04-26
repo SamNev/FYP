@@ -39,7 +39,7 @@ struct NodeMarker
 class Node {
 public:
 	void addWater(float height);
-	void addMarker(NodeMarker marker);
+	void addMarker(NodeMarker marker, float& maxHeight);
 	void addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float& maxHeight);
 	void erodeByValue(float amount);
 	float getResistiveForceAtHeight(float height) const;
@@ -49,13 +49,14 @@ public:
 	glm::vec3 topColor() const;
 	NodeMarker* top();
 	void skim();
+	float waterHeight() const;
 	float waterHeight(float valIfNoWater) const;
 	float waterHeightWithStreams(float valIfNoWater) const;
 	float waterDepth() const;
 	void setWaterHeight(float waterHeight);
 	void setWaterDepth(float waterDepth);
 	bool hasWater() const;
-	void setHeight(float height, NodeMarker fillerValue);
+	void setHeight(float height, NodeMarker fillerValue, float& maxHeight);
 	float getParticles() const;
 	void setParticles(float particles);
 	void setFoliageDensity(float density);
