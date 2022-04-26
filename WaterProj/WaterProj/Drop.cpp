@@ -128,7 +128,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim)
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 {
     float increaseAmount = 0.01f;
-    while (m_volume > 0)
+    while (m_volume > m_minVol)
     {
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
         if (index < 0 || index >= dim.x * dim.y)
