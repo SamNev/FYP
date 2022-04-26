@@ -404,7 +404,7 @@ void Map::erode(int cycles) {
 
 		Drop drop(newpos);
 
-		int spill = 500;
+		int spill = 1000;
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
 

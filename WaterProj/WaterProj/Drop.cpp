@@ -119,7 +119,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim)
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
         return false;
 
-    m_volume *= 0.98f;
+    m_volume *= 0.99f;
     m_age++;
     cascade(m_pos, dim, nodes, track);
     return true;
@@ -137,7 +137,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
         std::stack<int> toTry;
         std::vector<int> set;
-        int drain;
+        std::vector<int> border;
         const int size = (int)dim.x * dim.y;
         bool* tried = new bool[size];
 
@@ -156,32 +156,10 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             return true;
         };
 
-        std::function<bool(int, float&)> isValidDrain = [&](int i, float& drainHeight)
-        {
-            if (drainHeight > nodes[i].waterHeight(nodes[i].topHeight()))
-            {
-                if (std::find(set.begin(), set.end(), i + dim.x) != set.end() &&
-                    std::find(set.begin(), set.end(), i - dim.x) != set.end() &&
-                    std::find(set.begin(), set.end(), i + 1) != set.end() &&
-                    std::find(set.begin(), set.end(), i - 1) != set.end() &&
-                    std::find(set.begin(), set.end(), i + dim.x + 1) != set.end() &&
-                    std::find(set.begin(), set.end(), i - dim.x - 1) != set.end() &&
-                    std::find(set.begin(), set.end(), i + dim.x - 1) != set.end() &&
-                    std::find(set.begin(), set.end(), i - dim.x + 1) != set.end())
-                {
-                    return false;
-                }
-
-                drain = i;
-                drainHeight = nodes[i].waterHeight(nodes[i].topHeight());
-                return true;
-            }
-            return false;
-        };
-
         std::function<void(int, float&)> fill = [&](int i, float& vol) 
         {
             if (plane < nodes[i].waterHeight(nodes[i].topHeight())) {
+                border.push_back(i);
                 return;
             }
 
@@ -231,7 +209,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 nodes[s].setWaterHeight(plane);
             }
         }
-        else if(!set.empty())
+        else if(set.size() > 1)
         {
             if (increaseAmount >= 0.001f)
             {
@@ -243,7 +221,9 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 break;
 
             set.clear();
+            border.clear();
             toTry.push(index); 
+            std::fill(tried, tried + size, false);
             currVolume = 0.0f;
             plane = nodes[index].waterHeight(nodes[index].topHeight());
             while (!toTry.empty())
@@ -253,10 +233,16 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 fill(current, currVolume);
             }
 
+            int drain = 0;
             float drainHeight = FLT_MAX;
-            for (int s : set)
+            for (int potentialDrain : border)
             {
-                isValidDrain(s, drainHeight);
+                float height = nodes[drain].waterHeight(nodes[index].topHeight());
+                if (height < drainHeight)
+                {
+                    drain = potentialDrain;
+                    drainHeight = height;
+                }
             }
 
             glm::vec2 drainPos = glm::vec2(drain % dim.x, drain / dim.x);
@@ -268,7 +254,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 
             for (int s : set)
             {
-                nodes[s].setWaterHeight(nodes[drain].waterHeight(nodes[drain].topHeight()));
+                nodes[s].setWaterHeight(plane);
             }
             m_pos = drainPos;
             m_terminated = false;
