@@ -100,7 +100,7 @@ public:
 	std::string stats(glm::vec2 pos);
 	bool trySpawnTree(glm::vec2 pos);
 
-	//Simple Hydrology Functions
+	// Hydrology Functions
 	void erode(int cycles);
 	void grow();
 

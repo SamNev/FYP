@@ -199,14 +199,14 @@ int main()
 		if (erodeMe)
 		{
 			auto start = std::chrono::system_clock::now();
-			currentMap->erode(20);
+			currentMap->erode(100);
 			auto erodeEnd = std::chrono::system_clock::now();
 			currentMap->grow();
 			auto growEnd = std::chrono::system_clock::now();
 			std::chrono::duration<double> elapsedTime = growEnd - start;
 			std::chrono::duration<double> erodeTime = erodeEnd - start;
 			std::chrono::duration<double> growTime = growEnd - erodeEnd;
-			std::cout << "Tick took " << elapsedTime.count() << "s. " << erodeTime.count() << "s was eroding, " << growTime.count()<< " was growing" << std::endl;
+			std::cout << "Tick took " << elapsedTime.count() << "s. " << erodeTime.count() << "s was eroding, " << growTime.count()<< " was growing" << std::endl << std::endl;
 			heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 		}
 	}

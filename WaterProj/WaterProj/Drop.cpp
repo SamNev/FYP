@@ -7,13 +7,13 @@ Drop::Drop(glm::vec2 pos)
     m_pos = pos; 
 }
 
-Drop::Drop(glm::vec2 pos, glm::ivec2 dim, float volume) 
+Drop::Drop(glm::vec2 pos, float volume) 
 {
     m_pos = pos;
     m_volume = volume;
 }
 
-void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>* track)
+void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
     float initialSediment = m_sedimentAmount;
@@ -21,8 +21,6 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
     const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
-
-    const float maxDiff = 0.01f;
 
     for (int i = 0; i < 8; i++) 
     {
@@ -32,7 +30,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
         if (offsetPos.x >= dim.x || offsetPos.y >= dim.y || offsetPos.x < 0 || offsetPos.y < 0)
             continue;
 
-        track->at(offsetIndex) = true;
+        track[offsetIndex] = true;
         //if (nodes[offsetIndex].waterDepth() > 0.1) 
         //   continue;
 
@@ -65,22 +63,19 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, std::vector<bool>
     }
 }
 
-bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::ivec2 dim, float scale) 
+bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim) 
 {
     if (m_volume < m_minVol)
         return false;
 
     m_lastVelocity = m_velocity;
     int index = (int)m_pos.y * dim.x + (int)m_pos.x;
-    int prevIndex = index;
 
     if (index < 0 || index >= dim.x * dim.y)
         return false;
 
     if (nodes[index].hasWater())
         return false;
-
-    glm::vec2 dir = glm::vec2(norm.x, norm.y);
 
     nodes[index].setParticles(nodes[index].getParticles() + m_volume);
 
@@ -96,23 +91,27 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, std::vector<bool>* track, glm::i
 
     m_velocity *= 0.8f;
 
+    // more likely to travel to a location with water
     if (particleEffect != glm::vec2(0.0f))
     {
         particleEffect = glm::normalize(particleEffect);
         m_velocity += particleEffect * 0.05f;
     }
+
+    glm::vec2 dir = glm::vec2(norm.x, norm.y);
     m_velocity += 2.0f * dir;
 
+    // barely moving- flat surface and no speed?
     if (glm::length(m_velocity) < 0.001f)
         return false;
 
     m_pos += glm::normalize(m_velocity) * (float)sqrt(2);
-    index = (int)m_pos.y * dim.x + (int)m_pos.x;
+    float newIndex = (int)m_pos.y * dim.x + (int)m_pos.x;
 
-    if (index == m_prevIndex)
+    if (newIndex == index)
         return false;
 
-    m_prevIndex = prevIndex;
+    m_prevIndex = index;
 
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
         return false;

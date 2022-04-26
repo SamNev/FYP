@@ -20,11 +20,13 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	m_scale = params.scale;
 	m_params = params;
 
+	// seed based on time or whatever was given
 	if(seed == 0)
 		srand(time(NULL));
 	else
 		srand(seed);
 
+	// a selection of varying perlin noise is needed to generate complex terrain
 	int generatedSeed = rand() % 99999;
 	PerlinNoise baseVarianceNoise(generatedSeed);
 	generatedSeed = rand() % 99999;
@@ -42,11 +44,11 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	generatedSeed = rand() % 99999;
 	PerlinNoise sandNoise(generatedSeed);
 
-	// Ensure our values are valid-  rarity must be a multiple of scale
+	// Ensure our values are valid-  rarity must be a multiple of scale in these regards or we hit rounding errors.
 	params.hillRarity -= (params.hillRarity % m_scale);
 	params.mountainRarity -= (params.mountainRarity % m_scale);
 	params.divetRarity -= (params.divetRarity % m_scale);
-	const glm::vec3 colorVary = glm::vec3((float)(rand() % 100) / 100.0f * 0.45f, 0.9f + (float)(rand() % 100) / 100.0f * 0.1f, (float)(rand() % 100) / 100.0f * 0.45f);
+
 	float completion = 0.0f;
 
 	for (int x = 0; x < width; ++x)
@@ -97,10 +99,16 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 		float prevCompletion = completion;
 		completion = (x / (float)width) * 100.0f;
 		if((int)completion % 10 < (int) prevCompletion % 10)
-			std::cout << "Populating World Nodes: " << completion << "%" <<std::endl;
+		{
+			if (prevCompletion < 10.0f)
+				std::cout << "Generating World Nodes: " << completion << "%";
+			else
+				std::cout << std::string(3, '\b') << completion << "%";
+		}
 	}
+	std::cout << std::string(3, '\b') << "100 %";
+	std::cout << std::endl;
 
-	std::cout << "Populating World Nodes: 100%" << std::endl;
 	addRocksAndDirt(params.rockVerticalScaling, params.rockDensityVariance, params.densityVariance, params.densityChangeRate, params.rockRarity, &densityNoise, &rockNoise);
 }
 
@@ -157,9 +165,15 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 		float prevCompletion = completion;
 		completion = (x / (float)m_width) * 100.0f;
 		if ((int)completion % 10 < (int)prevCompletion % 10)
-			std::cout << "Placing Rocks and Dirt: " << completion << "%" << std::endl;
+		{
+			if (prevCompletion < 10.0f)
+				std::cout << "Placing Rocks, Trees, and Dirt: " << completion << "%";
+			else
+				std::cout << std::string(3, '\b') << completion << "%";
+		}
 	}
-	std::cout << "Placing Rocks and Dirt: 100%" << std::endl;
+	std::cout << std::string(3, '\b') << "100 %";
+	std::cout << std::endl;
 }
 
 void Map::addSpring(int x, int y)
@@ -367,16 +381,19 @@ std::string Map::stats(glm::vec2 pos)
 void Map::erode(int cycles) {
 
 	// all particle movement
-	std::vector<bool> track(m_width * m_height);
+	bool* track = new bool[m_width * m_height];
+	for (int i = 0; i < m_width * m_height; i++)
+		track[i] = false;
+
 	glm::vec2 dim = glm::vec2(m_width, m_height);
-	std::fill(track.begin(), track.end(), false);
 	int springIndex = 0;
+
+	float completion = 0.0f;
 
 	for (int i = 0; i < cycles; i++)
 	{
 		// spawn particle
 		glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
-		//glm::vec2 newpos = glm::vec2(500, 500);
 
 		// spawn at spring if possible
 		if (springIndex < m_springs.size())
@@ -387,11 +404,11 @@ void Map::erode(int cycles) {
 
 		Drop drop(newpos);
 
-		int spill = 5000;
+		int spill = 500;
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
 
-			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, &track, dim, m_scale) && drop.getVolume() > drop.getMinVolume())
+			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, track, dim) && drop.getVolume() > drop.getMinVolume())
 			{
 				if (!drop.flood(m_nodes, dim))
 					break;
@@ -402,7 +419,19 @@ void Map::erode(int cycles) {
 
 		if (spill == 0)
 			drop.flood(m_nodes, dim);
+
+		float prevCompletion = completion;
+		completion = (i / (float)cycles) * 100.0f;
+		if ((int)completion % 10 < (int)prevCompletion % 10)
+		{
+			if (prevCompletion < 10.0f)
+				std::cout << "Running water simulation: " << completion << "%";
+			else
+				std::cout << std::string(3, '\b') << completion << "%";
+		}
 	}
+	std::cout << std::string(3, '\b') << "100 %";
+	std::cout << std::endl;
 
 	for (int i = 0; i < m_width * m_height; i++)
 	{
@@ -423,6 +452,7 @@ void Map::erode(int cycles) {
 			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
 	}
 
+	delete[m_width * m_height] track;
 }
 
 void Map::grow()
@@ -430,6 +460,7 @@ void Map::grow()
 	// spawn a tree randomly on the map (long-distance fertilization)
 	int newTreePos = rand() % (m_width * m_height);
 	glm::vec3 n = normal(newTreePos);
+	int completion = 0;
 
 	trySpawnTree(glm::vec2(newTreePos % m_width, newTreePos / m_width));
 
@@ -450,7 +481,18 @@ void Map::grow()
 			m_trees[i].root(m_nodes, glm::vec2(m_width, m_height), -1.0f);
 			m_trees.erase(m_trees.begin() + i);
 		}
+		float prevCompletion = completion;
+		completion = (i / (float)m_trees.size()) * 100.0f;
+		if ((int)completion % 10 < (int)prevCompletion % 10)
+		{
+			if (prevCompletion < 10.0f)
+				std::cout << "Running foliage simulation: " << completion << "%";
+			else
+				std::cout << std::string(3, '\b') << completion << "%";
+		}
 	}
+	std::cout << std::string(3, '\b') << "100 %";
+	std::cout << std::endl;
 };
 
 bool Map::trySpawnTree(glm::vec2 pos)
