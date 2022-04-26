@@ -29,7 +29,7 @@ struct MapParams
 		baseVariance = 0.05f;
 		lieChangeRate = 3000.0f * getRandomModif();
 		liePeak = 25.0f * getRandomModif();
-		lieModif = -24.0f * getRandomModif();
+		lieModif = -21.0f * getRandomModif();
 		hillHeight = 80.0f * getRandomModif();
 		hillRarity = (int)(1000.0f * getRandomModif());
 		mountainHeight = 2000.0f * getRandomModif();
@@ -66,7 +66,7 @@ struct MapParams
 	int springRarity = 200;
 	float treeParticleDeathThreshold = 0.2f;
 	float treeSlopeThreshold = 0.985f;
-	int treeSpreadChance = 15;
+	int treeSpreadChance = 50;
 	int treeSpreadRadius = 9;
 	int treeRandomDeathChance = 100000;
 
