@@ -94,10 +94,12 @@ public:
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
 	float getMountainSteepness(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
 	float getHillSteepness(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
+	void defineSoils();
 	void skimTop();
 	void addSpring(int x, int y);
 	void erodeAllByValue(float amount);
 	std::string stats(glm::vec2 pos);
+	std::string getSoilType(glm::vec2 pos);
 	bool trySpawnTree(glm::vec2 pos);
 
 	// Hydrology Functions
@@ -122,5 +124,6 @@ protected:
 	int m_height;
 	float m_maxHeight;
 	std::vector<glm::vec2> m_springs;
+	std::vector<SoilDefinition> m_soilDefinitions;
 	MapParams m_params;
 };

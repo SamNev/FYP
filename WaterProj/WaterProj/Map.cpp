@@ -13,6 +13,7 @@
 
 Map::Map(int width, int height, MapParams params, unsigned int seed)
 {
+	defineSoils();
 	m_nodes = new Node[width * height];
 	m_width = width;
 	m_height = height;
@@ -81,16 +82,16 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 				}
 				else */
 				{
-					// sand (1.8g/cm3)
+					// sand (1.5g/cm3)
 					// this is slightly hack-y. We know this is going to be low, so we set the color to >1.0f so it'll render brighter.
-					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.8f, false, glm::vec3(3.0f, 3.0f, 0.8f), 0.1f, m_maxHeight);
+					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.5f, false, glm::vec3(3.0f, 3.0f, 0.8f), 0.1f, m_maxHeight);
 				}
 			}
 			else
 			{
 				// topsoil (2.3g/cm3)
 				float topNoise = densityNoise.noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), glm::max(-1.9f, total));
-				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), 1.0f, m_maxHeight);
+				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), 0.8f, m_maxHeight);
 			}
 			// bedrock (7.0g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), 0.0f, m_maxHeight);
@@ -135,11 +136,11 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 				const float scaledDensHeight = densHeight * rockVerticalScaling;
 				if (!isRock)
 				{
-					// soil resistiveForce (2.5-2.8g/cm3)
+					// soil resistiveForce (2.1-2.4g/cm3)
 					float noise = densityNoise->noise(x / (densityChangeRate / m_scale), y / (densityChangeRate / m_scale), scaledDensHeight);
-					float density = 2.5f + noise * densityVariance;
+					float density = 2.1f + noise * densityVariance;
 					glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
-					m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, false, col, 1.0f, m_maxHeight);
+					m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, false, col, 0.8f, m_maxHeight);
 
 					// rock resistiveForce (3.8-4.2g/cm3)
 					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
@@ -174,6 +175,17 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 	}
 	std::cout << std::string(3, '\b') << "100 %";
 	std::cout << std::endl;
+}
+
+void Map::defineSoils()
+{
+	// All the soil types we need to know
+	m_soilDefinitions.push_back(SoilDefinition("eapa", glm::vec2(0.24f, 0.29f), glm::vec2(0.29f, 0.34f), glm::vec2(0.2f, 0.75f), glm::vec2(0.0f, 2.3f)));
+	m_soilDefinitions.push_back(SoilDefinition("attewan", glm::vec2(0.05f, 0.28f), glm::vec2(0.35f, 0.79f), glm::vec2(0.2f, 0.75f), glm::vec2(2.2f, 3.0f)));
+	m_soilDefinitions.push_back(SoilDefinition("ethridge", glm::vec2(0.31f, 0.39f), glm::vec2(0.18f, 0.35f), glm::vec2(0.2f, 0.8f), glm::vec2(2.0f, 3.0f)));
+	m_soilDefinitions.push_back(SoilDefinition("yamacall", glm::vec2(0.23f, 0.24f), glm::vec2(0.39f, 0.40f), glm::vec2(0.85f, 1.0f), glm::vec2(1.0f, 2.35f)));
+	m_soilDefinitions.push_back(SoilDefinition("sand", glm::vec2(0.0f,0.05f), glm::vec2(0.8f,1.0f), glm::vec2(0.0f, 0.1f), glm::vec2(1.5f, 2.0f)));
+	m_soilDefinitions.push_back(SoilDefinition("rock", glm::vec2(0.0f, 0.05f), glm::vec2(0.0f, 0.1f), glm::vec2(0.0f, 0.01f), glm::vec2(3.0f, 7.0f), true));
 }
 
 void Map::addSpring(int x, int y)
@@ -362,13 +374,66 @@ Map::~Map()
 	delete[m_width * m_height] m_nodes;
 }
 
+std::string Map::getSoilType(glm::vec2 pos)
+{
+	std::ostringstream oss;
+	Node* node = getNodeAt(pos.x, pos.y);
+	int bestIndex = -1;
+	float bestCertainty = 0.0f;
+	NodeMarker general = node->getDataAboveHeight(-1.9f, true);
+
+	for (int i = 0; i < m_soilDefinitions.size(); i++)
+	{
+		float certainty = m_soilDefinitions[i].getCertainty(&general);
+		if (certainty > bestCertainty)
+		{
+			bestCertainty = certainty;
+			bestIndex = i;
+		}
+	}
+
+	if (bestIndex != -1)
+	{
+		oss << m_soilDefinitions[bestIndex].name << " (" << bestCertainty << " % certainty)";
+	}
+	else
+	{
+		oss << "unknown";
+	}
+
+	NodeMarker loam = node->getDataAboveHeight(node->topHeight() - 1.0f);
+	int mainIndex = bestIndex;
+	bestIndex = -1;
+	bestCertainty = 0.0f;
+
+	for (int i = 0; i < m_soilDefinitions.size(); i++)
+	{
+		float certainty = m_soilDefinitions[i].getCertainty(&loam);
+		if (certainty > bestCertainty)
+		{
+			bestCertainty = certainty;
+			bestIndex = i;
+		}
+	}
+
+	if (bestIndex != -1 && mainIndex != bestIndex)
+	{
+		oss << ", with a " << m_soilDefinitions[bestIndex].name << " loam (" << bestCertainty << "% certainty)" << std::endl;
+	}
+
+	return oss.str();
+}
+
 std::string Map::stats(glm::vec2 pos)
 {
 	std::ostringstream oss;
 	glm::vec3 norm = normal(pos.y * m_width + pos.x);
 	glm::vec3 col = getNodeAt(pos.x, pos.y)->topColor();
 	glm::vec3 col2 = getNodeAt(pos.x, pos.y)->top()->color;
-	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight() << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity() << " Normal is " << norm.x << ", " << norm.y << ", " << norm.z << " Color is " << col.x << ", " << col.y << ", " << col.z << " node color is " << col2.x << ", " << col2.y << ", " << col2.z << std::endl;
+	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight(); 
+	oss << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity();
+	oss << " Normal is " << norm.x << ", " << norm.y << ", " << norm.z << " Color is " << col.x << ", " << col.y << ", " << col.z << " node color is " << col2.x << ", " << col2.y << ", " << col2.z;
+	oss << " Soil type is " << getSoilType(pos) << std::endl;
 	return oss.str();
 }
 

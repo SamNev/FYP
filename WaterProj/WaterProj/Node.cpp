@@ -27,6 +27,7 @@ void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec
 		marker.height = height;
 		marker.resistiveForce = resistiveForce;
 		marker.hardStop = hardStop;
+		marker.fertility = fertility;
 		marker.color = color;
 
 		m_nodeData.push_back(marker);
@@ -43,6 +44,7 @@ void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec
 		marker.height = height;
 		marker.resistiveForce = resistiveForce;
 		marker.hardStop = hardStop;
+		marker.fertility = fertility;
 		marker.color = color;
 		m_nodeData.insert(m_nodeData.begin() + i, marker);
 		return;
@@ -254,7 +256,7 @@ void Node::setHeight(float height, NodeMarker fillerData, float& maxHeight)
 	}
 }
 
-NodeMarker Node::getDataAboveHeight(float height) const
+NodeMarker Node::getDataAboveHeight(float height, bool ignoreRock) const
 {
 	NodeMarker marker = m_nodeData[0];
 	float currentAmount = 0.0f;
@@ -263,15 +265,21 @@ NodeMarker Node::getDataAboveHeight(float height) const
 	{
 		if (height < m_nodeData[i - 1].height && height < m_nodeData[i].height)
 		{
-			float amount = m_nodeData[i - 1].height - m_nodeData[i].height;
-			currentAmount += amount;
-			marker.mix(m_nodeData[i], amount / currentAmount);
+			if (!ignoreRock || !m_nodeData[i].hardStop)
+			{
+				float amount = m_nodeData[i - 1].height - m_nodeData[i].height;
+				currentAmount += amount;
+				marker.mix(m_nodeData[i], amount / currentAmount);
+			}
 		}
 		else if (height < m_nodeData[i - 1].height)
 		{
-			float amount = m_nodeData[i - 1].height - height;
-			currentAmount += amount;
-			marker.mix(m_nodeData[i], amount / currentAmount);
+			if (!ignoreRock || !m_nodeData[i].hardStop)
+			{
+				float amount = m_nodeData[i - 1].height - height;
+				currentAmount += amount;
+				marker.mix(m_nodeData[i], amount / currentAmount);
+			}
 		}
 		else
 			break;
