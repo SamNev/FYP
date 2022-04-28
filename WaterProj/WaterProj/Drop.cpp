@@ -59,7 +59,8 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment, maxHeight);
         float deposit = initialSediment / 10.0f;
         m_sedimentAmount -= deposit;
-        nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment, maxHeight);
+        if(!nodes[offsetIndex].hasWater())
+            nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment, maxHeight);
     }
 }
 
