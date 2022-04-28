@@ -437,7 +437,6 @@ void Map::erode(int cycles) {
 	{
 		if (track[i])
 		{
-			m_nodes[i].setParticles(m_nodes[i].getParticles() + 1.0f);
 			float h = m_nodes[i].topHeight() + 1.0f;
 
 			for (int yOffset = 0; yOffset < 9; yOffset++)
@@ -471,14 +470,14 @@ void Map::grow()
 		{
 			if (rand() % m_params.treeSpreadChance == 0)
 			{
-				glm::vec2 newPlantPos = glm::vec2(newTreePos % m_width, newTreePos / m_width) + glm::vec2(rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2), rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2));
+				glm::vec2 newPlantPos = glm::vec2(i % m_width, i / m_width) + glm::vec2(rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2), rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2));
 				trySpawnTree(newPlantPos);
 			}
 
 			// trees die in water & sometimes die randomly
 			if (m_nodes[i].waterDepth() > 0.0 || m_nodes[i].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0)
 			{
-				Plant::root(m_nodes, glm::vec2(m_width, m_height), glm::vec2(newTreePos % m_width, newTreePos / m_width), -1.0f);
+				Plant::root(m_nodes, glm::vec2(m_width, m_height), glm::vec2(i % m_width, i / m_width), -1.0f);
 			}
 		}
 
@@ -512,7 +511,7 @@ bool Map::trySpawnTree(glm::vec2 pos)
 	if (m_nodes[index].hasWater())
 		return false;
 
-	if(m_nodes[index].getParticles() > 0.2f)
+	if(m_nodes[index].getParticles() > m_params.treeParticleDeathThreshold)
 		return false;
 
 	glm::vec3 norm = normal(index);

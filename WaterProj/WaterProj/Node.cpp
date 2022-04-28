@@ -172,7 +172,7 @@ float Node::topHeight() const
 
 glm::vec3 Node::topColor() const
 {
-	float particles = glm::min(1.0f, glm::max(0.0f, getParticles()));
+	float particles = glm::min(1.0f, glm::max(0.0f, getParticles() - 0.8f));
 
 	if(particles > 0.01f && !hasWater())
 		return m_nodeData[0].color * glm::max(0.25f, 1.0f - particles) + glm::vec3(0.0f, 0.2f, 0.9f) * glm::min(0.75f, particles);
@@ -282,7 +282,7 @@ NodeMarker Node::getDataAboveHeight(float height) const
 
 float Node::getParticles() const
 {
-	return glm::min(1.0f, m_waterData.particles);
+	return m_waterData.particles;
 }
 
 void Node::setParticles(float particles)

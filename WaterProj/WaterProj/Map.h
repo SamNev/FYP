@@ -64,9 +64,9 @@ struct MapParams
 	float cliffThreshold = 0.0007f;
 	float springThreshold = 0.99f;
 	int springRarity = 200;
-	float treeParticleDeathThreshold = 0.2f;
+	float treeParticleDeathThreshold = 0.1f;
 	float treeSlopeThreshold = 0.985f;
-	int treeSpreadChance = 50;
+	int treeSpreadChance = 5;
 	int treeSpreadRadius = 9;
 	int treeRandomDeathChance = 100000;
 
