@@ -33,6 +33,5 @@ protected:
     float m_sedimentAmount = 0.0f;
     NodeMarker m_sediment;
 
-    int m_prevIndex;
     bool m_terminated = false;
 };

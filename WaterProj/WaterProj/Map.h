@@ -57,7 +57,7 @@ struct MapParams
 		mountainHeight *= (1.0f + amount);
 	}
 
-	int scale = 5;
+	int scale = 1;
 	float baseVariance = 0.05f;
 	float lieChangeRate = 3000.0f;
 	float liePeak = 25.0f;
@@ -79,6 +79,8 @@ struct MapParams
 	float treeSlopeThreshold = 0.985f;
 	int treeSpreadChance = 5;
 	int treeSpreadRadius = 9;
+	float foliageOverpopulationThreshold = 0.8f;
+	float waterEvaporationRate = 0.1f;
 	int treeRandomDeathChance = 100000;
 	int dropWidth = 4;
 

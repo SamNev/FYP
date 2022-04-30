@@ -242,24 +242,7 @@ Node* Map::getNodeAt(int x, int y)
 
 float Map::getHeightAt(int x, int y)
 {
-	if (y >= m_height)
-	{
-		return getHeightAt(x, fmin(y, m_height - 1));
-	}
-	if (x >= m_width)
-	{
-		return getHeightAt(fmin(x, m_width - 1), y);
-	}
-	if (x < 0)
-	{
-		return getHeightAt(0, y);
-	}
-	if (y < 0)
-	{
-		return getHeightAt(x, 0);
-	}
-
-	return m_nodes[y * m_width + x].topHeight();
+	return getNodeAt(x,y)->topHeight();
 }
 
 float Map::getHeightAt(int index)
@@ -460,7 +443,7 @@ void Map::erode(int cycles) {
 			}
 		}
 		else
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - 0.1f));
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() - m_params.waterEvaporationRate));
 	}
 
 	delete[m_width * m_height] track;
@@ -514,10 +497,7 @@ bool Map::trySpawnTree(glm::vec2 pos)
 
 	int index = pos.y * m_width + pos.x;
 
-	if (m_nodes[index].top()->hardStop)
-		return false;
-
-	if (m_nodes[index].getFoliageDensity() >= 0.8f)
+	if (m_nodes[index].getFoliageDensity() >= m_params.foliageOverpopulationThreshold)
 		return false;
 
 	if (m_nodes[index].hasWater())

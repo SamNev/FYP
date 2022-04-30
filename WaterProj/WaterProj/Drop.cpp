@@ -66,6 +66,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
 
 bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, float& maxHeight) 
 {
+    // simulate behavior as a particle running down the landscape
     if (m_terminated)
         return false;
 
@@ -83,6 +84,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
     nodes[index].setParticles(nodes[index].getParticles() + m_volume);
 
+    // likely to flow into other water
     glm::vec2 particleEffect(0.0f);
     if(index - dim.x > 0)
         particleEffect.y -= nodes[index - dim.x].getParticles();
@@ -93,7 +95,9 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     if (index + 1 < dim.x * dim.y)
         particleEffect.x += nodes[index + 1].getParticles();
 
-    m_velocity *= 0.8f;
+    // frictional forces from foliage density
+    float friction = glm::min(glm::max(0.1f, 1.0f - nodes[index].getFoliageDensity()), 0.9f);
+    m_velocity *= friction;
 
     // more likely to travel to a location with water
     if (particleEffect != glm::vec2(0.0f))
@@ -102,25 +106,28 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
         m_velocity += particleEffect * 0.05f;
     }
 
-    glm::vec2 dir = glm::vec2(norm.x, norm.y);
-    m_velocity += 2.0f * dir;
+    // a=gSin(θ)
+    // θ can be found with dot product
+    // a is in m/s and needs to be scaled due to the extended time period (a year divided by our simulation steps)
+    float theta = acos(glm::dot(norm, glm::vec3(0.0f, 1.0f, 0.0f)));
+    glm::vec2 a = glm::vec2(norm.x, norm.y) * sin(theta);
+    m_velocity += a * 2628.0f;
 
     // barely moving- flat surface and no speed?
     if (glm::length(m_velocity) < 0.001f)
         return false;
 
+    // we need to visit every possible square, so normalize velocity only for movement. This won't matter as we immediately simulate again and will keep moving!
     m_pos += glm::normalize(m_velocity) * (float)sqrt(2);
     float newIndex = (int)m_pos.y * dim.x + (int)m_pos.x;
 
     if (newIndex == index)
         return false;
 
-    m_prevIndex = index;
-
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
         return false;
 
-    m_volume *= 0.99f;
+    m_volume *= 0.985f;
     m_age++;
     cascade(m_pos, dim, nodes, track, maxHeight);
     return true;
