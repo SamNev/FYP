@@ -28,22 +28,12 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 		srand(seed);
 
 	// a selection of varying perlin noise is needed to generate complex terrain
-	int generatedSeed = rand() % 99999;
-	PerlinNoise baseVarianceNoise(generatedSeed);
-	generatedSeed = rand() % 99999;
-	PerlinNoise hillNoise(generatedSeed);
-	generatedSeed = rand() % 99999;
-	PerlinNoise divetNoise(generatedSeed);
-	generatedSeed = rand() % 99999;
-	PerlinNoise mountainNoise(generatedSeed);
-	generatedSeed = rand() % 99999;
-	PerlinNoise lieNoise(generatedSeed);
-	generatedSeed = rand() % 99999;
-	PerlinNoise rockNoise(generatedSeed);
-	generatedSeed = rand() % 99999;
-	PerlinNoise densityNoise(generatedSeed);
-	generatedSeed = rand() % 99999;
-	PerlinNoise sandNoise(generatedSeed);
+	PerlinNoise noises[8];
+	for (int i = 0; i < 8; i++)
+	{
+		int generatedSeed = rand() % 99999;
+		noises[i] = PerlinNoise(generatedSeed);
+	}
 
 	// Ensure our values are valid-  rarity must be a multiple of scale in these regards or we hit rounding errors.
 	params.hillRarity -= (params.hillRarity % m_scale);
@@ -56,47 +46,39 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			float val = baseVarianceNoise.noise(x, y, 0.5f) * params.baseVariance * 10;
+			float val = noises[NoiseType_BaseVariance].noise(x, y, 0.5f) * params.baseVariance * 10;
 			val = 0;
-			const float base = (lieNoise.noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
-			const float hill = getHillValue(&hillNoise, x, y, params.hillHeight, params.hillRarity);
-			const float div = getDivetValue(&divetNoise, x, y, params.hillHeight / 20.0f, params.divetRarity);
-			const float mount = getMountainValue(&mountainNoise, x, y, params.mountainHeight, params.mountainRarity);
+			const float base = (noises[NoiseType_Lie].noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), 0.5f) * params.liePeak / m_scale) + (params.lieModif / m_scale);
+			const float hill = getHillValue(&noises[NoiseType_Hill], x, y, params.hillHeight, params.hillRarity);
+			const float div = getDivetValue(&noises[NoiseType_Divet], x, y, params.hillHeight / 20.0f, params.divetRarity);
+			const float mount = getMountainValue(&noises[NoiseType_Mountain], x, y, params.mountainHeight, params.mountainRarity);
 			float total = (base + val + hill + mount + div);
 
 #ifdef FLOODTESTMAP
+			// custom map
 			total = (abs(x-500) + abs(y-500))/20.0f;
 #endif
 
-			const float sandThreshold = sandNoise.noise(x, y, 0.5f) * 0.5f;
+			const float sandThreshold = noises[NoiseType_Sand].noise(x, y, 0.5f) * 0.5f;
 
 			if (total < sandThreshold)
 			{
-				const float mountSteep = getMountainSteepness(&mountainNoise, x, y, 1.0f, params.mountainRarity);
-				const float hillSteep = getHillSteepness(&hillNoise, x, y, 1.0f, params.hillRarity);
-				float currThreshold = params.cliffThreshold + (0.0001f * (mountainNoise.noise(x, y, 5.0f) - 0.5f));
-				/*if (mountSteep > currThreshold || hillSteep > currThreshold)
-				{
-					float modif = -(pow(1.0f + (glm::max(0.0f, mountSteep - currThreshold) + glm::max(0.0f, hillSteep - currThreshold)), 2)) * 10.0f;
-					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total + modif), 3.5f, true, glm::vec3(0.8f, 0.8f, 0.8f), m_maxHeight);
-				}
-				else */
-				{
-					// sand (1.5g/cm3)
-					// this is slightly hack-y. We know this is going to be low, so we set the color to >1.0f so it'll render brighter.
-					m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.5f, false, glm::vec3(3.0f, 3.0f, 0.8f), 0.1f, m_maxHeight);
-				}
+				// sand (1.5g/cm3)
+				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 1.5f, false, glm::vec3(1.0f, 1.0f, 0.7f), 0.1f, m_maxHeight);
 			}
 			else
 			{
 				// topsoil (2.3g/cm3)
-				float topNoise = densityNoise.noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), glm::max(-1.9f, total));
+				float topNoise = noises[NoiseType_Resistivity].noise(x / (params.densityChangeRate / m_scale), y / (params.densityChangeRate / m_scale), glm::max(-1.9f, total));
 				m_nodes[y * width + x].addMarker(glm::max(-1.9f, total), 2.3f, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), 0.8f, m_maxHeight);
 			}
-			// bedrock (7.0g/cm3)
+			// bedrock (7.5g/cm3)
 			m_nodes[y * width + x].addMarker(-2.0f, 7.5f, true, glm::vec3(0.1f), 0.0f, m_maxHeight);
+			// fill all nodes to a basic "sea level"
 			m_nodes[y * width + x].setWaterHeight(0.0f);
 		}
+
+		// display progress
 		float prevCompletion = completion;
 		completion = (x / (float)width) * 100.0f;
 		if((int)completion % 10 < (int) prevCompletion % 10)
@@ -110,11 +92,12 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	std::cout << std::string(3, '\b') << "100 %";
 	std::cout << std::endl;
 
-	addRocksAndDirt(params.rockVerticalScaling, params.rockDensityVariance, params.densityVariance, params.densityChangeRate, params.rockRarity, &densityNoise, &rockNoise);
+	addRocksAndDirt(params.rockVerticalScaling, params.rockDensityVariance, params.densityVariance, params.densityChangeRate, params.rockRarity, &noises[NoiseType_Resistivity], &noises[NoiseType_Rock]);
 }
 
-void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity, PerlinNoise* densityNoise, PerlinNoise* rockNoise)
+void Map::addRocksAndDirt(float rockVerticalScaling, float rockResistivityVariance, float resistivityVariance, float resistivityChangeRate, float rockRarity, PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 {
+	// F=pV so resistivity and resistivity are linearly related
 	float completion = 0.0f;
 
 	for (int x = 0; x < m_width; ++x)
@@ -131,32 +114,34 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, 
 			if (maxHeightScaled >= m_params.springThreshold && rand() % m_params.springRarity == 0)
 				addSpring(x, y);
 
-			for (float densHeight = 0.0f; densHeight < maxHeightScaled; densHeight += 0.05f)
+			for (float currHeight = 0.0f; currHeight < maxHeightScaled; currHeight += 0.05f)
 			{
-				const float scaledDensHeight = densHeight * rockVerticalScaling;
+				const float scaledDensHeight = currHeight * rockVerticalScaling;
 				if (!isRock)
 				{
-					// soil resistiveForce (2.1-2.4g/cm3)
-					float noise = densityNoise->noise(x / (densityChangeRate / m_scale), y / (densityChangeRate / m_scale), scaledDensHeight);
-					float density = 2.1f + noise * densityVariance;
+					// soil resistiveForce (2.3-2.6g/cm3)
+					float noise = resistivityNoise->noise(x / (resistivityChangeRate / m_scale), y / (resistivityChangeRate / m_scale), scaledDensHeight);
+					float resistivity = 2.3f + noise * resistivityVariance;
 					glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
-					m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, false, col, 0.8f, m_maxHeight);
+					m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, false, col, 0.8f, m_maxHeight);
 
 					// rock resistiveForce (3.8-4.2g/cm3)
 					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal > 0.6f)
 					{
-						float density = 3.8f + (currVal - 0.6f) * rockDensityVariance;
-						m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, density, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, 0.0f, m_maxHeight);
+						float resistivity = 3.8f + (currVal - 0.6f) * rockResistivityVariance;
+						m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, 0.0f, m_maxHeight);
 						isRock = true;
 					}
 				}
 				else
 				{
+					// rock resistiveForce (3.8-4.2g/cm3)
 					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal < 0.6f)
 					{
-						m_nodes[y * m_width + x].addMarker(densHeight * m_maxHeight, 3.2f, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, 0.0f, m_maxHeight);
+						float resistivity = 3.8f + (currVal - 0.6f) * rockResistivityVariance;
+						m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, 0.0f, m_maxHeight);
 						isRock = false;
 					}
 				}
@@ -217,40 +202,6 @@ float Map::getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeig
 		mountainVal += pow((noise->noise(XY.x, XY.y, 0.5f) - 0.85) * sqrt(mountainHeight) * 6.6f / m_scale, 2);
 	}
 	return mountainVal;
-}
-
-float Map::getMountainSteepness(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity)
-{
-	float XY = getMountainValue(noise, x, y, mountainHeight, rarity);
-	float XYup = getMountainValue(noise, x, y - 1, mountainHeight, rarity);
-	float XYdown = getMountainValue(noise, x, y + 1, mountainHeight, rarity);
-	float XYleft = getMountainValue(noise, x - 1, y, mountainHeight, rarity);
-	float XYright = getMountainValue(noise, x + 1, y, mountainHeight, rarity);
-
-	float steepnessVar = 0;
-	steepnessVar += abs(XY - XYup);
-	steepnessVar += abs(XY - XYdown);
-	steepnessVar += abs(XY - XYleft);
-	steepnessVar += abs(XY - XYright);
-
-	return (steepnessVar/4.0);
-}
-
-float Map::getHillSteepness(PerlinNoise* noise, int x, int y, float hillHeight, float rarity)
-{
-	float XY = getHillValue(noise, x, y, hillHeight, rarity);
-	float XYup = getHillValue(noise, x, y - 1, hillHeight, rarity);
-	float XYdown = getHillValue(noise, x, y + 1, hillHeight, rarity);
-	float XYleft = getHillValue(noise, x - 1, y, hillHeight, rarity);
-	float XYright = getHillValue(noise, x + 1, y, hillHeight, rarity);
-
-	float steepnessVar = 0;
-	steepnessVar += abs(XY - XYup);
-	steepnessVar += abs(XY - XYdown);
-	steepnessVar += abs(XY - XYleft);
-	steepnessVar += abs(XY - XYright);
-
-	return (steepnessVar / 4.0);
 }
 
 glm::vec2 Map::calculateXYFromRarity(int x, int y, float rarity)
@@ -437,15 +388,9 @@ std::string Map::stats(glm::vec2 pos)
 	return oss.str();
 }
 
-/*
-===================================================
-		  HYDRAULIC EROSION FUNCTIONS
-===================================================
-*/
-
 void Map::erode(int cycles) {
 
-	// all particle movement
+	// track all particle movement
 	bool* track = new bool[m_width * m_height];
 	for (int i = 0; i < m_width * m_height; i++)
 		track[i] = false;
@@ -469,6 +414,7 @@ void Map::erode(int cycles) {
 
 		Drop drop(newpos);
 
+		// if we've moved 1km, give up.
 		int spill = 1000;
 
 		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
@@ -498,17 +444,18 @@ void Map::erode(int cycles) {
 	std::cout << std::string(3, '\b') << "100 %";
 	std::cout << std::endl;
 
+	int riverWidth = m_params.dropWidth * 2 + 1;
 	for (int i = 0; i < m_width * m_height; i++)
 	{
 		if (track[i])
 		{
 			float h = m_nodes[i].topHeight() + 1.0f;
 
-			for (int yOffset = 0; yOffset < 9; yOffset++)
+			for (int yOffset = 0; yOffset < riverWidth; yOffset++)
 			{
-				for (int xOffset = 0; xOffset < 9; xOffset++)
+				for (int xOffset = 0; xOffset < riverWidth; xOffset++)
 				{
-					getNodeAt(i % m_width - 4, i / m_width - 4)->setParticles(glm::min(1.0f, glm::max(0.0f, h - getNodeAt(i % m_width, i / m_width)->topHeight())));
+					getNodeAt(i % m_width - m_params.dropWidth, i / m_width - m_params.dropWidth)->setParticles(glm::min(1.0f, glm::max(0.0f, h - getNodeAt(i % m_width, i / m_width)->topHeight())));
 				}
 			}
 		}

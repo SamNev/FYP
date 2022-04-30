@@ -11,6 +11,18 @@
 
 class PerlinNoise;
 
+enum noiseType : int
+{
+	NoiseType_BaseVariance,
+	NoiseType_Hill,
+	NoiseType_Divet,
+	NoiseType_Mountain,
+	NoiseType_Lie,
+	NoiseType_Rock,
+	NoiseType_Resistivity,
+	NoiseType_Sand,
+};
+
 struct MapParams
 {
 	float getRandomModif()
@@ -25,7 +37,6 @@ struct MapParams
 		else
 			srand(seed);
 
-		scale = 1;
 		baseVariance = 0.05f;
 		lieChangeRate = 3000.0f * getRandomModif();
 		liePeak = 25.0f * getRandomModif();
@@ -46,7 +57,7 @@ struct MapParams
 		mountainHeight *= (1.0f + amount);
 	}
 
-	int scale = 1;
+	int scale = 5;
 	float baseVariance = 0.05f;
 	float lieChangeRate = 3000.0f;
 	float liePeak = 25.0f;
@@ -69,6 +80,7 @@ struct MapParams
 	int treeSpreadChance = 5;
 	int treeSpreadRadius = 9;
 	int treeRandomDeathChance = 100000;
+	int dropWidth = 4;
 
 };
 
@@ -78,7 +90,7 @@ public:
 	Map(int width, int height, MapParams params, unsigned int seed = 0);
 	~Map();
 
-	void addRocksAndDirt(float rockVerticalScaling, float rockDensityVariance, float densityVariance, float densityChangeRate, float rockRarity, PerlinNoise* densityNoise, PerlinNoise* rockNoise);
+	void addRocksAndDirt(float rockVerticalScaling, float rockResistivityVariance, float densityVariance, float resistivityChangeRate, float rockRarity, PerlinNoise* resistivityNoise, PerlinNoise* rockNoise);
 	glm::vec2 calculateXYFromRarity(int x, int y, float rarity);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
@@ -92,8 +104,6 @@ public:
 	float getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	float getDivetValue(PerlinNoise* noise, int x, int y, float divetHeight, float rarity);
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
-	float getMountainSteepness(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
-	float getHillSteepness(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	void defineSoils();
 	void skimTop();
 	void addSpring(int x, int y);
