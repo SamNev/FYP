@@ -119,12 +119,6 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockResistivityVarian
 				const float scaledDensHeight = currHeight * rockVerticalScaling;
 				if (!isRock)
 				{
-					// soil resistiveForce (2.3-2.6g/cm3, increasing with depth)
-					float noise = resistivityNoise->noise(x / (resistivityChangeRate / m_scale), y / (resistivityChangeRate / m_scale), scaledDensHeight);
-					float resistivity = 2.3f + (1.0f - currHeight) + noise * resistivityVariance;
-					glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
-					m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, false, col, 0.8f, m_maxHeight);
-
 					// rock resistiveForce (3.8-4.2g/cm3)
 					float currVal = rockNoise->noise(x / (rockRarity / m_scale), y / (rockRarity / m_scale), scaledDensHeight);
 					if (currVal > 0.6f)
@@ -132,6 +126,14 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockResistivityVarian
 						float resistivity = 3.8f + (currVal - 0.6f) * rockResistivityVariance;
 						m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, true, glm::vec3(0.1f, 0.1f, 0.1f) + glm::vec3(0.5f, 0.5f, 0.5f) * currVal, 0.0f, m_maxHeight);
 						isRock = true;
+					}
+					else
+					{
+						// soil resistiveForce (2.3-2.6g/cm3, increasing with depth)
+						float noise = resistivityNoise->noise(x / (resistivityChangeRate / m_scale), y / (resistivityChangeRate / m_scale), scaledDensHeight);
+						float resistivity = 2.3f + (1.0f - currHeight) + noise * resistivityVariance;
+						glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
+						m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, false, col, 0.8f, m_maxHeight);
 					}
 				}
 				else
@@ -364,9 +366,9 @@ std::string Map::stats(glm::vec2 pos)
 	glm::vec3 norm = normal(pos.y * m_width + pos.x);
 	glm::vec3 col = getNodeAt(pos.x, pos.y)->topColor();
 	glm::vec3 col2 = getNodeAt(pos.x, pos.y)->top()->color;
-	oss << "Node data at pos " << pos.x << ", " << pos.y << ": Land height = " << getNodeAt(pos.x, pos.y)->topHeight(); 
-	oss << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity();
-	oss << " Normal is " << norm.x << ", " << norm.y << ", " << norm.z << " Color is " << col.x << ", " << col.y << ", " << col.z << " node color is " << col2.x << ", " << col2.y << ", " << col2.z;
+	oss << "Node data at pos " << pos.x << ", " << pos.y << ": \n Land height = " << getNodeAt(pos.x, pos.y)->topHeight() << std::endl;
+	oss << " Pool = " << getNodeAt(pos.x, pos.y)->waterDepth() << std::endl << " Stream = " << getNodeAt(pos.x, pos.y)->getParticles() << std::endl << " Foliage = " << getNodeAt(pos.x, pos.y)->getFoliageDensity();
+	oss << " Normal is " << norm.x << ", " << norm.y << ", " << norm.z << std::endl << " Color (with foliage and particles) is " << col.x << ", " << col.y << ", " << col.z << std::endl << " Node color is " << col2.x << ", " << col2.y << ", " << col2.z << std::endl;
 	oss << " Soil type is " << getSoilType(pos) << std::endl;
 	return oss.str();
 }

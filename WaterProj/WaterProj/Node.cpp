@@ -267,8 +267,10 @@ NodeMarker Node::getDataAboveHeight(float height, bool ignoreRock) const
 		{
 			if (!ignoreRock || !m_nodeData[i].hardStop)
 			{
-				float amount = m_nodeData[i - 1].height - m_nodeData[i].height;
+				float amount = abs(m_nodeData[i - 1].height - m_nodeData[i].height);
 				currentAmount += amount;
+				if (currentAmount == 0.0f)
+					continue;
 				marker.mix(m_nodeData[i], amount / currentAmount);
 			}
 		}
@@ -278,6 +280,8 @@ NodeMarker Node::getDataAboveHeight(float height, bool ignoreRock) const
 			{
 				float amount = m_nodeData[i - 1].height - height;
 				currentAmount += amount;
+				if (currentAmount == 0.0f)
+					continue;
 				marker.mix(m_nodeData[i], amount / currentAmount);
 			}
 		}
