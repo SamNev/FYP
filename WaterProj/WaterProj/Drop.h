@@ -24,12 +24,9 @@ protected:
     glm::vec2 m_pos;
     glm::vec2 m_velocity = glm::vec2(0.0);
     glm::vec2 m_lastVelocity = glm::vec2(0.0);
-    //1.0
+
     float m_volume = 1; 
-
     const float m_minVol = 0.01;
-    const float m_friction = 0.25;
-
     float m_sedimentAmount = 0.0f;
     NodeMarker m_sediment;
 

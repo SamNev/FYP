@@ -21,7 +21,6 @@ struct NodeMarker
 	float height = -2.0f;
 	float resistiveForce = 6.0f;
 	bool hardStop = false;
-	float foliage = 0.0f;
 	float fertility = 0.8f;
 	float sandAmount = 0.3f;
 	float clayAmount = 0.25f;
@@ -33,7 +32,6 @@ struct NodeMarker
 		height = height * invWeight + marker.height * weight;
 		resistiveForce = resistiveForce * invWeight + marker.resistiveForce * weight;
 		hardStop = false;
-		foliage = foliage * invWeight + marker.foliage * weight;
 		color = color * invWeight + marker.color * weight;
 		fertility = fertility * invWeight + marker.fertility * weight;
 		sandAmount = sandAmount * invWeight + marker.sandAmount * weight;
