@@ -119,9 +119,9 @@ void Map::addRocksAndDirt(float rockVerticalScaling, float rockResistivityVarian
 				const float scaledDensHeight = currHeight * rockVerticalScaling;
 				if (!isRock)
 				{
-					// soil resistiveForce (2.3-2.6g/cm3)
+					// soil resistiveForce (2.3-2.6g/cm3, increasing with depth)
 					float noise = resistivityNoise->noise(x / (resistivityChangeRate / m_scale), y / (resistivityChangeRate / m_scale), scaledDensHeight);
-					float resistivity = 2.3f + noise * resistivityVariance;
+					float resistivity = 2.3f + (1.0f - currHeight) + noise * resistivityVariance;
 					glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
 					m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, false, col, 0.8f, m_maxHeight);
 
