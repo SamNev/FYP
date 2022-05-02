@@ -95,9 +95,10 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     if (index + 1 < dim.x * dim.y)
         particleEffect.x += nodes[index + 1].getParticles();
 
-    // frictional forces from foliage density
-    float friction = glm::min(glm::max(0.1f, 1.0f - nodes[index].getFoliageDensity()), 0.9f);
-    m_velocity *= friction;
+    // frictional forces from foliage density. F=ma & f=un
+    float frictionCoefficient = glm::min(glm::max(0.1f, nodes[index].getFoliageDensity()), 0.7f);
+    float frictionalForce = frictionCoefficient * 9.81f;
+    m_velocity /= frictionalForce;
 
     // more likely to travel to a location with water
     if (particleEffect != glm::vec2(0.0f))
