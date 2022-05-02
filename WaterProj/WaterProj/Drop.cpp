@@ -34,6 +34,9 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         if (offsetPos.x >= dim.x || offsetPos.y >= dim.y || offsetPos.x < 0 || offsetPos.y < 0)
             continue;
 
+        if (offsetIndex == m_prevIndex)
+            continue;
+
         track[offsetIndex] = true;
         //if (nodes[offsetIndex].waterDepth() > 0.1) 
         //   continue;
@@ -126,9 +129,12 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
     // we need to visit every possible square, so normalize velocity only for movement. This won't matter as we immediately simulate again and will keep moving!
     m_pos += glm::normalize(m_velocity) * (float)sqrt(2);
-    float newIndex = (int)m_pos.y * dim.x + (int)m_pos.x;
+    int newIndex = (int)m_pos.y * dim.x + (int)m_pos.x;
 
-    if (newIndex == index)
+    if (newIndex = m_prevIndex)
+        m_retreadCount++;
+    
+    if (m_retreadCount > 500)
         return false;
 
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
@@ -137,6 +143,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     m_volume *= 0.985f;
     m_sedimentAmount *= 0.985f;
     m_age++;
+    m_prevIndex = index;
     cascade(m_pos, dim, nodes, track, maxHeight);
     return true;
 }
@@ -212,6 +219,9 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         float currVolume = 0.0f;
         while (!toTry.empty())
         {
+            if (currVolume > m_volume)
+                break;
+
             int current = toTry.top();
             toTry.pop();
             fill(current, currVolume);

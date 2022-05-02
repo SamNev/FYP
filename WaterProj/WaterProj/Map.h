@@ -82,7 +82,7 @@ struct MapParams
 	float foliageOverpopulationThreshold = 0.8f;
 	float waterEvaporationRate = 0.95f;
 	int treeRandomDeathChance = 100000;
-	int dropWidth = 4;
+	int dropWidth = 2;
 
 };
 
