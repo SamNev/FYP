@@ -37,7 +37,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         float diff = glm::min(abs(nodes[ind].topHeight() - nodes[offsetIndex].topHeight()), 1.0f);
 
         // assuming verticality change. Really steep changes are capped, to prevent absurd force values that would be unsustainable IRL. (f=mv)
-        float actingForce = m_volume * glm::max(glm::min(0.6f, (glm::distance(m_lastVelocity, m_velocity) + diff)), 0.2f);
+        float actingForce = m_volume * glm::max(glm::min(0.8f, (glm::distance(m_lastVelocity, m_velocity) + diff)), 0.2f);
         
         // very low velocity change! Likely that we're not really moving at all.
         if (actingForce <= 0.0f)
@@ -46,7 +46,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         // van Rijn calculations for sediment transfer
         // cohesionless and size assumed to be similar to dirt/sand (30000 microns)
         float transportRate = pow(actingForce * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f), 2.4f) * 0.0027507f;
-        float transfer = actingForce * transportRate;
+        float transfer = actingForce / nodes[ind].top()->resistiveForce * transportRate;
 
         if (transfer >= 10.0f)
             std::cout << "ERROR: transfer really high? force error?";
