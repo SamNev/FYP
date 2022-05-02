@@ -443,9 +443,13 @@ void Map::erode(int cycles) {
 					getNodeAt(i % m_width - m_params.dropWidth, i / m_width - m_params.dropWidth)->setParticles(getNodeAt(i % m_width - m_params.dropWidth, i / m_width - m_params.dropWidth)->getParticles() + glm::min(1.0f, glm::max(0.0f, h - getNodeAt(i % m_width, i / m_width)->topHeight())));
 				}
 			}
+
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - (0.5f*m_params.waterEvaporationRate))));
 		}
 		else
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes->getParticles() * (1.0f - m_params.waterEvaporationRate)));
+		{
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - m_params.waterEvaporationRate)));
+		}
 	}
 
 	delete[m_width * m_height] track;

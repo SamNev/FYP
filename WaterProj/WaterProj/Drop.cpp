@@ -34,26 +34,24 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         //if (nodes[offsetIndex].waterDepth() > 0.1) 
         //   continue;
 
-        float diff = glm::max(nodes[ind].topHeight() - nodes[offsetIndex].topHeight(), 0.001f);
+        float diff = glm::min(abs(nodes[ind].topHeight() - nodes[offsetIndex].topHeight()), 1.0f);
 
-        // assuming verticality change. Really steep changes are capped, to prevent absurd force values that would be unsustainable IRL.
-        float actingForce = 997.0f * m_volume * glm::max(glm::min(0.4f, (glm::distance(m_lastVelocity, m_velocity) + diff)), 0.3f);
-        actingForce -= (nodes[ind].top()->resistiveForce * nodes[ind].top()->resistiveForce);
+        // assuming verticality change. Really steep changes are capped, to prevent absurd force values that would be unsustainable IRL. (f=mv)
+        float actingForce = m_volume * glm::max(glm::min(0.6f, (glm::distance(m_lastVelocity, m_velocity) + diff)), 0.2f);
         
         // very low velocity change! Likely that we're not really moving at all.
         if (actingForce <= 0.0f)
             continue;
 
         // van Rijn calculations for sediment transfer
-        // qb = 0.053 * [(s-1)*g]0.5 * d501.5 * [T∗2.1 / D∗0.3]
         // cohesionless and size assumed to be similar to dirt/sand (30000 microns)
-        float transportRate = 0.053f * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f) * 0.0000519f;
+        float transportRate = pow(actingForce * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f), 2.4f) * 0.0027507f;
         float transfer = actingForce * transportRate;
 
         if (transfer >= 10.0f)
             std::cout << "ERROR: transfer really high? force error?";
 
-        m_sedimentAmount = glm::min(50.0f, m_sedimentAmount + transfer);
+        m_sedimentAmount = glm::min(10.0f, m_sedimentAmount + transfer);
         m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), glm::max(0.0f, glm::min(1.0f, transfer / m_sedimentAmount)));
 
         nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment, maxHeight);
@@ -95,10 +93,13 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     if (index + 1 < dim.x * dim.y)
         particleEffect.x += nodes[index + 1].getParticles();
 
-    // frictional forces from foliage density. F=ma & f=un
+    // θ can be found with dot product
+    float theta = acos(glm::dot(norm, glm::vec3(0.0f, 1.0f, 0.0f)));
+    // frictional forces from foliage density. F=ma & f=μn
     float frictionCoefficient = glm::min(glm::max(0.1f, nodes[index].getFoliageDensity()), 0.7f);
-    float frictionalForce = frictionCoefficient * 9.81f;
-    m_velocity /= frictionalForce;
+    //scale to m/s, apply g
+    float frictionalDecelleraion = frictionCoefficient * 0.981f * sin(theta);
+    m_velocity -= m_velocity * glm::min(0.8f, frictionalDecelleraion);
 
     // more likely to travel to a location with water
     if (particleEffect != glm::vec2(0.0f))
@@ -107,15 +108,13 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
         m_velocity += particleEffect * 0.05f;
     }
 
-    // a=gSin(θ)
-    // θ can be found with dot product
+    // accelleration due to gravity, a=gSin(θ)
     // a is in m/s and needs to be scaled due to the extended time period (a year divided by our simulation steps)
-    float theta = acos(glm::dot(norm, glm::vec3(0.0f, 1.0f, 0.0f)));
     glm::vec2 a = glm::vec2(norm.x, norm.y) * sin(theta);
     m_velocity += a * 2628.0f;
 
     // barely moving- flat surface and no speed?
-    if (glm::length(m_velocity) < 0.001f)
+    if (glm::length(m_velocity) < 0.075f)
         return false;
 
     // we need to visit every possible square, so normalize velocity only for movement. This won't matter as we immediately simulate again and will keep moving!
@@ -224,7 +223,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
         else if(set.size() > 1)
         {
-            if (increaseAmount >= 0.001f)
+            if (increaseAmount >= 0.0001f)
             {
                 increaseAmount /= 10.0f;
                 continue;
