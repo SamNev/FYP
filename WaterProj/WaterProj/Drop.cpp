@@ -16,7 +16,11 @@ Drop::Drop(glm::vec2 pos, float volume)
 void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, float& maxHeight)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
-    float initialSediment = m_sedimentAmount;
+    // stokes' law, see write-up
+    float deposit = m_sedimentAmount * glm::max(0.1f, glm::min(0.5f, 1.257f * glm::max(1.0f, (float)m_velocity.length())));
+    float depositCap = 0.02f;
+    if (deposit > depositCap)
+        deposit = depositCap;
 
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
@@ -50,13 +54,16 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
 
         if (transfer >= 10.0f)
             std::cout << "ERROR: transfer really high? force error?";
+        if (deposit >= 10.0f)
+            std::cout << "ERROR: deposit really high? force error?";
 
         m_sedimentAmount = glm::min(10.0f, m_sedimentAmount + transfer);
         m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), glm::max(0.0f, glm::min(1.0f, transfer / m_sedimentAmount)));
 
         nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment, maxHeight);
-        float deposit = initialSediment / 10.0f;
+
         m_sedimentAmount -= deposit;
+
         if(!nodes[offsetIndex].hasWater())
             nodes[offsetIndex].setHeight(nodes[offsetIndex].topHeight() + deposit, m_sediment, maxHeight);
     }
@@ -128,6 +135,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
         return false;
 
     m_volume *= 0.985f;
+    m_sedimentAmount *= 0.985f;
     m_age++;
     cascade(m_pos, dim, nodes, track, maxHeight);
     return true;
@@ -209,7 +217,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             fill(current, currVolume);
         }
 
-        if (!set.empty() && currVolume < m_volume)
+        if (!set.empty() && currVolume != 0.0f && currVolume < m_volume)
         {
 #ifdef WATERDEBUG
             std::cout << "flooding set of " << set.size() << " nodes at " << m_pos.x << ", " << m_pos.y << " to height " << plane << std::endl;
@@ -282,6 +290,11 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 #ifdef WATERDEBUG
             std::cout << "overflowing particle from set of " << set.size() << "nodes at " << m_pos.x << ", " << m_pos.y << ". plane = " << plane << " drain = " << drainHeight << std::endl;
 #endif // WATERDEBUG
+        }
+        else
+        {
+            // evaporate as nothing else can happen here- we can't fill anything at all
+            m_volume = 0.0f;
         }
 
         delete[] tried;
