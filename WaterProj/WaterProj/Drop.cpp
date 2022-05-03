@@ -121,7 +121,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     // accelleration due to gravity, a=gSin(θ)
     // a is in m/s and needs to be scaled due to the extended time period (a year divided by our simulation steps)
     glm::vec2 a = glm::vec2(norm.x, norm.y) * sin(theta);
-    m_velocity += a * 2628.0f;
+    m_velocity += a * 26.28f;
 
     // barely moving- flat surface and no speed?
     if (glm::length(m_velocity) < 0.075f)
@@ -191,7 +191,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             }
 
             set.push_back(i);
-            vol += plane - nodes[i].waterHeight();
+            vol += glm::max(0.0f, plane - nodes[i].waterHeight());
 
             if (inBounds(i + dim.x))
                 toTry.push(i + dim.x);
@@ -227,7 +227,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             fill(current, currVolume);
         }
 
-        if (!set.empty() && currVolume != 0.0f && currVolume < m_volume)
+        if (set.size() > 1 && currVolume != 0.0f && currVolume < m_volume)
         {
 #ifdef WATERDEBUG
             std::cout << "flooding set of " << set.size() << " nodes at " << m_pos.x << ", " << m_pos.y << " to height " << plane << std::endl;
@@ -241,7 +241,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
         else if(set.size() > 1)
         {
-            if (increaseAmount >= 0.0001f)
+            if (increaseAmount >= 0.00001f)
             {
                 increaseAmount /= 10.0f;
                 continue;

@@ -28,7 +28,7 @@ protected:
     float m_volume = 1; 
     int m_prevIndex = 0;
     int m_retreadCount = 0;
-    const float m_minVol = 0.01;
+    const float m_minVol = 0.001;
     float m_sedimentAmount = 0.0f;
     NodeMarker m_sediment;
 
