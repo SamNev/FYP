@@ -458,8 +458,8 @@ void Map::erode(int cycles) {
 void Map::grow()
 {
 	// spawn a tree randomly on the map (long-distance fertilization)
+	// TODO: more of this? tweakable?
 	int newTreePos = rand() % (m_width * m_height);
-	glm::vec3 n = normal(newTreePos);
 	int completion = 0;
 
 	trySpawnTree(glm::vec2(newTreePos % m_width, newTreePos / m_width));
@@ -474,6 +474,7 @@ void Map::grow()
 				glm::vec2 newPlantPos = glm::vec2(i % m_width, i / m_width) + glm::vec2(rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2), rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2));
 				trySpawnTree(newPlantPos);
 			}
+			// TODO: lower base root value, re-add grow function. Additional fertility on river banks?
 
 			// trees die in water & sometimes die randomly
 			if (m_nodes[i].waterDepth() > 0.0 || m_nodes[i].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0)
