@@ -69,10 +69,10 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			else
 			{
 				// topsoil (2.3g/cm3)
-				float topNoise = noises[NoiseType_Resistivity].noise(x / (params.resistivityChangeRate / m_scale), y / (params.resistivityChangeRate / m_scale), glm::max(BEDROCK_SAFETY_LAYER, total));
+				float topNoise = noises[NoiseType_Resistivity].noise(x / (params.soilResistivityChangeRate / m_scale), y / (params.soilResistivityChangeRate / m_scale), glm::max(BEDROCK_SAFETY_LAYER, total));
 				float sandAmount = params.soilSandContent + topNoise * params.soilSandVariance;
 				float clayAmount = params.soilClayContent + topNoise * params.soilSandContent;
-				float resistivity = params.resistivityBase + topNoise * params.resistivityVariance;
+				float resistivity = params.soilResistivityBase + topNoise * params.soilResistivityVariance;
 				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), resistivity, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), params.soilFertility, sandAmount, clayAmount, m_maxHeight);
 			}
 			// bedrock (7.5g/cm3)
@@ -134,8 +134,8 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 					else
 					{
 						// soil resistiveForce (2.3-2.6g/cm3, increasing with depth)
-						float noise = resistivityNoise->noise(x / (m_params.resistivityChangeRate / m_scale), y / (m_params.resistivityChangeRate / m_scale), scaledDensHeight);
-						float resistivity = m_params.resistivityBase + (1.0f - currHeight) + noise * m_params.resistivityVariance;
+						float noise = resistivityNoise->noise(x / (m_params.soilResistivityChangeRate / m_scale), y / (m_params.soilResistivityChangeRate / m_scale), scaledDensHeight);
+						float resistivity = m_params.soilResistivityBase + (1.0f - currHeight) + noise * m_params.soilResistivityVariance;
 						float sandAmount = m_params.soilSandContent + noise * m_params.soilSandVariance;
 						float clayAmount = m_params.soilClayContent + noise * m_params.soilSandContent;
 						glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
