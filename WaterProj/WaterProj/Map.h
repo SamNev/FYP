@@ -59,6 +59,7 @@ struct MapParams
 		mountainHeight *= (1.0f + amount);
 	}
 
+	float noiseSampleHeight = 0.5f;
 	int scale = 1;
 	float baseVariance = 0.05f;
 	float lieChangeRate = 3000.0f;
@@ -66,46 +67,55 @@ struct MapParams
 	float lieModif = -24.0f;
 	float hillHeight = 80.0f;
 	int hillRarity = 1000;
+	float hillVariancePower = 0.5f;
+
 	int divetRarity = 85;
+	float divetHillScalar = 0.05f;
+
 	float mountainHeight = 200.0f;
 	int mountainRarity = 5000;
-	float resistivityChangeRate = 2000.0f;
-	float resistivityBase = 2.3f;
-	float resistivityVariance = 0.3f;
+	float mountainThreshold = 0.85;
+	float mountainConstantMultiplier = 6.6f;
+
+	int generatedMapDensity = 20;
+	float soilResistivityChangeRate = 2000.0f;
+	float soilResistivityBase = 2.3f;
+	float soilResistivityVariance = 0.3f;
+	float soilSandContent = 0.25f;
+	float soilClayContent = 0.22f;
+	float soilSandVariance = 0.15f;
+	float soilClayVariance = 0.07f;
+	float soilFertility = 0.8f;
+
 	float rockRarity = 200.0f;
 	float rockResistivityVariance = 0.6f;
 	float rockVerticalScaling = 5.0f;
-	float cliffThreshold = 0.0007f;
+	float rockResistivityBase = 3.8f;
+	float rockThreshold = 0.6f;
+
 	float springThreshold = 0.99f;
 	int springRarity = 200;
+
+	float cliffThreshold = 0.0007f;
+
 	float treeParticleDeathThreshold = 0.1f;
 	float treeSlopeThreshold = 0.985f;
 	int treeSpreadChance = 5;
 	int treeSpreadRadius = 9;
 	float foliageOverpopulationThreshold = 0.8f;
-	float waterEvaporationRate = 0.95f;
 	int treeRandomDeathChance = 100000;
+	int treeGenerationRarity = 2;
+
+	float waterEvaporationRate = 0.95f;
 	int dropWidth = 2;
-	float noiseSampleHeight = 0.5f;
-	float divetHillScalar = 0.05f;
+	float seaLevel = 0.0f;
+
 	float peakSandHeight = 0.5f;
 	float sandResistivity = 1.5f;
 	glm::vec3 sandColor = glm::vec3(1.0f, 1.0f, 0.7f);
 	float sandFertility = 0.05f;
-	float soilSandContent = 0.25f;
-	float soilClayContent = 0.22f;
-	float soilSandVariance = 0.15f;
-	float soilClayVariance = 0.07f;
+
 	float bedrockResisitivity = 7.5f;
-	float soilFertility = 0.8f;
-	int treeGenerationRarity = 2;
-	float seaLevel = 0.0f;
-	int generatedMapDensity = 20;
-	float rockResistivityBase = 3.8;
-	float rockThreshold = 0.6f;
-	float hillVariancePower = 0.5f;
-	float mountainThreshold = 0.85;
-	float mountainConstantMultiplier = 6.6f;
 };
 
 class Map 
