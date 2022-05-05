@@ -28,7 +28,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
     // stokes' law, see write-up. Particle density assumed at 1500kg/m^3
     float deposit = m_sedimentAmount * glm::max(0.1f, glm::min(0.5f, 2.4627f / (float)m_velocity.length()));
     deposit /= 8.0f;
-    float depositCap = 0.02f;
+    float depositCap = 0.015f;
     if (deposit > depositCap)
         deposit = depositCap;
 
