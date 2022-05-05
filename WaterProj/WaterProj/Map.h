@@ -8,6 +8,8 @@
 #include "SDL2/SDL.h"
 
 //#define FLOODTESTMAP
+#define BEDROCK_LAYER -2.0f
+#define BEDROCK_SAFETY_LAYER -1.9f
 
 class PerlinNoise;
 
@@ -67,10 +69,11 @@ struct MapParams
 	int divetRarity = 85;
 	float mountainHeight = 200.0f;
 	int mountainRarity = 5000;
-	float densityChangeRate = 2000.0f;
-	float densityVariance = 0.3f;
+	float resistivityChangeRate = 2000.0f;
+	float resistivityBase = 2.3f;
+	float resistivityVariance = 0.3f;
 	float rockRarity = 200.0f;
-	float rockDensityVariance = 0.6f;
+	float rockResistivityVariance = 0.6f;
 	float rockVerticalScaling = 5.0f;
 	float cliffThreshold = 0.0007f;
 	float springThreshold = 0.99f;
@@ -83,7 +86,26 @@ struct MapParams
 	float waterEvaporationRate = 0.95f;
 	int treeRandomDeathChance = 100000;
 	int dropWidth = 2;
-
+	float noiseSampleHeight = 0.5f;
+	float divetHillScalar = 0.05f;
+	float peakSandHeight = 0.5f;
+	float sandResistivity = 1.5f;
+	glm::vec3 sandColor = glm::vec3(1.0f, 1.0f, 0.7f);
+	float sandFertility = 0.05f;
+	float soilSandContent = 0.25f;
+	float soilClayContent = 0.22f;
+	float soilSandVariance = 0.15f;
+	float soilClayVariance = 0.07f;
+	float bedrockResisitivity = 7.5f;
+	float soilFertility = 0.8f;
+	int treeGenerationRarity = 2;
+	float seaLevel = 0.0f;
+	int generatedMapDensity = 20;
+	float rockResistivityBase = 3.8;
+	float rockThreshold = 0.6f;
+	float hillVariancePower = 0.5f;
+	float mountainThreshold = 0.85;
+	float mountainConstantMultiplier = 6.6f;
 };
 
 class Map 
@@ -92,7 +114,7 @@ public:
 	Map(int width, int height, MapParams params, unsigned int seed = 0);
 	~Map();
 
-	void addRocksAndDirt(float rockVerticalScaling, float rockResistivityVariance, float densityVariance, float resistivityChangeRate, float rockRarity, PerlinNoise* resistivityNoise, PerlinNoise* rockNoise);
+	void addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise);
 	glm::vec2 calculateXYFromRarity(int x, int y, float rarity);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }

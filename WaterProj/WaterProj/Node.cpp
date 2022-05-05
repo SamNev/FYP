@@ -10,10 +10,10 @@ NodeMarker* Node::top()
 
 void Node::addMarker(NodeMarker marker, float& maxHeight)
 {
-	addMarker(marker.height, marker.resistiveForce, marker.hardStop, marker.color, marker.fertility, maxHeight);
+	addMarker(marker.height, marker.resistiveForce, marker.hardStop, marker.color, marker.fertility, marker.sandAmount, marker.clayAmount, maxHeight);
 }
 
-void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float& maxHeight)
+void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float sandAmount, float clayAmount, float& maxHeight)
 {
 	if (height > maxHeight)
 	{
@@ -29,6 +29,8 @@ void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec
 		marker.hardStop = hardStop;
 		marker.fertility = fertility;
 		marker.color = color;
+		marker.sandAmount = sandAmount;
+		marker.clayAmount = clayAmount;
 
 		m_nodeData.push_back(marker);
 		return;
@@ -46,6 +48,9 @@ void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec
 		marker.hardStop = hardStop;
 		marker.fertility = fertility;
 		marker.color = color;
+		marker.sandAmount = sandAmount;
+		marker.clayAmount = clayAmount;
+
 		m_nodeData.insert(m_nodeData.begin() + i, marker);
 		return;
 	}

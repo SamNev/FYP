@@ -91,7 +91,7 @@ class Node {
 public:
 	void addWater(float height);
 	void addMarker(NodeMarker marker, float& maxHeight);
-	void addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float& maxHeight);
+	void addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float sandAmount, float clayAmount, float& maxHeight);
 	void erodeByValue(float amount);
 	float getResistiveForceAtHeight(float height) const;
 	NodeMarker getDataAboveHeight(float height, bool ignoreRock = false) const;
