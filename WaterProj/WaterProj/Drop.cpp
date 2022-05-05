@@ -16,8 +16,18 @@ Drop::Drop(glm::vec2 pos, float volume)
 void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, float& maxHeight)
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
-    // stokes' law, see write-up
-    float deposit = m_sedimentAmount * glm::max(0.1f, glm::min(0.5f, 1.257f * glm::max(1.0f, (float)m_velocity.length())));
+
+    // don't simulate transfer if we're stuck on one tile
+    if (m_prevIndex == ind)
+        return;
+
+    // avoid /0 and incredibly high deposit values due to sediment not moving at all
+    if (m_velocity.length() < 1.0f)
+        return;
+
+    // stokes' law, see write-up. Particle density assumed at 1500kg/m^3
+    float deposit = m_sedimentAmount * glm::max(0.1f, glm::min(0.5f, 2.4627f / (float)m_velocity.length()));
+    deposit /= 8.0f;
     float depositCap = 0.02f;
     if (deposit > depositCap)
         deposit = depositCap;
@@ -42,22 +52,25 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         //   continue;
 
         float diff = glm::min(abs(nodes[ind].topHeight() - nodes[offsetIndex].topHeight()), 1.0f);
+        float actingForce = m_volume * glm::max(glm::min(0.8f, (glm::distance(m_lastVelocity, m_velocity))), 0.2f);
 
-        // assuming verticality change. Really steep changes are capped, to prevent absurd force values that would be unsustainable IRL. (f=mv)
-        float actingForce = m_volume * glm::max(glm::min(0.8f, (glm::distance(m_lastVelocity, m_velocity) + diff)), 0.2f);
-        
+        if (m_lastVelocity == glm::vec2(0.0f))
+            actingForce = 0.0f;
+
         // very low velocity change! Likely that we're not really moving at all.
         if (actingForce <= 0.0f)
             continue;
 
         // van Rijn calculations for sediment transfer
         // cohesionless and size assumed to be similar to dirt/sand (30000 microns)
-        float transportRate = pow(actingForce * pow((nodes[ind].top()->resistiveForce - 1) * 9.81f, 0.5f), 2.4f) * 0.0027507f;
-        float transfer = actingForce / nodes[ind].top()->resistiveForce * transportRate;
+        float transportRate = pow(actingForce * pow((nodes[ind].top()->resistiveForce - 1) * 0.02943f, -0.5f), 2.4f) * 0.0027507f;
+        float transfer = actingForce * transportRate;
+        // modify based on height difference, to account for exposed amount of surface
+        transfer *= glm::max(1.0f, (1.5f - diff));
 
-        if (transfer >= 10.0f)
+          if (transfer >= 2.0f)
             std::cout << "ERROR: transfer really high? force error?";
-        if (deposit >= 10.0f)
+        if (deposit >= 2.0f)
             std::cout << "ERROR: deposit really high? force error?";
 
         m_sedimentAmount = glm::min(10.0f, m_sedimentAmount + transfer);
@@ -143,8 +156,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     m_volume *= 0.985f;
     m_sedimentAmount *= 0.985f;
     m_age++;
-    m_prevIndex = index;
     cascade(m_pos, dim, nodes, track, maxHeight);
+    m_prevIndex = index;
     return true;
 }
 
