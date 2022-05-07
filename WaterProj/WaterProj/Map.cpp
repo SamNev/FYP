@@ -417,7 +417,7 @@ std::string Map::getSoilType(glm::vec2 pos)
 		oss << "unknown";
 	}
 
-	NodeMarker loam = node->getDataAboveHeight(node->topHeight() - 1.0f);
+	NodeMarker loam = node->getDataAboveHeight(node->topHeight() - 1.0f, true);
 	int mainIndex = bestIndex;
 	bestIndex = -1;
 	bestCertainty = 0.0f;

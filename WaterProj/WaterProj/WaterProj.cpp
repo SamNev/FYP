@@ -167,6 +167,10 @@ int main()
 						std::cout << "invalid input" << std::endl;
 					}
 				}
+				else if (event.key.keysym.sym == SDLK_x)
+				{
+					std::cout << currentMap->stats(glm::vec2(renderer.getCamPos().x, renderer.getCamPos().z)) << std::endl;
+				}
 				else if (event.key.keysym.sym == SDLK_c)
 				{
 					std::cout << "Current position = " << renderer.getCamPos().x << ", " << renderer.getCamPos().z << std::endl;

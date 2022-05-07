@@ -52,7 +52,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         //   continue;
 
         float diff = glm::min(abs(nodes[ind].topHeight() - nodes[offsetIndex].topHeight()), 1.0f);
-        float actingForce = m_volume * glm::max(glm::min(0.8f, (glm::distance(m_lastVelocity, m_velocity))), 0.2f);
+        float actingForce = m_volume * glm::max(glm::min(0.8f, (glm::distance(glm::normalize(m_lastVelocity), glm::normalize(m_velocity)))), 0.2f);
 
         if (m_lastVelocity == glm::vec2(0.0f))
             actingForce = 0.0f;
@@ -99,9 +99,6 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
     if (index < 0 || index >= dim.x * dim.y)
         return false;
-
-    if (nodes[index].hasWater())
-        m_terminated = true;
 
     nodes[index].setParticles(nodes[index].getParticles() + m_volume);
 
@@ -153,7 +150,9 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     if (m_previous.size() >= 10)
     {
         // TODO- modifiable property?
-        if (distance(m_previous.front(), m_pos) < 4.0f)
+        glm::ivec2 prev = m_previous.front();
+
+        if (distance(m_previous.front(), m_pos) < 4.0f || nodes[prev.y * dim.x + prev.x].hasWater())
             m_terminated = true;
        
         m_previous.pop();
