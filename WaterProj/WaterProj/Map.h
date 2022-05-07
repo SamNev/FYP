@@ -1,7 +1,11 @@
 #pragma once
 
+#include <fstream>
+#include <iostream>
+#include <map>
 #include <string>
 #include <time.h>
+#include <Windows.h>
 
 #include "Node.h"
 #include "Plant.h"
@@ -27,38 +31,141 @@ enum noiseType : int
 
 struct MapParams
 {
-	float getRandomModif()
+	MapParams()
 	{
-		return (float)(((rand() % 1000) / 1000.0f) * 1.4f) + 0.3f;
+		floatPropertyMap.emplace(std::pair<std::string, float&>("noiseSampleHeight", noiseSampleHeight));
+		intPropertyMap.emplace(std::pair<std::string, int&>("scale", scale));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("baseVariance", baseVariance));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("lieChangeRate", lieChangeRate));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("liePeak", liePeak));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("lieModif", lieModif));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("hillHeight", hillHeight));
+		intPropertyMap.emplace(std::pair<std::string, int&>("hillRarity", hillRarity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("hillVariancePower", hillVariancePower));
+
+		intPropertyMap.emplace(std::pair<std::string, int&>("divetRarity", divetRarity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("divetHillScalar", divetHillScalar));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("mountainHeight", mountainHeight));
+		intPropertyMap.emplace(std::pair<std::string, int&>("mountainRarity", mountainRarity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("mountainThreshold", mountainThreshold));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("mountainConstantMultiplier", mountainConstantMultiplier));
+
+		intPropertyMap.emplace(std::pair<std::string, int&>("generatedMapDensity", generatedMapDensity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilResistivityChangeRate", soilResistivityChangeRate));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilResistivityBase", soilResistivityBase));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilResistivityVariance", soilResistivityVariance));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilSandContent", soilSandContent));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilClayContent", soilClayContent));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilSandVariance", soilSandVariance));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilClayVariance", soilClayVariance));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("soilFertility", soilFertility));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("rockRarity", rockRarity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("rockResistivityVariance", rockResistivityVariance));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("rockVerticalScaling", rockVerticalScaling));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("rockResistivityBase", rockResistivityBase));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("rockThreshold", rockThreshold));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("springThreshold", springThreshold));
+		intPropertyMap.emplace(std::pair<std::string, int&>("springRarity", springRarity));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("cliffThreshold", cliffThreshold));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("treeParticleDeathThreshold", treeParticleDeathThreshold));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("treeSlopeThreshold", treeSlopeThreshold));
+		intPropertyMap.emplace(std::pair<std::string, int&>("treeSpreadChance", treeSpreadChance));
+		intPropertyMap.emplace(std::pair<std::string, int&>("treeSpreadRadius", treeSpreadRadius));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("foliageOverpopulationThreshold", foliageOverpopulationThreshold));
+		intPropertyMap.emplace(std::pair<std::string, int&>("treeRandomDeathChance", treeRandomDeathChance));
+		intPropertyMap.emplace(std::pair<std::string, int&>("treeGenerationRarity", treeGenerationRarity));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("waterEvaporationRate", waterEvaporationRate));
+		intPropertyMap.emplace(std::pair<std::string, int&>("dropWidth", dropWidth));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("seaLevel", seaLevel));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("peakSandHeight", peakSandHeight));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("sandResistivity", sandResistivity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("sandFertility", sandFertility));
+
+		floatPropertyMap.emplace(std::pair<std::string, float&>("bedrockResisitivity", bedrockResisitivity));
+	}
+	
+	void loadFromFile()
+	{
+		bool found = false;
+		wchar_t strExePath[MAX_PATH];
+		GetModuleFileName(NULL, strExePath, MAX_PATH);
+		size_t origsize = wcslen(strExePath) + 1;
+		size_t convertedChars = 0;
+		const size_t newsize = origsize * 2;
+		char* nstring = new char[newsize];
+		wcstombs_s(&convertedChars, nstring, newsize, strExePath, _TRUNCATE);
+
+		std::string folderPath = std::string(nstring);
+		std::string executableName = folderPath.substr(folderPath.find_last_of("\\"));
+		executableName = executableName.substr(1, executableName.length() - 5);
+		std::string fullpath;
+		while (!found && folderPath.find_last_of("\\") != std::string::npos)
+		{
+			folderPath.erase(folderPath.find_last_of("\\"));
+			fullpath = folderPath + "\\" + executableName + "\\" + "params.txt";
+			std::ifstream file(fullpath);
+			if (file.is_open())
+			{
+				std::string line;
+				int parameterCount = 0;
+				while (std::getline(file, line))
+				{
+					try {
+						int pos = line.find(' ');
+						std::string param = line.substr(0, pos);
+						std::map<std::string, float&>::iterator floatParamPos = floatPropertyMap.find(param);
+						std::map<std::string, int&>::iterator intParamPos = intPropertyMap.find(param);
+						if (floatParamPos != floatPropertyMap.end())
+						{
+							float val = stof(line.substr(pos + 1));
+							floatParamPos->second = val;
+							parameterCount++;
+						}
+						else if (intParamPos != intPropertyMap.end())
+						{
+							int val = stoi(line.substr(pos + 1));
+							intParamPos->second = val;
+							parameterCount++;
+						}
+						else
+						{
+							throw std::exception("didn't find property?");
+						}
+					}
+					catch (std::exception e)
+					{
+						if (line.length() > 2)
+						{
+							if (line.find("//") != 0)
+							{
+								std::cout << "Failed to parse parameter from line \"" << line << "\"" << std::endl;
+							}
+						}
+					}
+				}
+				std::cout << parameterCount << " parameters loaded from file." << std::endl;
+				found = true;
+				file.close();
+			}
+		}
+
+		if (!found)
+		{
+			std::cout << "Failed to find params file, assuming default values." << std::endl;
+		}
 	}
 
-	void randomize(unsigned int seed = 0)
-	{
-		if (seed == 0)
-			srand((unsigned int)time(NULL));
-		else
-			srand(seed);
+	std::map<std::string, float&> floatPropertyMap;
+	std::map<std::string, int&> intPropertyMap;
 
-		baseVariance = 0.05f;
-		lieChangeRate = 3000.0f * getRandomModif();
-		liePeak = 25.0f * getRandomModif();
-		lieModif = -21.0f * getRandomModif();
-		hillHeight = 80.0f * getRandomModif();
-		hillRarity = (int)(1000.0f * getRandomModif());
-		mountainHeight = 2000.0f * getRandomModif();
-		mountainRarity = (int)(5000.0f * getRandomModif());
-		divetRarity = (int)(85.0f * getRandomModif());
-		rockVerticalScaling = 5.0f * getRandomModif();
-	}
-
-	void tweak(float amount)
-	{
-		liePeak *= (1.0f + amount);
-		lieModif *= (1.0f + amount);
-		hillHeight *= (1.0f + amount);
-		mountainHeight *= (1.0f + amount);
-	}
-
+	// NOTE: additional map parameters need to be added to the constructor, filling the property map!
 	float noiseSampleHeight = 0.5f;
 	int scale = 1;
 	float baseVariance = 0.05f;
@@ -112,7 +219,6 @@ struct MapParams
 
 	float peakSandHeight = 0.5f;
 	float sandResistivity = 1.5f;
-	glm::vec3 sandColor = glm::vec3(1.0f, 1.0f, 0.7f);
 	float sandFertility = 0.05f;
 
 	float bedrockResisitivity = 7.5f;

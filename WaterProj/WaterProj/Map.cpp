@@ -2,7 +2,6 @@
 
 #include <glm.hpp>
 #include <ext.hpp>
-#include <iostream>
 #include <sstream>
 
 #include "MapRenderer.h"
@@ -64,7 +63,7 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			if (total < sandThreshold)
 			{
 				// sand (1.5g/cm3)
-				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), params.sandResistivity, false, params.sandColor, params.sandFertility, 1.0f, 0.0f, m_maxHeight);
+				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), params.sandResistivity, false, glm::vec3(1.0f, 1.0f, 0.7f), params.sandFertility, 1.0f, 0.0f, m_maxHeight);
 			}
 			else
 			{

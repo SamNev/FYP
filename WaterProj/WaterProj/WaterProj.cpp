@@ -63,7 +63,7 @@ int main()
 	unsigned int seed = getSeed();
 
 	MapParams params;
-	params.randomize(seed);
+	params.loadFromFile();
 	Map* currentMap = new Map(1000, 1000, params, seed);
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
@@ -86,7 +86,7 @@ int main()
 				{
 					delete(currentMap);
 					seed = getSeed();
-					params.randomize(seed);
+					params.loadFromFile();
 					currentMap = new Map(1000, 1000, params, seed);
 					renderer.setMap(currentMap);
 					heightMode = false;

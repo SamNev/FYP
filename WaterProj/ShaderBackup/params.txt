@@ -1,0 +1,56 @@
+noiseSampleHeight 0.5
+scale 1
+baseVariance 0.05
+lieChangeRate 3000.0
+liePeak 25.0
+lieModif -24.0
+hillHeight 80.0
+hillRarity 1000
+hillVariancePower 0.5
+
+// test comment :)
+give me errors right now or ima lose it
+divetRarity 85
+divetHillScalar 0.05
+
+mountainHeight 200.0
+mountainRarity 5000
+mountainThreshold 0.85
+mountainConstantMultiplier 6.6
+
+generatedMapDensity 20
+soilResistivityChangeRate 2000.0
+soilResistivityBase 2.3
+soilResistivityVariance 0.3
+soilSandContent 0.25
+soilClayContent 0.22
+soilSandVariance 0.15
+soilClayVariance 0.07
+soilFertility 0.8
+
+rockRarity 200.0
+rockResistivityVariance 0.6
+rockVerticalScaling 5.0
+rockResistivityBase 3.8
+rockThreshold 0.6
+
+springThreshold 0.99
+springRarity 200
+cliffThreshold 0.0007
+
+treeParticleDeathThreshold 0.1
+treeSlopeThreshold 0.8
+treeSpreadChance 5
+treeSpreadRadius 9
+foliageOverpopulationThreshold 0.8
+treeRandomDeathChance 100000
+treeGenerationRarity 2
+
+waterEvaporationRate 0.95
+dropWidth 2
+seaLevel 0.0
+
+peakSandHeight 0.5
+sandResistivity 1.5
+sandFertility 0.05
+bedrockResisitivity 7.5
