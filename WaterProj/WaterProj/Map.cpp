@@ -10,6 +10,81 @@
 #include "Plant.h"
 #include "Drop.h"
 
+///////////////////////////////////////////////////////////////////////////////// MapParams
+
+void MapParams::loadFromFile()
+{
+	bool found = false;
+	wchar_t strExePath[MAX_PATH];
+	GetModuleFileName(NULL, strExePath, MAX_PATH);
+	size_t origsize = wcslen(strExePath) + 1;
+	size_t convertedChars = 0;
+	const size_t newsize = origsize * 2;
+	char* nstring = new char[newsize];
+	wcstombs_s(&convertedChars, nstring, newsize, strExePath, _TRUNCATE);
+
+	std::string folderPath = std::string(nstring);
+	std::string executableName = folderPath.substr(folderPath.find_last_of("\\"));
+	executableName = executableName.substr(1, executableName.length() - 5);
+	std::string fullpath;
+	while (!found && folderPath.find_last_of("\\") != std::string::npos)
+	{
+		folderPath.erase(folderPath.find_last_of("\\"));
+		fullpath = folderPath + "\\" + executableName + "\\" + "params.txt";
+		std::ifstream file(fullpath);
+		if (file.is_open())
+		{
+			std::string line;
+			int parameterCount = 0;
+			while (std::getline(file, line))
+			{
+				try {
+					int pos = line.find(' ');
+					std::string param = line.substr(0, pos);
+					std::map<std::string, float&>::iterator floatParamPos = floatPropertyMap.find(param);
+					std::map<std::string, int&>::iterator intParamPos = intPropertyMap.find(param);
+					if (floatParamPos != floatPropertyMap.end())
+					{
+						float val = stof(line.substr(pos + 1));
+						floatParamPos->second = val;
+						parameterCount++;
+					}
+					else if (intParamPos != intPropertyMap.end())
+					{
+						int val = stoi(line.substr(pos + 1));
+						intParamPos->second = val;
+						parameterCount++;
+					}
+					else
+					{
+						throw std::exception("didn't find property?");
+					}
+				}
+				catch (std::exception e)
+				{
+					if (line.length() > 2)
+					{
+						if (line.find("//") != 0)
+						{
+							std::cout << "Failed to parse parameter from line \"" << line << "\"" << std::endl;
+						}
+					}
+				}
+			}
+			std::cout << parameterCount << " parameters loaded from file." << std::endl;
+			found = true;
+			file.close();
+		}
+	}
+
+	if (!found)
+	{
+		std::cout << "Failed to find params file, assuming default values." << std::endl;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////// Map
+
 Map::Map(int width, int height, MapParams params, unsigned int seed)
 {
 	defineSoils();
@@ -134,9 +209,9 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 					{
 						// soil resistiveForce (2.3-2.6g/cm3, increasing with depth)
 						float noise = resistivityNoise->noise(x / (m_params.soilResistivityChangeRate / m_scale), y / (m_params.soilResistivityChangeRate / m_scale), scaledDensHeight);
-						float resistivity = m_params.soilResistivityBase + (1.0f - currHeight) + noise * m_params.soilResistivityVariance;
+						float resistivity = m_params.soilResistivityBase + glm::max(0.0f, 0.5f - currHeight) + noise * m_params.soilResistivityVariance;
 						float sandAmount = m_params.soilSandContent + noise * m_params.soilSandVariance;
-						float clayAmount = m_params.soilClayContent + noise * m_params.soilSandContent;
+						float clayAmount = m_params.soilClayContent + noise * m_params.soilClayVariance;
 						glm::vec3 col = glm::vec3(0.2f + noise * 0.2f, 0.3f, 0.0f);
 						m_nodes[y * m_width + x].addMarker(currHeight * m_maxHeight, resistivity, false, col, m_params.soilFertility, sandAmount, clayAmount, m_maxHeight);
 					}
@@ -172,9 +247,9 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 void Map::defineSoils()
 {
 	// All the soil types we need to know
-	m_soilDefinitions.push_back(SoilDefinition("eapa", glm::vec2(0.24f, 0.29f), glm::vec2(0.29f, 0.34f), glm::vec2(0.2f, 0.75f), glm::vec2(0.0f, 2.3f)));
+	m_soilDefinitions.push_back(SoilDefinition("eapa", glm::vec2(0.22f, 0.29f), glm::vec2(0.24f, 0.34f), glm::vec2(0.2f, 0.8f), glm::vec2(0.0f, 2.5f)));
 	m_soilDefinitions.push_back(SoilDefinition("attewan", glm::vec2(0.05f, 0.28f), glm::vec2(0.35f, 0.79f), glm::vec2(0.2f, 0.75f), glm::vec2(2.2f, 3.0f)));
-	m_soilDefinitions.push_back(SoilDefinition("ethridge", glm::vec2(0.31f, 0.39f), glm::vec2(0.18f, 0.35f), glm::vec2(0.2f, 0.8f), glm::vec2(2.0f, 3.0f)));
+	m_soilDefinitions.push_back(SoilDefinition("ethridge", glm::vec2(0.31f, 0.39f), glm::vec2(0.18f, 0.30f), glm::vec2(0.2f, 0.8f), glm::vec2(2.8f, 4.0f)));
 	m_soilDefinitions.push_back(SoilDefinition("yamacall", glm::vec2(0.23f, 0.24f), glm::vec2(0.39f, 0.40f), glm::vec2(0.85f, 1.0f), glm::vec2(1.0f, 2.35f)));
 	m_soilDefinitions.push_back(SoilDefinition("sand", glm::vec2(0.0f,0.05f), glm::vec2(0.8f,1.0f), glm::vec2(0.0f, 0.1f), glm::vec2(1.5f, 2.0f)));
 	m_soilDefinitions.push_back(SoilDefinition("rock", glm::vec2(0.0f, 0.05f), glm::vec2(0.0f, 0.1f), glm::vec2(0.0f, 0.01f), glm::vec2(3.0f, 7.0f), true));

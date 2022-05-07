@@ -1,6 +1,7 @@
 #include <functional>
 #include <GL/glew.h>
 #include <glm.hpp>
+#include <queue>
 #include <unordered_map>
 
 #include "Node.h"
@@ -24,6 +25,7 @@ protected:
     glm::vec2 m_pos;
     glm::vec2 m_velocity = glm::vec2(0.0);
     glm::vec2 m_lastVelocity = glm::vec2(0.0);
+    std::queue<glm::vec2> m_previous;
 
     float m_volume = 1; 
     int m_prevIndex = 0;

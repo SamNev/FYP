@@ -142,13 +142,6 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
     // we need to visit every possible square, so normalize velocity only for movement. This won't matter as we immediately simulate again and will keep moving!
     m_pos += glm::normalize(m_velocity) * (float)sqrt(2);
-    int newIndex = (int)m_pos.y * dim.x + (int)m_pos.x;
-
-    if (newIndex = m_prevIndex)
-        m_retreadCount++;
-    
-    if (m_retreadCount > 500)
-        return false;
 
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
         return false;
@@ -156,6 +149,18 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     m_volume *= 0.985f;
     m_sedimentAmount *= 0.985f;
     m_age++;
+
+    if (m_previous.size() >= 10)
+    {
+        // TODO- modifiable property?
+        if (distance(m_previous.front(), m_pos) < 4.0f)
+            m_terminated = true;
+       
+        m_previous.pop();
+    }
+
+    m_previous.push(m_pos);
+
     cascade(m_pos, dim, nodes, track, maxHeight);
     m_prevIndex = index;
     return true;

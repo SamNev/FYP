@@ -31,6 +31,8 @@ enum noiseType : int
 
 struct MapParams
 {
+	void loadFromFile();
+
 	MapParams()
 	{
 		floatPropertyMap.emplace(std::pair<std::string, float&>("noiseSampleHeight", noiseSampleHeight));
@@ -89,77 +91,6 @@ struct MapParams
 		floatPropertyMap.emplace(std::pair<std::string, float&>("sandFertility", sandFertility));
 
 		floatPropertyMap.emplace(std::pair<std::string, float&>("bedrockResisitivity", bedrockResisitivity));
-	}
-	
-	void loadFromFile()
-	{
-		bool found = false;
-		wchar_t strExePath[MAX_PATH];
-		GetModuleFileName(NULL, strExePath, MAX_PATH);
-		size_t origsize = wcslen(strExePath) + 1;
-		size_t convertedChars = 0;
-		const size_t newsize = origsize * 2;
-		char* nstring = new char[newsize];
-		wcstombs_s(&convertedChars, nstring, newsize, strExePath, _TRUNCATE);
-
-		std::string folderPath = std::string(nstring);
-		std::string executableName = folderPath.substr(folderPath.find_last_of("\\"));
-		executableName = executableName.substr(1, executableName.length() - 5);
-		std::string fullpath;
-		while (!found && folderPath.find_last_of("\\") != std::string::npos)
-		{
-			folderPath.erase(folderPath.find_last_of("\\"));
-			fullpath = folderPath + "\\" + executableName + "\\" + "params.txt";
-			std::ifstream file(fullpath);
-			if (file.is_open())
-			{
-				std::string line;
-				int parameterCount = 0;
-				while (std::getline(file, line))
-				{
-					try {
-						int pos = line.find(' ');
-						std::string param = line.substr(0, pos);
-						std::map<std::string, float&>::iterator floatParamPos = floatPropertyMap.find(param);
-						std::map<std::string, int&>::iterator intParamPos = intPropertyMap.find(param);
-						if (floatParamPos != floatPropertyMap.end())
-						{
-							float val = stof(line.substr(pos + 1));
-							floatParamPos->second = val;
-							parameterCount++;
-						}
-						else if (intParamPos != intPropertyMap.end())
-						{
-							int val = stoi(line.substr(pos + 1));
-							intParamPos->second = val;
-							parameterCount++;
-						}
-						else
-						{
-							throw std::exception("didn't find property?");
-						}
-					}
-					catch (std::exception e)
-					{
-						if (line.length() > 2)
-						{
-							if (line.find("//") != 0)
-							{
-								std::cout << "Failed to parse parameter from line \"" << line << "\"" << std::endl;
-							}
-						}
-					}
-				}
-				std::cout << parameterCount << " parameters loaded from file." << std::endl;
-				found = true;
-				file.close();
-			}
-		}
-
-		if (!found)
-		{
-			std::cout << "Failed to find params file, assuming default values." << std::endl;
-		}
 	}
 
 	std::map<std::string, float&> floatPropertyMap;
