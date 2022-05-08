@@ -2,6 +2,8 @@
 
 #include <vector>
 
+//TODO: does this need any changes? Probs not?
+
 ShaderProgram::ShaderProgram(const std::string vertexShader, const std::string fragmentShader)
 {
 	const char* vert = vertexShader.c_str();

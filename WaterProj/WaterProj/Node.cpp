@@ -22,7 +22,7 @@ void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec
 		maxHeight = height;
 	}
 
-	// If there's no node data or this is the new lowest point, just push it back immediately.
+	// If there's no node data yet or this is the new lowest point, just push it back immediately.
 	if (m_nodeData.size() == 0 || m_nodeData[m_nodeData.size() - 1].height >= height)
 	{
 		NodeMarker marker;

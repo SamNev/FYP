@@ -6,6 +6,8 @@
 #include "Map.h"
 #include "MapRenderer.h"
 
+//TODO: all this needs tidying
+
 SDL_Window* makeSDLWindow()
 {
 	// Init SDL, create window and screen

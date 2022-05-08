@@ -202,6 +202,7 @@ void MapRenderer::render(SDL_Window* window)
 	glBindVertexArray(m_vaoId);
 	glViewport(0, 0, 900, 900);
 	glEnable(GL_DEPTH_TEST);
+	// TODO: cache! Also analyse this file
 	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
 	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
 	GLuint surroundingColorLoc = m_groundRenderer->getUniform("u_SurroundingColor");

@@ -126,8 +126,7 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			float val = noises[NoiseType_BaseVariance].noise(x, y, m_params.noiseSampleHeight) * m_params.baseVariance * 10;
-			val = 0;
+			float val = noises[NoiseType_BaseVariance].noise(x, y, m_params.noiseSampleHeight) * m_params.baseVariance;
 			const float base = (noises[NoiseType_Lie].noise(x/(m_params.lieChangeRate / m_params.scale), y/(m_params.lieChangeRate / m_params.scale), m_params.noiseSampleHeight) * m_params.liePeak / m_params.scale) + (m_params.lieModif / m_params.scale);
 			const float hill = getHillValue(&noises[NoiseType_Hill], x, y, m_params.hillHeight, m_params.hillRarity);
 			const float div = getDivetValue(&noises[NoiseType_Divet], x, y, m_params.hillHeight * m_params.divetHillScalar, m_params.divetRarity);
@@ -148,9 +147,9 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			}
 			else
 			{
-				// topsoil (2.3g/cm3)
+				// topsoil (2.3g/cm3). Clay will make more resistive, sand will make less resistive.
 				float topNoise = noises[NoiseType_Resistivity].noise(x / (m_params.soilResistivityChangeRate / m_params.scale), y / (m_params.soilResistivityChangeRate / m_params.scale), glm::max(BEDROCK_SAFETY_LAYER, total));
-				float sandAmount = m_params.soilSandContent + topNoise * m_params.soilSandVariance;
+				float sandAmount = m_params.soilSandContent + (1.0f - topNoise) * m_params.soilSandVariance;
 				float clayAmount = m_params.soilClayContent + topNoise * m_params.soilSandContent;
 				float resistivity = m_params.soilResistivityBase + topNoise * m_params.soilResistivityVariance;
 				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), resistivity, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), m_params.soilFertility, sandAmount, clayAmount, m_maxHeight);
@@ -182,7 +181,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 {
 	// F=pV so resistivity and resistivity are linearly related
 	float completion = 0.0f;
-	float inc = 1.0f / (float)m_params.generatedMapDensity;
+	float incrementValue = 1.0f / (float)m_params.generatedMapDensity;
 
 	for (int x = 0; x < m_width; ++x)
 	{
@@ -191,6 +190,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 			bool isRock = false;
 			float maxHeightScaled = getHeightAt(x, y) / m_maxHeight;
 
+			// place a tree
 			if (rand() % m_params.treeGenerationRarity == 0)
 				trySpawnTree(glm::vec2(x, y));
 
@@ -198,7 +198,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 			if (maxHeightScaled >= m_params.springThreshold && rand() % m_params.springRarity == 0)
 				addSpring(x, y);
 
-			for (float currHeight = 0.0f; currHeight < maxHeightScaled; currHeight += inc)
+			for (float currHeight = 0.0f; currHeight < maxHeightScaled; currHeight += incrementValue)
 			{
 				const float scaledDensHeight = currHeight * m_params.rockVerticalScaling;
 				if (!isRock)

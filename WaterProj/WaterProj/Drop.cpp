@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stack>
 
+//TODO: all the water params
+
 Drop::Drop(glm::vec2 pos) 
 { 
     m_pos = pos; 
@@ -48,8 +50,6 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
             continue;
 
         track[offsetIndex] = true;
-        //if (nodes[offsetIndex].waterDepth() > 0.1) 
-        //   continue;
 
         float diff = glm::min(abs(nodes[ind].topHeight() - nodes[offsetIndex].topHeight()), 1.0f);
         float actingForce = m_volume * glm::max(glm::min(0.8f, (glm::distance(glm::normalize(m_lastVelocity), glm::normalize(m_velocity)))), 0.2f);
@@ -67,11 +67,6 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         float transfer = actingForce * transportRate;
         // modify based on height difference, to account for exposed amount of surface
         transfer *= glm::max(1.0f, (1.5f - diff));
-
-          if (transfer >= 2.0f)
-            std::cout << "ERROR: transfer really high? force error?";
-        if (deposit >= 2.0f)
-            std::cout << "ERROR: deposit really high? force error?";
 
         m_sedimentAmount = glm::min(10.0f, m_sedimentAmount + transfer);
         m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), glm::max(0.0f, glm::min(1.0f, transfer / m_sedimentAmount)));
@@ -149,7 +144,6 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
     if (m_previous.size() >= 10)
     {
-        // TODO- modifiable property?
         glm::ivec2 prev = m_previous.front();
 
         if (distance(m_previous.front(), m_pos) < 4.0f || nodes[prev.y * dim.x + prev.x].hasWater())
