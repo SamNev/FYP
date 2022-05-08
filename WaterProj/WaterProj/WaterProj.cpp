@@ -14,7 +14,7 @@ SDL_Window* makeSDLWindow()
 		throw std::exception("SDL Init failed!");
 	}
 
-	SDL_Window* window = SDL_CreateWindow("Water, water, everywhere!",
+	SDL_Window* window = SDL_CreateWindow("Water Simulation Project",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		900, 900,
 		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -191,6 +191,10 @@ int main()
 					{
 						std::cout << "invalid input" << std::endl;
 					}
+				}
+				else if (event.key.keysym.sym == SDLK_1)
+				{
+					currentMap->grow();
 				}
 				else if (event.key.keysym.sym == SDLK_t)
 				{

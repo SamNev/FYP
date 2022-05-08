@@ -9,7 +9,6 @@ hillRarity 1000
 hillVariancePower 0.5
 
 // test comment :)
-give me errors right now or ima lose it
 divetRarity 85
 divetHillScalar 0.05
 
@@ -20,7 +19,7 @@ mountainConstantMultiplier 6.6
 
 generatedMapDensity 20
 soilResistivityChangeRate 2000.0
-soilResistivityBase 2.3
+soilResistivityBase 2.15
 soilResistivityVariance 0.3
 soilSandContent 0.25
 soilClayContent 0.22
@@ -42,6 +41,7 @@ treeParticleDeathThreshold 0.1
 treeSlopeThreshold 0.8
 treeSpreadChance 5
 treeSpreadRadius 9
+treeLongDistanceFertilizationCount 5
 foliageOverpopulationThreshold 0.8
 treeRandomDeathChance 100000
 treeGenerationRarity 2
