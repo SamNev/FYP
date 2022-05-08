@@ -1,5 +1,7 @@
 #include "Node.h"
 
+#include "Plant.h"
+
 #include <ext.hpp>
 #include <iostream>
 
@@ -264,6 +266,7 @@ void Node::setHeight(float height, NodeMarker fillerData, float& maxHeight)
 NodeMarker Node::getDataAboveHeight(float height, bool ignoreRock) const
 {
 	NodeMarker marker = m_nodeData[0];
+	marker.fertility = Plant::getFertilityForNode(this);
 	float currentAmount = 0.0f;
 
 	for (int i = 1; i < m_nodeData.size(); i++)
@@ -304,6 +307,16 @@ float Node::getParticles() const
 
 void Node::setParticles(float particles)
 {
+	if (particles < 2.0f && particles > 0.0f && !hasWater())
+	{
+		// calculate water supply to current node
+		m_vegetationData.waterSupply = 1.0f - (abs(1.0f - particles));
+	}
+	else
+	{
+		m_vegetationData.waterSupply = 0.0f;
+	}
+
 	m_waterData.particles = particles;
 }
 
@@ -312,8 +325,18 @@ float Node::getFoliageDensity() const
 	return glm::min(1.0f, m_vegetationData.density);
 }
 
+float Node::getFoliageWaterSupply() const
+{
+	return m_vegetationData.waterSupply;
+}
+
 void Node::setFoliageDensity(float foliageDensity)
 {
 	float modifDensity = glm::min(1.0f, glm::max(foliageDensity, 0.0f));
 	m_vegetationData.density = modifDensity;
+}
+
+float Node::getFertility() const
+{
+	return m_nodeData[0].fertility;
 }

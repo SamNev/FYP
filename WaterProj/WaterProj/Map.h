@@ -78,6 +78,7 @@ struct MapParams
 		floatPropertyMap.emplace(std::pair<std::string, float&>("treeSlopeThreshold", treeSlopeThreshold));
 		intPropertyMap.emplace(std::pair<std::string, int&>("treeSpreadChance", treeSpreadChance));
 		intPropertyMap.emplace(std::pair<std::string, int&>("treeSpreadRadius", treeSpreadRadius));
+		intPropertyMap.emplace(std::pair<std::string, int&>("treeLongDistanceFertilizationCount", treeLongDistanceFertilizationCount));
 		floatPropertyMap.emplace(std::pair<std::string, float&>("foliageOverpopulationThreshold", foliageOverpopulationThreshold));
 		intPropertyMap.emplace(std::pair<std::string, int&>("treeRandomDeathChance", treeRandomDeathChance));
 		intPropertyMap.emplace(std::pair<std::string, int&>("treeGenerationRarity", treeGenerationRarity));
@@ -140,6 +141,7 @@ struct MapParams
 	float treeSlopeThreshold = 0.985f;
 	int treeSpreadChance = 5;
 	int treeSpreadRadius = 9;
+	int treeLongDistanceFertilizationCount = 5;
 	float foliageOverpopulationThreshold = 0.8f;
 	int treeRandomDeathChance = 100000;
 	int treeGenerationRarity = 2;
@@ -181,6 +183,8 @@ public:
 	void erodeAllByValue(float amount);
 	std::string stats(glm::vec2 pos);
 	std::string getSoilType(glm::vec2 pos);
+	std::string getMapGeneralSoilType();
+	int getSoilTypeBestMatching(NodeMarker* nodeData, float& bestCertainty);
 	bool trySpawnTree(glm::vec2 pos);
 
 	// Hydrology Functions

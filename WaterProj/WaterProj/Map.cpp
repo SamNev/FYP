@@ -250,7 +250,7 @@ void Map::defineSoils()
 	m_soilDefinitions.push_back(SoilDefinition("eapa", glm::vec2(0.22f, 0.29f), glm::vec2(0.24f, 0.34f), glm::vec2(0.2f, 0.8f), glm::vec2(0.0f, 2.5f)));
 	m_soilDefinitions.push_back(SoilDefinition("attewan", glm::vec2(0.05f, 0.28f), glm::vec2(0.35f, 0.79f), glm::vec2(0.2f, 0.75f), glm::vec2(2.2f, 3.0f)));
 	m_soilDefinitions.push_back(SoilDefinition("ethridge", glm::vec2(0.31f, 0.39f), glm::vec2(0.18f, 0.30f), glm::vec2(0.2f, 0.8f), glm::vec2(2.8f, 4.0f)));
-	m_soilDefinitions.push_back(SoilDefinition("yamacall", glm::vec2(0.23f, 0.24f), glm::vec2(0.39f, 0.40f), glm::vec2(0.85f, 1.0f), glm::vec2(1.0f, 2.35f)));
+	m_soilDefinitions.push_back(SoilDefinition("yamacall", glm::vec2(0.23f, 0.26f), glm::vec2(0.30f, 0.40f), glm::vec2(0.85f, 1.0f), glm::vec2(1.0f, 2.45f)));
 	m_soilDefinitions.push_back(SoilDefinition("sand", glm::vec2(0.0f,0.05f), glm::vec2(0.8f,1.0f), glm::vec2(0.0f, 0.1f), glm::vec2(1.5f, 2.0f)));
 	m_soilDefinitions.push_back(SoilDefinition("rock", glm::vec2(0.0f, 0.05f), glm::vec2(0.0f, 0.1f), glm::vec2(0.0f, 0.01f), glm::vec2(3.0f, 7.0f), true));
 }
@@ -390,6 +390,49 @@ Map::~Map()
 	delete[m_width * m_height] m_nodes;
 }
 
+std::string Map::getMapGeneralSoilType()
+{
+	std::ostringstream oss;
+	oss << "Soil types:" << std::endl;
+	int* count = new int[m_soilDefinitions.size()];
+	std::fill(count, count + m_soilDefinitions.size(), 0);
+	float certainty;
+
+	for (int i = 0; i < m_width * m_height; ++i)
+	{
+		NodeMarker general = m_nodes[i].getDataAboveHeight(m_nodes[i].topHeight() - 1.0f, true);
+		int index = getSoilTypeBestMatching(&general, certainty);
+		if (index != -1)
+			count[index]++;
+	}
+
+	for (int i = 0; i < m_soilDefinitions.size(); ++i)
+	{
+		oss << m_soilDefinitions[i].name << ": " << count[i] * 100 / (m_width * m_height) << "%" << std::endl;
+	}
+
+	delete[m_soilDefinitions.size()] count;
+	return oss.str();
+}
+
+int Map::getSoilTypeBestMatching(NodeMarker* nodeData, float& bestCertainty)
+{
+	int bestIndex = -1;
+	bestCertainty = 0.0f;
+
+	for (int i = 0; i < m_soilDefinitions.size(); i++)
+	{
+		float certainty = m_soilDefinitions[i].getCertainty(nodeData);
+		if (certainty > bestCertainty)
+		{
+			bestCertainty = certainty;
+			bestIndex = i;
+		}
+	}
+
+	return bestIndex;
+}
+
 std::string Map::getSoilType(glm::vec2 pos)
 {
 	std::ostringstream oss;
@@ -398,15 +441,7 @@ std::string Map::getSoilType(glm::vec2 pos)
 	float bestCertainty = 0.0f;
 	NodeMarker general = node->getDataAboveHeight(-1.9f, true);
 
-	for (int i = 0; i < m_soilDefinitions.size(); i++)
-	{
-		float certainty = m_soilDefinitions[i].getCertainty(&general);
-		if (certainty > bestCertainty)
-		{
-			bestCertainty = certainty;
-			bestIndex = i;
-		}
-	}
+	bestIndex = getSoilTypeBestMatching(&general, bestCertainty);
 
 	if (bestIndex != -1)
 	{
@@ -419,18 +454,7 @@ std::string Map::getSoilType(glm::vec2 pos)
 
 	NodeMarker loam = node->getDataAboveHeight(node->topHeight() - 1.0f, true);
 	int mainIndex = bestIndex;
-	bestIndex = -1;
-	bestCertainty = 0.0f;
-
-	for (int i = 0; i < m_soilDefinitions.size(); i++)
-	{
-		float certainty = m_soilDefinitions[i].getCertainty(&loam);
-		if (certainty > bestCertainty)
-		{
-			bestCertainty = certainty;
-			bestIndex = i;
-		}
-	}
+	bestIndex = getSoilTypeBestMatching(&loam, bestCertainty);
 
 	if (bestIndex != -1 && mainIndex != bestIndex)
 	{
@@ -524,7 +548,7 @@ void Map::erode(int cycles) {
 				}
 			}
 
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - (0.5f*m_params.waterEvaporationRate))));
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - (0.5f * m_params.waterEvaporationRate))));
 		}
 		else
 		{
@@ -538,11 +562,13 @@ void Map::erode(int cycles) {
 void Map::grow()
 {
 	// spawn a tree randomly on the map (long-distance fertilization)
-	// TODO: more of this? tweakable?
-	int newTreePos = rand() % (m_width * m_height);
-	int completion = 0;
+	for (int i = 0; i < m_params.treeLongDistanceFertilizationCount; i++)
+	{
+		int newTreePos = rand() % (m_width * m_height);
+		trySpawnTree(glm::vec2(newTreePos % m_width, newTreePos / m_width));
+	}
 
-	trySpawnTree(glm::vec2(newTreePos % m_width, newTreePos / m_width));
+	int completion = 0;
 
 	for (int i = 0; i < m_width * m_height; i++)
 	{
@@ -554,7 +580,6 @@ void Map::grow()
 				glm::vec2 newPlantPos = glm::vec2(i % m_width, i / m_width) + glm::vec2(rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2), rand() % m_params.treeSpreadRadius - (m_params.treeSpreadRadius / 2));
 				trySpawnTree(newPlantPos);
 			}
-			// TODO: lower base root value, re-add grow function. Additional fertility on river banks?
 
 			// trees die in water & sometimes die randomly
 			if (m_nodes[i].waterDepth() > 0.0 || m_nodes[i].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0)

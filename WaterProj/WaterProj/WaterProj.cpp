@@ -192,6 +192,10 @@ int main()
 						std::cout << "invalid input" << std::endl;
 					}
 				}
+				else if (event.key.keysym.sym == SDLK_t)
+				{
+					std::cout << currentMap->getMapGeneralSoilType();
+				}
 
 				heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;

@@ -14,6 +14,7 @@ struct WaterData
 struct VegetationData
 {
 	float density;
+	float waterSupply;
 };
 
 struct NodeMarker
@@ -111,7 +112,9 @@ public:
 	float getParticles() const;
 	void setParticles(float particles);
 	void setFoliageDensity(float density);
+	float getFertility() const;
 	float getFoliageDensity() const;
+	float getFoliageWaterSupply() const;
 protected:
 	std::vector<NodeMarker> m_nodeData;
 	WaterData m_waterData;
