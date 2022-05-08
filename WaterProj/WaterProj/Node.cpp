@@ -181,10 +181,10 @@ float Node::topHeight() const
 
 glm::vec3 Node::topColor() const
 {
-	float particles = glm::min(1.0f, glm::max(0.0f, getParticles() - 1.0f));
+	float particles = glm::max(0.0f, glm::min(50.0f, glm::max(0.0f, getParticles()))) / 50.0f;
 
-	if(particles > 0.01f && m_waterData.height < 0.2f)
-		return m_nodeData[0].color * glm::max(0.25f, 1.0f - particles) + glm::vec3(0.0f, 0.2f, 0.9f) * glm::min(0.75f, particles);
+	if(particles > 0.01f && m_waterData.height < 0.25f)
+		return m_nodeData[0].color * glm::max(0.0f, 1.0f - particles) + glm::vec3(0.0f, 0.5f, 1.0f) * glm::min(1.0f, particles);
 
 	if (getFoliageDensity() == 0.0f)
 		return m_nodeData[0].color;

@@ -19,6 +19,7 @@ public:
     glm::vec2 getPosition() { return m_pos; }
     float getVolume() { return m_volume; }
     float getMinVolume() { return m_minVol; }
+    int getAge() { return m_age; }
 
 protected:
     int m_age = 0;

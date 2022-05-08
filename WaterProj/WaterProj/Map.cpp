@@ -14,6 +14,7 @@
 
 void MapParams::loadFromFile()
 {
+	// fetch executable name
 	bool found = false;
 	wchar_t strExePath[MAX_PATH];
 	GetModuleFileName(NULL, strExePath, MAX_PATH);
@@ -23,50 +24,56 @@ void MapParams::loadFromFile()
 	char* nstring = new char[newsize];
 	wcstombs_s(&convertedChars, nstring, newsize, strExePath, _TRUNCATE);
 
+	// folderPath created from executable name
 	std::string folderPath = std::string(nstring);
 	std::string executableName = folderPath.substr(folderPath.find_last_of("\\"));
 	executableName = executableName.substr(1, executableName.length() - 5);
 	std::string fullpath;
 	while (!found && folderPath.find_last_of("\\") != std::string::npos)
 	{
+		// search upwards for folder matching exe name
 		folderPath.erase(folderPath.find_last_of("\\"));
 		fullpath = folderPath + "\\" + executableName + "\\" + "params.txt";
 		std::ifstream file(fullpath);
 		if (file.is_open())
 		{
-			std::string line;
+			// if file is found
+			std::string currentLine;
 			int parameterCount = 0;
-			while (std::getline(file, line))
+			while (std::getline(file, currentLine))
 			{
 				try {
-					int pos = line.find(' ');
-					std::string param = line.substr(0, pos);
+					int spaceIndex = currentLine.find(' ');
+					std::string param = currentLine.substr(0, spaceIndex);
+					// search for float or int parameter
 					std::map<std::string, float&>::iterator floatParamPos = floatPropertyMap.find(param);
 					std::map<std::string, int&>::iterator intParamPos = intPropertyMap.find(param);
 					if (floatParamPos != floatPropertyMap.end())
 					{
-						float val = stof(line.substr(pos + 1));
+						float val = stof(currentLine.substr(spaceIndex + 1));
 						floatParamPos->second = val;
 						parameterCount++;
 					}
 					else if (intParamPos != intPropertyMap.end())
 					{
-						int val = stoi(line.substr(pos + 1));
+						int val = stoi(currentLine.substr(spaceIndex + 1));
 						intParamPos->second = val;
 						parameterCount++;
 					}
 					else
 					{
+						// this error message is never shown- caught below
 						throw std::exception("didn't find property?");
 					}
 				}
 				catch (std::exception e)
 				{
-					if (line.length() > 2)
+					// if line is empty or is a comment, don't show error message
+					if (currentLine.length() > 2)
 					{
-						if (line.find("//") != 0)
+						if (currentLine.find("//") != 0)
 						{
-							std::cout << "Failed to parse parameter from line \"" << line << "\"" << std::endl;
+							std::cout << "Failed to parse parameter from line \"" << currentLine << "\"" << std::endl;
 						}
 					}
 				}
@@ -92,7 +99,6 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	m_width = width;
 	m_height = height;
 	m_maxHeight = 0.0f;
-	m_scale = params.scale;
 	m_params = params;
 
 	// seed based on time or whatever was given
@@ -109,10 +115,10 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 		noises[i] = PerlinNoise(generatedSeed);
 	}
 
-	// Ensure our values are valid-  rarity must be a multiple of scale in these regards or we hit rounding errors.
-	params.hillRarity -= (params.hillRarity % m_scale);
-	params.mountainRarity -= (params.mountainRarity % m_scale);
-	params.divetRarity -= (params.divetRarity % m_scale);
+	// Ensure our values are valid-  rarity must be a multiple of scale in these parameters or we hit rounding errors.
+	m_params.hillRarity -= (m_params.hillRarity % m_params.scale);
+	m_params.mountainRarity -= (m_params.mountainRarity % m_params.scale);
+	m_params.divetRarity -= (m_params.divetRarity % m_params.scale);
 
 	float completion = 0.0f;
 
@@ -120,12 +126,12 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	{
 		for (int y = 0; y < height; ++y)
 		{
-			float val = noises[NoiseType_BaseVariance].noise(x, y, params.noiseSampleHeight) * params.baseVariance * 10;
+			float val = noises[NoiseType_BaseVariance].noise(x, y, m_params.noiseSampleHeight) * m_params.baseVariance * 10;
 			val = 0;
-			const float base = (noises[NoiseType_Lie].noise(x/(params.lieChangeRate / m_scale), y/(params.lieChangeRate / m_scale), params.noiseSampleHeight) * params.liePeak / m_scale) + (params.lieModif / m_scale);
-			const float hill = getHillValue(&noises[NoiseType_Hill], x, y, params.hillHeight, params.hillRarity);
-			const float div = getDivetValue(&noises[NoiseType_Divet], x, y, params.hillHeight * params.divetHillScalar, params.divetRarity);
-			const float mount = getMountainValue(&noises[NoiseType_Mountain], x, y, params.mountainHeight, params.mountainRarity);
+			const float base = (noises[NoiseType_Lie].noise(x/(m_params.lieChangeRate / m_params.scale), y/(m_params.lieChangeRate / m_params.scale), m_params.noiseSampleHeight) * m_params.liePeak / m_params.scale) + (m_params.lieModif / m_params.scale);
+			const float hill = getHillValue(&noises[NoiseType_Hill], x, y, m_params.hillHeight, m_params.hillRarity);
+			const float div = getDivetValue(&noises[NoiseType_Divet], x, y, m_params.hillHeight * m_params.divetHillScalar, m_params.divetRarity);
+			const float mount = getMountainValue(&noises[NoiseType_Mountain], x, y, m_params.mountainHeight, m_params.mountainRarity);
 			float total = (base + val + hill + mount + div);
 
 #ifdef FLOODTESTMAP
@@ -133,26 +139,26 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			total = (abs(x-500) + abs(y-500))/20.0f;
 #endif
 
-			const float sandThreshold = noises[NoiseType_Sand].noise(x, y, params.noiseSampleHeight) * params.peakSandHeight;
+			const float sandThreshold = noises[NoiseType_Sand].noise(x, y, m_params.noiseSampleHeight) * m_params.peakSandHeight;
 
 			if (total < sandThreshold)
 			{
 				// sand (1.5g/cm3)
-				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), params.sandResistivity, false, glm::vec3(1.0f, 1.0f, 0.7f), params.sandFertility, 1.0f, 0.0f, m_maxHeight);
+				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), m_params.sandResistivity, false, glm::vec3(1.0f, 1.0f, 0.7f), m_params.sandFertility, 1.0f, 0.0f, m_maxHeight);
 			}
 			else
 			{
 				// topsoil (2.3g/cm3)
-				float topNoise = noises[NoiseType_Resistivity].noise(x / (params.soilResistivityChangeRate / m_scale), y / (params.soilResistivityChangeRate / m_scale), glm::max(BEDROCK_SAFETY_LAYER, total));
-				float sandAmount = params.soilSandContent + topNoise * params.soilSandVariance;
-				float clayAmount = params.soilClayContent + topNoise * params.soilSandContent;
-				float resistivity = params.soilResistivityBase + topNoise * params.soilResistivityVariance;
-				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), resistivity, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), params.soilFertility, sandAmount, clayAmount, m_maxHeight);
+				float topNoise = noises[NoiseType_Resistivity].noise(x / (m_params.soilResistivityChangeRate / m_params.scale), y / (m_params.soilResistivityChangeRate / m_params.scale), glm::max(BEDROCK_SAFETY_LAYER, total));
+				float sandAmount = m_params.soilSandContent + topNoise * m_params.soilSandVariance;
+				float clayAmount = m_params.soilClayContent + topNoise * m_params.soilSandContent;
+				float resistivity = m_params.soilResistivityBase + topNoise * m_params.soilResistivityVariance;
+				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), resistivity, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), m_params.soilFertility, sandAmount, clayAmount, m_maxHeight);
 			}
 			// bedrock (7.5g/cm3)
-			m_nodes[y * width + x].addMarker(BEDROCK_LAYER, params.bedrockResisitivity, true, glm::vec3(0.1f), 0.0f, 0.0f, 0.0f, m_maxHeight);
+			m_nodes[y * width + x].addMarker(BEDROCK_LAYER, m_params.bedrockResisitivity, true, glm::vec3(0.1f), 0.0f, 0.0f, 0.0f, m_maxHeight);
 			// fill all nodes to a basic "sea level"
-			m_nodes[y * width + x].setWaterHeight(params.seaLevel);
+			m_nodes[y * width + x].setWaterHeight(m_params.seaLevel);
 		}
 
 		// display progress
@@ -198,7 +204,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 				if (!isRock)
 				{
 					// rock resistiveForce (3.8-4.2g/cm3)
-					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_scale), y / (m_params.rockRarity / m_scale), scaledDensHeight);
+					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_params.scale), y / (m_params.rockRarity / m_params.scale), scaledDensHeight);
 					if (currVal > m_params.rockThreshold)
 					{
 						float resistivity = m_params.rockResistivityBase + (currVal - m_params.rockThreshold) * m_params.rockResistivityVariance;
@@ -208,7 +214,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 					else
 					{
 						// soil resistiveForce (2.3-2.6g/cm3, increasing with depth)
-						float noise = resistivityNoise->noise(x / (m_params.soilResistivityChangeRate / m_scale), y / (m_params.soilResistivityChangeRate / m_scale), scaledDensHeight);
+						float noise = resistivityNoise->noise(x / (m_params.soilResistivityChangeRate / m_params.scale), y / (m_params.soilResistivityChangeRate / m_params.scale), scaledDensHeight);
 						float resistivity = m_params.soilResistivityBase + glm::max(0.0f, 0.5f - currHeight) + noise * m_params.soilResistivityVariance;
 						float sandAmount = m_params.soilSandContent + noise * m_params.soilSandVariance;
 						float clayAmount = m_params.soilClayContent + noise * m_params.soilClayVariance;
@@ -219,7 +225,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 				else
 				{
 					// rock resistiveForce (3.8-4.2g/cm3)
-					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_scale), y / (m_params.rockRarity / m_scale), scaledDensHeight);
+					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_params.scale), y / (m_params.rockRarity / m_params.scale), scaledDensHeight);
 					if (currVal < m_params.rockThreshold)
 					{
 						float resistivity = m_params.rockResistivityBase + (currVal - m_params.rockThreshold) * m_params.rockResistivityVariance;
@@ -264,14 +270,14 @@ float Map::getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, floa
 {
 	glm::vec2 XY = calculateXYFromRarity(x, y, rarity);
 	float hillVal = (noise->noise(XY.x, XY.y, m_params.noiseSampleHeight) - 0.1f) * glm::pow(noise->noise(XY.x, XY.y, m_params.noiseSampleHeight * 2.0f), m_params.hillVariancePower);
-	return hillVal * hillHeight / m_scale;
+	return hillVal * hillHeight / m_params.scale;
 }
 
 float Map::getDivetValue(PerlinNoise* noise, int x, int y, float divetHeight, float rarity)
 {
 	glm::vec2 XY = calculateXYFromRarity(x, y, rarity);
 	float divetVal = -(float)noise->noise(XY.x, XY.y, m_params.noiseSampleHeight);
-	return divetVal * divetHeight / m_scale;
+	return divetVal * divetHeight / m_params.scale;
 }
 
 float Map::getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity)
@@ -281,14 +287,14 @@ float Map::getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeig
 	bool mountain = noise->noise(XY.x, XY.y, m_params.noiseSampleHeight) > m_params.mountainThreshold;
 	if (mountain)
 	{
-		mountainVal += pow((noise->noise(XY.x, XY.y, m_params.noiseSampleHeight) - m_params.mountainThreshold) * sqrt(mountainHeight) * m_params.mountainConstantMultiplier / m_scale, 2);
+		mountainVal += pow((noise->noise(XY.x, XY.y, m_params.noiseSampleHeight) - m_params.mountainThreshold) * sqrt(mountainHeight) * m_params.mountainConstantMultiplier / m_params.scale, 2);
 	}
 	return mountainVal;
 }
 
 glm::vec2 Map::calculateXYFromRarity(int x, int y, float rarity)
 {
-	float scalar = (rarity / m_scale);
+	float scalar = (rarity / m_params.scale);
 	int lowX = x / scalar;
 	int lowY = y / scalar;
 	int highX = lowX + 1;
@@ -481,47 +487,41 @@ void Map::erode(int cycles) {
 
 	// track all particle movement
 	bool* track = new bool[m_width * m_height];
-	for (int i = 0; i < m_width * m_height; i++)
-		track[i] = false;
-
+	std::fill(track, track + m_width * m_height, false);
 	glm::vec2 dim = glm::vec2(m_width, m_height);
 	int springIndex = 0;
-
 	float completion = 0.0f;
 
-	for (int i = 0; i < cycles; i++)
+	for (int currentCycle = 0; currentCycle < cycles; currentCycle++)
 	{
 		// spawn particle
-		glm::vec2 newpos = glm::vec2(rand() % m_width, rand() % m_height);
+		glm::vec2 newParticlePos = glm::vec2(rand() % m_width, rand() % m_height);
 
 		// spawn at spring if possible
 		if (springIndex < m_springs.size())
 		{
-			newpos = m_springs.at(springIndex);
+			newParticlePos = m_springs.at(springIndex);
 			springIndex++;
 		}
 
-		Drop drop(newpos);
+		Drop drop(newParticlePos);
 
 		// if we've moved 1km, give up.
-		int spill = 1000;
-
-		while (drop.getVolume() > drop.getMinVolume() && spill != 0) {
+		while (drop.getVolume() > drop.getMinVolume() && drop.getAge() < 1000) {
 
 			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, track, dim, m_maxHeight) && drop.getVolume() > drop.getMinVolume())
 			{
 				if (!drop.flood(m_nodes, dim))
 					break;
 			}
-
-			spill--;
 		}
 
-		if (spill == 0)
+		// if we've terminated for whatever reason, immediately try and flood
+		if (drop.getAge() >= 1000)
 			drop.flood(m_nodes, dim);
 
 		float prevCompletion = completion;
-		completion = (i / (float)cycles) * 100.0f;
+		completion = (currentCycle / (float)cycles) * 100.0f;
 		if ((int)completion % 10 < (int)prevCompletion % 10)
 		{
 			if (prevCompletion < 10.0f)
@@ -533,6 +533,7 @@ void Map::erode(int cycles) {
 	std::cout << std::string(3, '\b') << "100 %";
 	std::cout << std::endl;
 
+	// travelled nodes can be filled outwards for wider, more effective-looking rivers
 	int riverWidth = m_params.dropWidth * 2 + 1;
 	for (int i = 0; i < m_width * m_height; i++)
 	{

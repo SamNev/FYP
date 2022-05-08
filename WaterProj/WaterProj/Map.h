@@ -167,7 +167,7 @@ public:
 	glm::vec2 calculateXYFromRarity(int x, int y, float rarity);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
-	float getScale() { return m_scale; }
+	float getScale() { return m_params.scale; }
 	float getMaxHeight() { return m_maxHeight; }
 	Node* getNodeAt(int x, int y);
 	float getDensityAt(int x, int y, float height);
@@ -203,7 +203,6 @@ public:
 	
 
 protected:
-	int m_scale = 10;
 	Node* m_nodes;
 	int m_width;
 	int m_height;
