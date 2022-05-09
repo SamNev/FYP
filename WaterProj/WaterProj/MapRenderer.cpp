@@ -15,6 +15,7 @@ MapRenderer::MapRenderer(Map* map)
 	m_groundRenderer = createShaderProgram("vertex.txt", "fragment.txt");
 	m_zoomLevel = 50;
 	makeMapTile();
+	cacheProperties();
 }
 
 MapRenderer::~MapRenderer()
@@ -194,41 +195,51 @@ float MapRenderer::distFromCamera(glm::vec3 pos)
 	return glm::length(m_camPos - pos);
 }
 
-void MapRenderer::render(SDL_Window* window)
+void MapRenderer::cacheProperties()
 {
-	const int lodScale = lodScaling();
-	m_groundRenderer->use(); 
+	m_colorLoc = m_groundRenderer->getUniform("u_Color");
+	m_surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
+	m_surroundingColorLoc = m_groundRenderer->getUniform("u_SurroundingColor");
+	m_posLoc = m_groundRenderer->getUniform("u_Pos");
+	m_maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
+	m_ignoreHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
+	m_surrWaterHeightLoc = m_groundRenderer->getUniform("u_SurroundingWaterHeight");
+	m_projLoc = m_groundRenderer->getUniform("u_Proj");
+	m_viewLoc = m_groundRenderer->getUniform("u_View");
+}
+
+void MapRenderer::prepareRender(bool ignoreHeight)
+{
+	m_groundRenderer->use();
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(m_vaoId);
 	glViewport(0, 0, 900, 900);
 	glEnable(GL_DEPTH_TEST);
-	// TODO: cache! Also analyse this file
-	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
-	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
-	GLuint surroundingColorLoc = m_groundRenderer->getUniform("u_SurroundingColor");
-	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
-	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
-	GLuint igHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
-	GLuint surrWaterHeightLoc = m_groundRenderer->getUniform("u_SurroundingWaterHeight");
-	GLuint proj = m_groundRenderer->getUniform("u_Proj");
-	GLuint view = m_groundRenderer->getUniform("u_View");
+
 	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
 	m_camPos.y = m_map->getHeightAt(m_camPos.x, m_camPos.z) + (m_zoomLevel * 2);
 	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
-	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
-	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
-	glUniform1f(maxHeightLoc, m_map->getMaxHeight());
-	glUniform1i(igHeightLoc, false);
+	glUniformMatrix4fv(m_projLoc, 1, GL_FALSE, glm::value_ptr(projMat));
+	glUniformMatrix4fv(m_viewLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
+	glUniform1f(m_maxHeightLoc, m_map->getMaxHeight());
+	glUniform1i(m_ignoreHeightLoc, ignoreHeight);
+}
+
+void MapRenderer::render(SDL_Window* window)
+{
+	prepareRender(false);
+	const int lodScale = lodScaling();
 	const float cullDist = getCullDist();
 
 	for (int x = 0; x < m_map->getWidth(); x += lodScale)
 	{
 		for (int y = 0; y < m_map->getHeight(); y += lodScale)
 		{
-			// calc model matrix here
+			// current node height & color
 			const float height = m_map->getHeightAt(x, y);
 			glm::vec3 color = m_map->getNodeAt(x, y)->topColor();
+			glUniform3f(m_colorLoc, color.x, color.y, color.z);
 
 			const glm::vec3 current = { x, height, y };
 			if (cullDist < distFromCamera(current))
@@ -239,6 +250,8 @@ void MapRenderer::render(SDL_Window* window)
 
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
 			model = glm::scale(model, glm::vec3(lodScale, 1.0f, lodScale));
+
+			// Get surrounding nodes
 			const Node* right = m_map->getNodeAt(x + lodScale, y);
 			const Node* left = m_map->getNodeAt(x - lodScale, y);
 			const Node* down = m_map->getNodeAt(x, y + lodScale);
@@ -248,17 +261,19 @@ void MapRenderer::render(SDL_Window* window)
 			const Node* leftUp = m_map->getNodeAt(x - lodScale, y - lodScale);
 			const Node* leftDown = m_map->getNodeAt(x - lodScale, y + lodScale);
 			
+			// Calculate average values for each edge on the tile
 			const float topRightHeight = ((up->topHeight() + right->topHeight() + rightUp->topHeight() + height) / 4.0f) - height;
 			const float bottomRightHeight = ((down->topHeight() + right->topHeight() + rightDown->topHeight() + height) / 4.0f) - height;
 			const float bottomLeftHeight = ((down->topHeight() + left->topHeight() + leftDown->topHeight() + height) / 4.0f) - height;
 			const float topLeftHeight = ((up->topHeight() + left->topHeight() + leftUp->topHeight() + height) / 4.0f) - height;
-			
+			glUniform4f(m_surroundingLoc, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
+
+			// Surrounding colors
 			const glm::vec3 topRightColor = ((up->topColor() + right->topColor() + rightUp->topColor() + color) / 4.0f);
 			const glm::vec3 bottomRightColor = ((down->topColor() + right->topColor() + rightDown->topColor() + color) / 4.0f);
 			const glm::vec3 bottomLeftColor = ((down->topColor() + left->topColor() + leftDown->topColor() + color) / 4.0f);
 			const glm::vec3 topLeftColor = ((up->topColor() + left->topColor() + leftUp->topColor() + color) / 4.0f);
 			float colors[12] = { topRightColor.x, topRightColor.y, topRightColor.z, bottomLeftColor.x, bottomLeftColor.y, bottomLeftColor.z, topLeftColor.x, topLeftColor.y, topLeftColor.z, bottomRightColor.x, bottomRightColor.y, bottomRightColor.z};
-			
 			for (int i = 0; i < 12; ++i)
 			{
 				if (colors[i] < 0)
@@ -267,28 +282,17 @@ void MapRenderer::render(SDL_Window* window)
 				if (colors[i] > 1)
 					colors[i] = 1;
 			}
+			glUniform3fv(m_surroundingColorLoc, 4, colors);
 
-			float waterHeight = m_map->getNodeAt(x, y)->waterHeight(-100.0f);
-			if (waterHeight == -100.0f)
-			{
-				waterHeight = 0.0f;
-
-				const float max = max(max(up->waterHeight(waterHeight), down->waterHeight(waterHeight)), max(left->waterHeight(waterHeight), right->waterHeight(waterHeight)));
-				glUniform4f(surrWaterHeightLoc, max, max, max, max);
-			}
-
-			{
-				const float topRightWater = ((up->waterHeight(waterHeight) + right->waterHeight(waterHeight) + rightUp->waterHeight(waterHeight) + waterHeight) / 4.0f);
-				const float bottomRightWater = ((down->waterHeight(waterHeight) + right->waterHeight(waterHeight) + rightDown->waterHeight(waterHeight) + waterHeight) / 4.0f);
-				const float bottomLeftWater = ((down->waterHeight(waterHeight) + left->waterHeight(waterHeight) + leftDown->waterHeight(waterHeight) + waterHeight) / 4.0f);
-				const float topLeftWater = ((up->waterHeight(waterHeight) + left->waterHeight(waterHeight) + leftUp->waterHeight(waterHeight) + waterHeight) / 4.0f);
-				glUniform4f(surrWaterHeightLoc, topRightWater, bottomLeftWater, topLeftWater, bottomRightWater);
-			}
+			// Water height
+			float waterHeight = m_map->getNodeAt(x, y)->waterHeight(0.0f);
+			const float topRightWater = ((up->waterHeight(waterHeight) + right->waterHeight(waterHeight) + rightUp->waterHeight(waterHeight) + waterHeight) / 4.0f);
+			const float bottomRightWater = ((down->waterHeight(waterHeight) + right->waterHeight(waterHeight) + rightDown->waterHeight(waterHeight) + waterHeight) / 4.0f);
+			const float bottomLeftWater = ((down->waterHeight(waterHeight) + left->waterHeight(waterHeight) + leftDown->waterHeight(waterHeight) + waterHeight) / 4.0f);
+			const float topLeftWater = ((up->waterHeight(waterHeight) + left->waterHeight(waterHeight) + leftUp->waterHeight(waterHeight) + waterHeight) / 4.0f);
+			glUniform4f(m_surrWaterHeightLoc, topRightWater, bottomLeftWater, topLeftWater, bottomRightWater);
 			
-			glUniform3fv(surroundingColorLoc, 4, colors);
-			glUniform4f(surroundingLoc, topRightHeight, bottomLeftHeight, topLeftHeight, bottomRightHeight);
-			glUniform3f(colorLoc, color.x, color.y, color.z);
-			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
+			glUniformMatrix4fv(m_posLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			glDrawArrays(GL_TRIANGLES, 0, 12);
 		}
@@ -302,28 +306,8 @@ void MapRenderer::render(SDL_Window* window)
 
 void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 {
+	prepareRender(true);
 	const int lodScale = lodScaling();
-	m_groundRenderer->use();
-	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindVertexArray(m_vaoId);
-	glViewport(0, 0, 900, 900);
-	glEnable(GL_DEPTH_TEST);
-	GLuint colorLoc = m_groundRenderer->getUniform("u_Color");
-	GLuint surroundingLoc = m_groundRenderer->getUniform("u_Surrounding");
-	GLuint surroundingColorLoc = m_groundRenderer->getUniform("u_SurroundingColor");
-	GLuint posLoc = m_groundRenderer->getUniform("u_Pos");
-	GLuint maxHeightLoc = m_groundRenderer->getUniform("u_MaxHeight");
-	GLuint igHeightLoc = m_groundRenderer->getUniform("u_IgnoreHeight");
-	GLuint proj = m_groundRenderer->getUniform("u_Proj");
-	GLuint view = m_groundRenderer->getUniform("u_View");
-	glm::mat4 projMat = glm::perspective(glm::radians(45.0f), 900.0f / 900.0f, 0.1f, getCullDist());
-	m_camPos.y = m_map->getHeightAt(m_camPos.x, m_camPos.z) + (m_zoomLevel * 2);
-	glm::mat4 viewMat = glm::lookAt(m_camPos, glm::vec3(m_camPos.x + 1.0f, m_camPos.y, m_camPos.z + 1.0f), glm::vec3(0, 1, 0));
-	glUniformMatrix4fv(proj, 1, GL_FALSE, glm::value_ptr(projMat));
-	glUniformMatrix4fv(view, 1, GL_FALSE, glm::value_ptr(viewMat));
-	glUniform1f(maxHeightLoc, m_map->getMaxHeight());
-	glUniform1i(igHeightLoc, true);
 	const float cullDist = getCullDist();
 
 	for (int x = 0; x < m_map->getWidth(); x += lodScale)
@@ -333,14 +317,13 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 			if (height > m_map->getHeightAt(x, y))
 				continue;
 
-			// calc model matrix here
 			const glm::vec3 current = { x, height, y };
 			if (cullDist < distFromCamera(current))
 				continue;
-
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), current);
 			model = glm::scale(model, glm::vec3(lodScale, 1.0f, lodScale));
 
+			// Surrounding node data
 			const Node* right = m_map->getNodeAt(x + lodScale, y);
 			const Node* left = m_map->getNodeAt(x - lodScale, y);
 			const Node* down = m_map->getNodeAt(x, y + lodScale);
@@ -350,19 +333,19 @@ void MapRenderer::renderAtHeight(SDL_Window* window, float height)
 			const Node* leftUp = m_map->getNodeAt(x - lodScale, y - lodScale);
 			const Node* leftDown = m_map->getNodeAt(x - lodScale, y + lodScale); 
 
+			// Color data at given height
 			const glm::vec3 color = m_map->getNodeAt(x, y)->getColorAtHeight(height);
 			const glm::vec3 topRightColor = ((up->getColorAtHeight(height) + right->getColorAtHeight(height) + rightUp->getColorAtHeight(height) + color) / 4.0f);
 			const glm::vec3 bottomRightColor = ((down->getColorAtHeight(height) + right->getColorAtHeight(height) + rightDown->getColorAtHeight(height) + color) / 4.0f);
 			const glm::vec3 bottomLeftColor = ((down->getColorAtHeight(height) + left->getColorAtHeight(height) + leftDown->getColorAtHeight(height) + color) / 4.0f);
 			const glm::vec3 topLeftColor = ((up->getColorAtHeight(height) + left->getColorAtHeight(height) + leftUp->getColorAtHeight(height) + color) / 4.0f);
-
  			const float values[12] = { topRightColor.x, topRightColor.y, topRightColor.z, bottomLeftColor.x, bottomLeftColor.y, bottomLeftColor.z, topLeftColor.x, topLeftColor.y, topLeftColor.z, bottomRightColor.x, bottomRightColor.y, bottomRightColor.z };
+			glUniform3fv(m_surroundingColorLoc, 4, values);
+			glUniform3f(m_colorLoc, color.x, color.y, color.z);
 
-			glUniform3fv(surroundingColorLoc, 4, values);
-
-			glUniform4f(surroundingLoc, 0.0f, 0.0f, 0.0f, 0.0f);
-			glUniform3f(colorLoc, color.x, color.y, color.z);
-			glUniformMatrix4fv(posLoc, 1, GL_FALSE, glm::value_ptr(model));
+			// No vertical scaling
+			glUniform4f(m_surroundingLoc, 0.0f, 0.0f, 0.0f, 0.0f);
+			glUniformMatrix4fv(m_posLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			glDrawArrays(GL_TRIANGLES, 0, 12);
 		}

@@ -30,6 +30,8 @@ public:
 	float distFromCamera(glm::vec3 pos);
 	int lodScaling();
 	int uncappedLodScaling();
+	void cacheProperties();
+	void prepareRender(bool ignoreHeight);
 protected:
 	std::vector<ShaderProgram*> m_shaderPrograms;
 	ShaderProgram* m_groundRenderer;
@@ -38,4 +40,15 @@ protected:
 	std::string m_knownResourceFolder;
 	glm::vec3 m_camPos;
 	int m_zoomLevel = 1;
+	bool m_propertiesCached = false;
+
+	GLuint m_colorLoc;
+	GLuint m_surroundingLoc;
+	GLuint m_surroundingColorLoc;
+	GLuint m_posLoc;
+	GLuint m_maxHeightLoc;
+	GLuint m_ignoreHeightLoc;
+	GLuint m_surrWaterHeightLoc;
+	GLuint m_projLoc;
+	GLuint m_viewLoc;
 };
