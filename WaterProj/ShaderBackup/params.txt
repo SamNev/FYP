@@ -1,56 +1,124 @@
+// The height at which noise is sampled. Will change all aspects of landscape generation randomly
 noiseSampleHeight 0.5
+// Scale of the map- will not affect water simulation, which assumes 1 meter/tile
 scale 1
-baseVariance 0.05
+// The base variance height of the ground from animals/plants etc. Keep very small.
+baseVariance 0.03
+// The average distance at which the land lie changes- lower values will have huge peaks/troughs in the land, high values for flatter land
 lieChangeRate 3000.0
+// The highest base land lie
 liePeak 25.0
+// The variance in land lie
 lieModif -24.0
+// Max height of generated hills
 hillHeight 80.0
+// Average distance between generated hills
 hillRarity 1000
+// Modifier for the "bumpiness" of hill generation. Higher values will cause rough hills, lower will cause smooth terrain lumps
 hillVariancePower 0.5
 
-// test comment :)
+// Average distance between divets
 divetRarity 85
+// Max divet height, as a multiplier of hill height
 divetHillScalar 0.05
 
+// Max mountain height
 mountainHeight 200.0
+// Average distance between attempts to generate mountains mountains
 mountainRarity 5000
+// Threshold at any given point to generate a mountain, from random(0 - 1)- by default, 85% chance for it to fail.
 mountainThreshold 0.85
+// Base multiplier for terrain under a mountain
 mountainConstantMultiplier 6.6
 
+// The amount of layers filled within the terrain at map generation. Steeper maps likely require more layers for realistic simulation
 generatedMapDensity 20
+// The average distance between large soil resistivity changes
 soilResistivityChangeRate 2000.0
+// Lowest soil resistivity
 soilResistivityBase 2.15
+// Variance in soil resistivity. Added to SoilResistivityBase
 soilResistivityVariance 0.3
+// Minimum generated soil sand content
 soilSandContent 0.25
+// Minimum generated soil clay content
 soilClayContent 0.22
+// Variance in soil sand content. Added to soilSandContent
 soilSandVariance 0.15
+// Variance in soil clay content. Added to soilClayContent
 soilClayVariance 0.07
+// Generated topsoil fertility
 soilFertility 0.8
 
+// Average distance between rocks within the terrain
 rockRarity 200.0
-rockResistivityVariance 0.6
-rockVerticalScaling 5.0
+// Minimum rock resistivity
 rockResistivityBase 3.8
+// Variance in rock resistivity. Added to rockResistivityBase
+rockResistivityVariance 0.6
+// Average rock height within the terrain
+rockVerticalScaling 5.0
+// Threshold to generate a rock
 rockThreshold 0.6
 
+// Height must be between this and 1.0 of the map's maximum height to generate a spring
 springThreshold 0.99
+// Average distance between attempted spring generation 
 springRarity 200
+// Threshold to collapse a hill into a cliff. Rarely used, keep very low to avoid massive terrain deformation
 cliffThreshold 0.0007
 
+// When particles are larger than this number in a node, all foliage is killed
 treeParticleDeathThreshold 0.1
+// Normal threshold at which foliage cannot generate. higher numbers will leave cliffs without any foliage
 treeSlopeThreshold 0.8
-treeSpreadChance 5
+// 1/treeSpreadChance chance for a tree to grow in an empty ajacent location
+treeSpreadChance 3
+// Radius at which a tree can spread
 treeSpreadRadius 9
+// Number of trees randomly spawned on the map per tick. Only exists to populate islands/after floods
 treeLongDistanceFertilizationCount 5
+// Foliage will not grow past this threshold
 foliageOverpopulationThreshold 0.8
+// Chance for all foliage in a node to randomly die
 treeRandomDeathChance 100000
+// Chance for generated node to have foliage
 treeGenerationRarity 2
 
-waterEvaporationRate 0.95
+// Rate at which water in a stream evaporates
+streamEvaporationRate 0.95
+// Rate at which water in a particle evaporates
+particleEvaporationRate 0.985
+// Assumed meter coverage of a drop radius (limited by height)
 dropWidth 2
+// Generated sea level of the maps
 seaLevel 0.0
+// Default volume of a drop. High increases may cause loss of accuracy!
+dropDefaultVolume 1.0
+// Minimum value of a drop before it is assumed to have fully evaporated
+dropMinimumVolume 0.001
+// Minimum simulation velocity of a drop. Used to ensure drops don't get stuck
+dropSedimentSimulationMinimumVelocity 1.0
+// If drop velocity drops this low, assume it's done moving and flood
+dropSedimentSimulationTerminationVelocity 0.075
+// Maximum deposited sediment in a single tick. In case of mathematical/force errors, shouldn't come into effect often
+dropSedimentDepositCap 0.015
+// Maximum sediment contained within a drop (kg)
+dropContainedSedimentCap 10.0
+// If a particle has only moved this far in 10 ticks, terminate it.
+particleTerminationProximity 4.0
+// The effect of previous streams on current particle movement. This needs to be low! Do not increase over 0.2 or simulation will fail!
+particleSwayMagnitude 0.05
+// Default increase of a flood. Higher values cause more efficient flooding of small areas.
+floodDefaultIncrease 0.01
+// Erode a drain this much when a particle drains.
+drainErosionAmount 0.005
 
+// Heighest generated sand height 
 peakSandHeight 0.5
+// Resistivity of sand (no variance)
 sandResistivity 1.5
+// Fertility of sand
 sandFertility 0.05
+// Resistivity of bedrock
 bedrockResisitivity 7.5

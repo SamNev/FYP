@@ -30,7 +30,7 @@ void main()
 	if(depth < 0.1)
 	    depth = 0.0;
 	
-        col = depth <= 0 ? col * (0.2 + (fs_in.FragPos.y/u_MaxHeight) * 0.8) : col * 0.1f + vec3(0.0, 0.6 - max(0.58, depth/50.0), 0.2 + max(0.6, depth/20.0));
+        col = depth <= 0 ? col * (0.2 + (fs_in.FragPos.y/u_MaxHeight) * 0.8) : (col * (0.10f - min(0.10f, depth/200.0f)) + vec3(0.0, 0.1 - min(0.05, depth/30.0), 0.2 - min(0.15, depth/50.0))) * 0.75f;
 	//if(depth > 0)
 	//    col = vec3(1.0f, 0.0f, 0.0f);
         gl_FragColor = vec4(col, 0.0f);

@@ -483,8 +483,9 @@ std::string Map::stats(glm::vec2 pos)
 	return oss.str();
 }
 
-void Map::erode(int cycles) {
-
+void Map::erode(int cycles) 
+{
+	m_age++;
 	// track all particle movement
 	bool* track = new bool[m_width * m_height];
 	std::fill(track, track + m_width * m_height, false);

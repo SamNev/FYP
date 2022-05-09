@@ -6,11 +6,9 @@
 #include "Map.h"
 #include "MapRenderer.h"
 
-//TODO: all this needs tidying
-
 SDL_Window* makeSDLWindow()
 {
-	// Init SDL, create window and screen
+	// Init SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		throw std::exception("SDL Init failed!");
@@ -21,9 +19,8 @@ SDL_Window* makeSDLWindow()
 		900, 900,
 		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
-	// V 4.5. Can be set to earlier versions if building for an older machine.
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	if (!SDL_GL_CreateContext(window))
@@ -72,11 +69,13 @@ int main()
 
 	float height = 0.2f;
 	bool exit = false;
-	bool erodeMe = false;
-	bool heightMode = false;
+	bool erosionEnabled = false;
+	bool heightDisplayMode = false;
+
 	while (!exit)
 	{
 		SDL_Event event;
+		// Scale speed based on current zoom
 		float speed = renderer.uncappedLodScaling() * 0.4f;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -84,16 +83,18 @@ int main()
 				exit = true;
 				break;
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_SPACE)
+				// Change map
+				if (event.key.keysym.sym == SDLK_r)
 				{
 					delete(currentMap);
 					seed = getSeed();
 					params.loadFromFile();
 					currentMap = new Map(1000, 1000, params, seed);
 					renderer.setMap(currentMap);
-					heightMode = false;
+					heightDisplayMode = false;
 					height = 0.2f;
 				}
+				// Camera movement
 				else if (event.key.keysym.sym == SDLK_w)
 				{
 					renderer.transformCam(glm::vec2(speed, speed));
@@ -110,10 +111,6 @@ int main()
 				{
 					renderer.transformCam(glm::vec2(-speed, speed));
 				}
-				else if (event.key.keysym.sym == SDLK_z)
-				{
-					renderer.setCamPos(glm::vec3(500, 10, 500));
-				}
 				else if (event.key.keysym.sym == SDLK_q)
 				{
 					renderer.zoomIn();
@@ -122,36 +119,44 @@ int main()
 				{
 					renderer.zoomOut();
 				}
-				else if (event.key.keysym.sym == SDLK_l)
+
+				// Debug
+				else if (event.key.keysym.sym == SDLK_KP_1)
 				{
 					currentMap->erodeAllByValue(0.5f);
 				}
+
+				// Height view mode
 				else if (event.key.keysym.sym == SDLK_UP)
 				{
-					if (heightMode)
+					if (heightDisplayMode)
 					{
 						height = height + 0.2f;
 					}
 				}
 				else if (event.key.keysym.sym == SDLK_DOWN)
 				{
-					if (heightMode) 
+					if (heightDisplayMode) 
 					{
 						height = height - 0.2f;
 					}
 				}
-				else if (event.key.keysym.sym == SDLK_h)
+				else if (event.key.keysym.sym == SDLK_KP_2)
 				{
-					heightMode = !heightMode;
+					heightDisplayMode = !heightDisplayMode;
 				}
+
+				// Quit
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
 					exit = true;
 				}
+				// play/pause
 				else if (event.key.keysym.sym == SDLK_p)
 				{
-					erodeMe = !erodeMe;
+					erosionEnabled = !erosionEnabled;
 				}
+				// Get node position
 				else if (event.key.keysym.sym == SDLK_i)
 				{
 					std::cout << "Which node? (x,y)" << std::endl;
@@ -169,15 +174,19 @@ int main()
 						std::cout << "invalid input" << std::endl;
 					}
 				}
-				else if (event.key.keysym.sym == SDLK_x)
+
+				// Current node stats
+				else if (event.key.keysym.sym == SDLK_KP_3)
 				{
 					std::cout << currentMap->stats(glm::vec2(renderer.getCamPos().x, renderer.getCamPos().z)) << std::endl;
 				}
-				else if (event.key.keysym.sym == SDLK_c)
+				// Current position
+				else if (event.key.keysym.sym == SDLK_KP_4)
 				{
 					std::cout << "Current position = " << renderer.getCamPos().x << ", " << renderer.getCamPos().z << std::endl;
 				}
-				else if (event.key.keysym.sym == SDLK_g)
+				// Go to position
+				else if (event.key.keysym.sym == SDLK_KP_5)
 				{
 					std::cout << "Which node? (x,y)" << std::endl;
 					std::string choice;
@@ -194,23 +203,27 @@ int main()
 						std::cout << "invalid input" << std::endl;
 					}
 				}
-				else if (event.key.keysym.sym == SDLK_1)
+				else if (event.key.keysym.sym == SDLK_KP_6)
 				{
 					currentMap->grow();
 				}
-				else if (event.key.keysym.sym == SDLK_t)
+				else if (event.key.keysym.sym == SDLK_KP_7)
+				{
+					currentMap->erode(100);
+				}
+				else if (event.key.keysym.sym == SDLK_KP_8)
 				{
 					std::cout << currentMap->getMapGeneralSoilType();
 				}
 
-				heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
+				heightDisplayMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;
 			default:
 				break;
 			}
 		}
 
-		if (erodeMe)
+		if (erosionEnabled)
 		{
 			auto start = std::chrono::system_clock::now();
 			currentMap->erode(100);
@@ -220,8 +233,8 @@ int main()
 			std::chrono::duration<double> elapsedTime = growEnd - start;
 			std::chrono::duration<double> erodeTime = erodeEnd - start;
 			std::chrono::duration<double> growTime = growEnd - erodeEnd;
-			std::cout << "Tick took " << elapsedTime.count() << "s. " << erodeTime.count() << "s was eroding, " << growTime.count()<< " was growing" << std::endl << std::endl;
-			heightMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
+			std::cout << "Year " << currentMap->getAge() << ". Tick took " << elapsedTime.count() << "s. " << erodeTime.count() << "s was eroding, " << growTime.count()<< " was growing" << std::endl << std::endl;
+			heightDisplayMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 		}
 	}
 }

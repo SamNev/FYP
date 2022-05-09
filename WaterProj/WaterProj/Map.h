@@ -191,6 +191,7 @@ public:
 	int getHeight() { return m_height; }
 	float getScale() { return m_params.scale; }
 	float getMaxHeight() { return m_maxHeight; }
+	int getAge() { return m_age; }
 	Node* getNodeAt(int x, int y);
 	float getDensityAt(int x, int y, float height);
 	float getHeightAt(int x, int y);
@@ -228,6 +229,7 @@ protected:
 	Node* m_nodes;
 	int m_width;
 	int m_height;
+	int m_age;
 	float m_maxHeight;
 	std::vector<glm::vec2> m_springs;
 	std::vector<SoilDefinition> m_soilDefinitions;
