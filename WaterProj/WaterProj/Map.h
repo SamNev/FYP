@@ -12,8 +12,8 @@
 #include "Plant.h"
 
 //#define FLOODTESTMAP
-#define BEDROCK_LAYER -2.0f
-#define BEDROCK_SAFETY_LAYER -1.9f
+#define BEDROCK_LAYER -20.0f
+#define BEDROCK_SAFETY_LAYER -19.9f
 
 class PerlinNoise;
 

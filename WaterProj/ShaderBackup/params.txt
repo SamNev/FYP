@@ -32,7 +32,7 @@ mountainThreshold 0.85
 mountainConstantMultiplier 6.6
 
 // The amount of layers filled within the terrain at map generation. Steeper maps likely require more layers for realistic simulation
-generatedMapDensity 20
+generatedMapDensity 40
 // The average distance between large soil resistivity changes
 soilResistivityChangeRate 2000.0
 // Lowest soil resistivity
@@ -123,4 +123,4 @@ sandResistivity 1.5
 // Fertility of sand
 sandFertility 0.05
 // Resistivity of bedrock
-bedrockResisitivity 7.5
+bedrockResisitivity 50.0
