@@ -162,7 +162,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     return true;
 }
 
-bool Drop::flood(Node* nodes, glm::ivec2 dim) 
+bool Drop::flood(Node* nodes, glm::ivec2 dim, float& maxHeight) 
 {
     float increaseAmount = m_params->floodDefaultIncrease;
     while (m_volume > m_params->dropMinimumVolume)
@@ -248,6 +248,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
 #endif // WATERDEBUG
             m_volume -= currVolume;
 
+            transportThroughPool(nodes, dim, &set, maxHeight);
             for (int s : set)
             {
                 nodes[s].setWaterHeight(plane);
@@ -300,10 +301,13 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                     break;
                 }
 
+                transportThroughPool(nodes, dim, &set, maxHeight);
+
                 for (int s : set)
                 {
                     nodes[s].setWaterHeight(plane);
                 }
+
                 m_pos = drainPos;
                 m_terminated = false;
             }
@@ -325,6 +329,35 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         delete[] tried;
     }
     return false;
+}
+
+void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* set, float& maxHeight)
+{
+#ifdef WATERDEBUG
+    std::cout << "mixing sediment in pool of " << set->size() << std::endl;
+#endif // WATERDEBUG
+    if (!set || set->size() < 1)
+        return;
+
+    NodeMarker sediment = m_sediment;
+    float sedimentAmount = m_sedimentAmount;
+    float depth = 0.0f;
+    for (int s : *set)
+    {
+        float transfer = m_volume * pow(m_volume * pow((nodes[s].top()->resistiveForce - 1) * 0.02943f, -0.5f), 2.4f) * 0.0027507f;
+        sedimentAmount += transfer;
+        sediment.mix(nodes[s].getDataAboveHeight(nodes[s].topHeight() - transfer), transfer / sedimentAmount);
+        depth += nodes[s].waterDepth();
+        nodes[s].erodeByValue(transfer);
+    }
+
+    sedimentAmount *= m_params->poolSedimentLossRate;
+
+    for (int s : *set)
+    {
+        float transfer = (nodes[s].waterDepth() / depth) * sedimentAmount;
+        nodes[s].setHeight(nodes[s].topHeight() + transfer, sediment, maxHeight);
+    }
 }
 
 float Drop::getMinVolume()

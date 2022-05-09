@@ -513,14 +513,14 @@ void Map::erode(int cycles)
 
 			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, track, dim, m_maxHeight) && drop.getVolume() > drop.getMinVolume())
 			{
-				if (!drop.flood(m_nodes, dim))
+				if (!drop.flood(m_nodes, dim, m_maxHeight))
 					break;
 			}
 		}
 
 		// If we've terminated for whatever reason, immediately try and flood
 		if (drop.getAge() >= 1000)
-			drop.flood(m_nodes, dim);
+			drop.flood(m_nodes, dim, m_maxHeight);
 
 		float prevCompletion = completion;
 		completion = (currentCycle / (float)cycles) * 100.0f;
