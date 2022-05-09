@@ -22,6 +22,12 @@ void Node::addMarker(float height, float resistiveForce, bool hardStop, glm::vec
 		maxHeight = height;
 	}
 
+	if (m_nodeData.size() > 0 && height > topHeight())
+	{
+		float diff = height - topHeight();
+		m_waterData.height = glm::max(m_waterData.height - diff, 0.0f);
+	}
+
 	// If there's no node data yet or this is the new lowest point, just push it back immediately.
 	if (m_nodeData.size() == 0 || m_nodeData[m_nodeData.size() - 1].height >= height)
 	{
