@@ -25,7 +25,7 @@ struct NodeMarker
 	float fertility = 0.8f;
 	float sandAmount = 0.3f;
 	float clayAmount = 0.25f;
-	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	void mix(NodeMarker marker, float weight)
 	{
