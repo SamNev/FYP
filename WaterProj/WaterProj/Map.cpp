@@ -14,7 +14,7 @@
 
 void MapParams::loadFromFile()
 {
-	// fetch executable name
+	// Fetch executable name
 	bool found = false;
 	wchar_t strExePath[MAX_PATH];
 	GetModuleFileName(NULL, strExePath, MAX_PATH);
@@ -24,20 +24,20 @@ void MapParams::loadFromFile()
 	char* nstring = new char[newsize];
 	wcstombs_s(&convertedChars, nstring, newsize, strExePath, _TRUNCATE);
 
-	// folderPath created from executable name
+	// FolderPath created from executable name
 	std::string folderPath = std::string(nstring);
 	std::string executableName = folderPath.substr(folderPath.find_last_of("\\"));
 	executableName = executableName.substr(1, executableName.length() - 5);
 	std::string fullpath;
 	while (!found && folderPath.find_last_of("\\") != std::string::npos)
 	{
-		// search upwards for folder matching exe name
+		// Search upwards for folder matching exe name
 		folderPath.erase(folderPath.find_last_of("\\"));
 		fullpath = folderPath + "\\" + executableName + "\\" + "params.txt";
 		std::ifstream file(fullpath);
 		if (file.is_open())
 		{
-			// if file is found
+			// If file is found
 			std::string currentLine;
 			int parameterCount = 0;
 			while (std::getline(file, currentLine))
@@ -45,7 +45,7 @@ void MapParams::loadFromFile()
 				try {
 					int spaceIndex = currentLine.find(' ');
 					std::string param = currentLine.substr(0, spaceIndex);
-					// search for float or int parameter
+					// Search for float or int parameter
 					std::map<std::string, float&>::iterator floatParamPos = floatPropertyMap.find(param);
 					std::map<std::string, int&>::iterator intParamPos = intPropertyMap.find(param);
 					if (floatParamPos != floatPropertyMap.end())
@@ -62,13 +62,13 @@ void MapParams::loadFromFile()
 					}
 					else
 					{
-						// this error message is never shown- caught below
+						// This error message is never shown- caught below
 						throw std::exception("didn't find property?");
 					}
 				}
 				catch (std::exception e)
 				{
-					// if line is empty or is a comment, don't show error message
+					// If line is empty or is a comment, don't show error message
 					if (currentLine.length() > 2)
 					{
 						if (currentLine.find("//") != 0)
@@ -101,13 +101,13 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 	m_maxHeight = 0.0f;
 	m_params = params;
 
-	// seed based on time or whatever was given
+	// Seed based on time or whatever was given
 	if(seed == 0)
 		srand(time(NULL));
 	else
 		srand(seed);
 
-	// a selection of varying perlin noise is needed to generate complex terrain
+	// A selection of varying perlin noise is needed to generate complex terrain
 	PerlinNoise noises[8];
 	for (int i = 0; i < 8; i++)
 	{
@@ -142,25 +142,25 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 
 			if (total < sandThreshold)
 			{
-				// sand (1.5g/cm3)
+				// Sand (1.5g/cm3)
 				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), m_params.sandResistivity, false, glm::vec3(1.0f, 1.0f, 0.7f), m_params.sandFertility, 1.0f, 0.0f, m_maxHeight);
 			}
 			else
 			{
-				// topsoil (2.3g/cm3). Clay will make more resistive, sand will make less resistive.
+				// Topsoil (2.3g/cm3). Clay will make more resistive, sand will make less resistive.
 				float topNoise = noises[NoiseType_Resistivity].noise(x / (m_params.soilResistivityChangeRate / m_params.scale), y / (m_params.soilResistivityChangeRate / m_params.scale), glm::max(BEDROCK_SAFETY_LAYER, total));
 				float sandAmount = m_params.soilSandContent + (1.0f - topNoise) * m_params.soilSandVariance;
 				float clayAmount = m_params.soilClayContent + topNoise * m_params.soilSandContent;
 				float resistivity = m_params.soilResistivityBase + topNoise * m_params.soilResistivityVariance;
 				m_nodes[y * width + x].addMarker(glm::max(BEDROCK_SAFETY_LAYER, total), resistivity, false, glm::vec3(0.2f + topNoise * 0.4f, 0.3f, 0.0f), m_params.soilFertility, sandAmount, clayAmount, m_maxHeight);
 			}
-			// bedrock (7.5g/cm3)
+			// Bedrock (7.5g/cm3)
 			m_nodes[y * width + x].addMarker(BEDROCK_LAYER, m_params.bedrockResisitivity, true, glm::vec3(0.1f), 0.0f, 0.0f, 0.0f, m_maxHeight);
-			// fill all nodes to a basic "sea level"
+			// Fill all nodes to a basic "sea level"
 			m_nodes[y * width + x].setWaterHeight(m_params.seaLevel);
 		}
 
-		// display progress
+		// Display progress
 		float prevCompletion = completion;
 		completion = (x / (float)width) * 100.0f;
 		if((int)completion % 10 < (int) prevCompletion % 10)
@@ -188,14 +188,15 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 		for (int y = 0; y < m_height; ++y)
 		{
 			bool isRock = false;
-			float maxHeightScaled = getHeightAt(x, y) / m_maxHeight;
+			float height = getHeightAt(x, y);
+			float maxHeightScaled = height / m_maxHeight;
 
-			// place a tree
+			// Place a tree
 			if (rand() % m_params.treeGenerationRarity == 0)
 				trySpawnTree(glm::vec2(x, y));
 
-			// peak heights can be springs, spawning water constantly
-			if (maxHeightScaled >= m_params.springThreshold && rand() % m_params.springRarity == 0)
+			// Peak heights can be springs, spawning water constantly
+			if (maxHeightScaled >= m_params.springThreshold && height > m_params.minimumSpringHeight &&  rand() % m_params.springRarity == 0)
 				addSpring(x, y);
 
 			for (float currHeight = 0.0f; currHeight < maxHeightScaled; currHeight += incrementValue)
@@ -486,7 +487,7 @@ std::string Map::stats(glm::vec2 pos)
 void Map::erode(int cycles) 
 {
 	m_age++;
-	// track all particle movement
+	// Track all particle movement
 	bool* track = new bool[m_width * m_height];
 	std::fill(track, track + m_width * m_height, false);
 	glm::vec2 dim = glm::vec2(m_width, m_height);
@@ -495,10 +496,10 @@ void Map::erode(int cycles)
 
 	for (int currentCycle = 0; currentCycle < cycles; currentCycle++)
 	{
-		// spawn particle
+		// Spawn particle
 		glm::vec2 newParticlePos = glm::vec2(rand() % m_width, rand() % m_height);
 
-		// spawn at spring if possible
+		// Spawn at spring if possible
 		if (springIndex < m_springs.size())
 		{
 			newParticlePos = m_springs.at(springIndex);
@@ -507,7 +508,7 @@ void Map::erode(int cycles)
 
 		Drop drop(newParticlePos, &m_params);
 
-		// if we've moved 1km, give up.
+		// If we've moved 1km, give up.
 		while (drop.getVolume() > drop.getMinVolume() && drop.getAge() < 1000) {
 
 			if (!drop.descend(normal((int)drop.getPosition().y * m_width + (int)drop.getPosition().x), m_nodes, track, dim, m_maxHeight) && drop.getVolume() > drop.getMinVolume())
@@ -517,7 +518,7 @@ void Map::erode(int cycles)
 			}
 		}
 
-		// if we've terminated for whatever reason, immediately try and flood
+		// If we've terminated for whatever reason, immediately try and flood
 		if (drop.getAge() >= 1000)
 			drop.flood(m_nodes, dim);
 
@@ -534,7 +535,7 @@ void Map::erode(int cycles)
 	std::cout << std::string(3, '\b') << "100 %";
 	std::cout << std::endl;
 
-	// travelled nodes can be filled outwards for wider, more effective-looking rivers
+	// Travelled nodes can be filled outwards for wider, more effective-looking rivers
 	int riverWidth = m_params.dropWidth * 2 + 1;
 	for (int i = 0; i < m_width * m_height; i++)
 	{
@@ -563,7 +564,7 @@ void Map::erode(int cycles)
 
 void Map::grow()
 {
-	// spawn a tree randomly on the map (long-distance fertilization)
+	// Spawn a tree randomly on the map (long-distance fertilization)
 	for (int i = 0; i < m_params.treeLongDistanceFertilizationCount; i++)
 	{
 		int newTreePos = rand() % (m_width * m_height);
@@ -574,7 +575,7 @@ void Map::grow()
 
 	for (int i = 0; i < m_width * m_height; i++)
 	{
-		// tree spawns a new tree
+		// Tree spawns a new tree
 		if (m_nodes[i].getFoliageDensity() > 0.5f)
 		{
 			if (rand() % m_params.treeSpreadChance == 0)
@@ -583,7 +584,7 @@ void Map::grow()
 				trySpawnTree(newPlantPos);
 			}
 
-			// trees die in water & sometimes die randomly
+			// Trees die in water & sometimes die randomly
 			if (m_nodes[i].waterDepth() > 0.0 || m_nodes[i].getParticles() > m_params.treeParticleDeathThreshold || rand() % m_params.treeRandomDeathChance == 0)
 			{
 				Plant::root(m_nodes, glm::vec2(m_width, m_height), glm::vec2(i % m_width, i / m_width), -1.0f);

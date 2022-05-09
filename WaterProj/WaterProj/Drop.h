@@ -5,7 +5,7 @@
 
 #include "Node.h"
 
-// resolves conflict between GLM and windows defines
+// Resolves conflict between GLM and windows defines
 #define NOMINMAX
 //#define WATERDEBUG
 

@@ -23,21 +23,21 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
 {
     int ind = floor(pos.y) * dim.x + floor(pos.x);
 
-    // don't simulate transfer if we're stuck on one tile
+    // Don't simulate transfer if we're stuck on one tile
     if (m_prevIndex == ind)
         return;
 
-    // avoid /0 and incredibly high deposit values due to sediment not moving at all
+    // Avoid /0 and incredibly high deposit values due to sediment not moving at all
     if (m_velocity.length() < m_params->dropSedimentSimulationMinimumVelocity)
         return;
 
-    // stokes' law, see write-up. Particle density assumed at 1500kg/m^3
+    // Stokes' law, see write-up. Particle density assumed at 1500kg/m^3
     float deposit = m_sedimentAmount * glm::max(0.1f, glm::min(0.5f, 2.4627f / (float)m_velocity.length()));
     deposit /= 8.0f;
 
     deposit = glm::min(m_params->dropSedimentDepositCap, deposit);
 
-    // neighbors
+    // For each neighboring node
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
     const int ny[8] = { -1, 0, 1,-1, 1,-1, 0, 1 };
 
@@ -64,11 +64,11 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         if (actingForce <= 0.0f)
             continue;
 
-        // van Rijn calculations for sediment transfer
-        // cohesionless and size assumed to be similar to dirt/sand (30000 microns)
+        // Van Rijn calculations for sediment transfer
+        // Cohesionless and size assumed to be similar to dirt/sand (30000 microns)
         float transportRate = pow(actingForce * pow((nodes[ind].top()->resistiveForce - 1) * 0.02943f, -0.5f), 2.4f) * 0.0027507f;
         float transfer = actingForce * transportRate;
-        // modify based on height difference, to account for exposed amount of surface
+        // Modify based on height difference, to account for exposed amount of surface
         transfer *= glm::max(1.0f, (1.5f - diff));
 
         m_sedimentAmount = glm::min(m_params->dropContainedSedimentCap, m_sedimentAmount + transfer);
@@ -85,7 +85,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
 
 bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, float& maxHeight) 
 {
-    // simulate behavior as a particle running down the landscape
+    // Simulate behavior as a particle running down the landscape
     if (m_terminated)
         return false;
 
@@ -100,7 +100,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
     nodes[index].setParticles(nodes[index].getParticles() + m_volume);
 
-    // likely to flow into other water
+    // Likely to flow into other water
     glm::vec2 particleEffect(0.0f);
     if(index - dim.x > 0)
         particleEffect.y -= nodes[index - dim.x].getParticles();
@@ -113,29 +113,29 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
     // θ can be found with dot product
     float theta = acos(glm::dot(norm, glm::vec3(0.0f, 1.0f, 0.0f)));
-    // frictional forces from foliage density. F=ma & f=μn
+    // Frictional forces from foliage density. F=ma & f=μn
     float frictionCoefficient = glm::min(glm::max(0.1f, nodes[index].getFoliageDensity()), 0.7f);
-    //scale to m/s, apply g
+    // Scale to m/s, apply g
     float frictionalDecelleraion = frictionCoefficient * 0.981f * sin(theta);
     m_velocity -= m_velocity * glm::min(0.8f, frictionalDecelleraion);
 
-    // more likely to travel to a location with water
+    // More likely to travel to a location with water
     if (particleEffect != glm::vec2(0.0f))
     {
         particleEffect = glm::normalize(particleEffect);
         m_velocity += particleEffect * m_params->particleSwayMagnitude;
     }
 
-    // accelleration due to gravity, a=gSin(θ)
+    // Accelleration due to gravity, a=gSin(θ)
     // a is in m/s and needs to be scaled due to the extended time period (a year divided by our simulation steps)
     glm::vec2 a = glm::vec2(norm.x, norm.y) * sin(theta);
     m_velocity += a * 26.28f;
 
-    // barely moving- flat surface and no speed?
+    // Barely moving- flat surface and no speed?
     if (glm::length(m_velocity) < m_params->dropSedimentSimulationTerminationVelocity)
         return false;
 
-    // we need to visit every possible square, so normalize velocity only for movement. This won't matter as we immediately simulate again and will keep moving!
+    // We need to visit every possible square, so normalize velocity only for movement. This won't matter as we immediately simulate again and will keep moving!
     m_pos += glm::normalize(m_velocity) * (float)sqrt(2);
 
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
@@ -255,7 +255,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
         else if(set.size() > 1)
         {
-            // not a parameter, as changing this can really impact performance
+            // Not a parameter, as changing this can really impact performance
             if (increaseAmount >= 0.00001f)
             {
                 increaseAmount /= 10.0f;
@@ -309,7 +309,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
             }
             else
             {
-                // we're going to fill off the map, so "evaporate" and vanish
+                // We're going to fill off the map, so "evaporate" and vanish
                 m_volume = 0.0f;
             }
 #ifdef WATERDEBUG
@@ -318,7 +318,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
         else
         {
-            // evaporate as nothing else can happen here- we can't fill anything at all
+            // Evaporate as nothing else can happen here- we can't fill anything at all
             m_volume = 0.0f;
         }
 

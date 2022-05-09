@@ -63,6 +63,8 @@ rockThreshold 0.6
 
 // Height must be between this and 1.0 of the map's maximum height to generate a spring
 springThreshold 0.99
+// Minimum height a spring can generate at
+minimumSpringHeight 50
 // Average distance between attempted spring generation 
 springRarity 200
 // Threshold to collapse a hill into a cliff. Rarely used, keep very low to avoid massive terrain deformation

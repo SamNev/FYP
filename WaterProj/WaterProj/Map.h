@@ -70,6 +70,7 @@ struct MapParams
 		floatPropertyMap.emplace(std::pair<std::string, float&>("rockThreshold", rockThreshold));
 
 		floatPropertyMap.emplace(std::pair<std::string, float&>("springThreshold", springThreshold));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("minimumSpringHeight", minimumSpringHeight));
 		intPropertyMap.emplace(std::pair<std::string, int&>("springRarity", springRarity));
 
 		floatPropertyMap.emplace(std::pair<std::string, float&>("cliffThreshold", cliffThreshold));
@@ -144,6 +145,7 @@ struct MapParams
 	float rockThreshold = 0.6f;
 
 	float springThreshold = 0.99f;
+	float minimumSpringHeight = 50.0f;
 	int springRarity = 200;
 
 	float cliffThreshold = 0.0007f;

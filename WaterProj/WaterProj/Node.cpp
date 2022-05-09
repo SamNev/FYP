@@ -138,7 +138,7 @@ glm::vec3 Node::getColorAtHeight(float height) const
 	return m_nodeData[0].color;
 }
 
-// debug function. Removes top node data.
+// Debug function. Removes top node data.
 void Node::skim()
 {
 	if(m_nodeData.size() > 1)
@@ -309,7 +309,7 @@ void Node::setParticles(float particles)
 {
 	if (particles < 2.0f && particles > 0.0f && !hasWater())
 	{
-		// calculate water supply to current node
+		// Calculate water supply to current node
 		m_vegetationData.waterSupply = 1.0f - (abs(1.0f - particles));
 	}
 	else

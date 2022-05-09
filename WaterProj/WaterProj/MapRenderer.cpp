@@ -72,7 +72,7 @@ void MapRenderer::makeMapTile()
 	// Reset the state
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	//VAO config
+	// VAO config
 	m_vaoId = 0;
 
 	// Create a new VAO on the GPU and bind it
@@ -86,8 +86,7 @@ void MapRenderer::makeMapTile()
 	int size = sizeof(positionsA) / sizeof(positionsA[0]);
 	glBindVertexArray(m_vaoId);
 
-	// Bind the position VBO, assign it to position 0 on the bound VAO
-	// and flag it to be used
+	// Bind the position VBO, assign it to position 0 on the bound VAO and flag it to be used
 	glBindBuffer(GL_ARRAY_BUFFER, positionsVboId);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
 		3 * sizeof(GLfloat), (void*)0);
@@ -132,7 +131,7 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 		throw std::exception((std::string("Could not open vertex shader from file: ") + vertexShaderPath).c_str());
 	}
 
-	// repeat for frag shader
+	// Repeat for frag shader
 	calcPath(fragmentShaderPath);
 	std::ifstream fragmentFile(fragmentShaderPath);
 	GLchar* fShaderText = NULL;
@@ -236,7 +235,7 @@ void MapRenderer::render(SDL_Window* window)
 	{
 		for (int y = 0; y < m_map->getHeight(); y += lodScale)
 		{
-			// current node height & color
+			// Current node height & color
 			const float height = m_map->getHeightAt(x, y);
 			glm::vec3 color = m_map->getNodeAt(x, y)->topColor();
 			glUniform3f(m_colorLoc, color.x, color.y, color.z);
