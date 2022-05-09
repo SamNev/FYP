@@ -35,6 +35,25 @@ SDL_Window* makeSDLWindow()
 	return window;
 }
 
+void printControls()
+{
+	std::cout << "\nControls:\n";
+	std::cout << "ESC: Quit\n";
+	std::cout << "W,A,S,D: Transform camera\n";
+	std::cout << "Q,E: Zoom in, zoom out\n";
+	std::cout << "P: Play/pause simulation\n";
+	std::cout << "1: Enter height view mode\n";
+	std::cout << "Up/Down arrows: Raise/Lower height view mode\n";
+	std::cout << "2: Get node data at specified position\n";
+	std::cout << "3: Get node data at current position\n";
+	std::cout << "4: Get general map soil data\n";
+	std::cout << "5: Get current position\n";
+	std::cout << "6: Go to position\n";
+	std::cout << "7: Simulate foliage growth\n";
+	std::cout << "8: Simulate fluid movement\n";
+	std::cout << "9: Erode all terrain (debug)\n\n";
+}
+
 unsigned int getSeed()
 {
 	system("cls");
@@ -66,6 +85,7 @@ int main()
 	Map* currentMap = new Map(1000, 1000, params, seed);
 	MapRenderer renderer(currentMap);
 	renderer.render(window);
+	printControls();
 
 	float height = 0.2f;
 	bool exit = false;
@@ -91,6 +111,7 @@ int main()
 					params.loadFromFile();
 					currentMap = new Map(1000, 1000, params, seed);
 					renderer.setMap(currentMap);
+					printControls();
 					heightDisplayMode = false;
 					height = 0.2f;
 				}
@@ -119,13 +140,20 @@ int main()
 				{
 					renderer.zoomOut();
 				}
-
-				// Debug
-				else if (event.key.keysym.sym == SDLK_KP_1)
+				// Quit
+				else if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
-					currentMap->erodeAllByValue(0.5f);
+					exit = true;
 				}
-
+				// Play/pause
+				else if (event.key.keysym.sym == SDLK_p)
+				{
+					erosionEnabled = !erosionEnabled;
+				}
+				else if (event.key.keysym.sym == SDLK_1)
+				{
+					heightDisplayMode = !heightDisplayMode;
+				}
 				// Height view mode
 				else if (event.key.keysym.sym == SDLK_UP)
 				{
@@ -141,28 +169,13 @@ int main()
 						height = height - 0.2f;
 					}
 				}
-				else if (event.key.keysym.sym == SDLK_KP_2)
-				{
-					heightDisplayMode = !heightDisplayMode;
-				}
-
-				// Quit
-				else if (event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					exit = true;
-				}
-				// play/pause
-				else if (event.key.keysym.sym == SDLK_p)
-				{
-					erosionEnabled = !erosionEnabled;
-				}
-				// Get node position
-				else if (event.key.keysym.sym == SDLK_i)
+				// Get stats at position
+				else if (event.key.keysym.sym == SDLK_2)
 				{
 					std::cout << "Which node? (x,y)" << std::endl;
 					std::string choice;
 					std::getline(std::cin, choice);
-					
+
 					int choicePos = choice.find(',');
 					try {
 						int locationY = stoi(choice.substr(choicePos + 1));
@@ -174,19 +187,22 @@ int main()
 						std::cout << "invalid input" << std::endl;
 					}
 				}
-
 				// Current node stats
-				else if (event.key.keysym.sym == SDLK_KP_3)
+				else if (event.key.keysym.sym == SDLK_3)
 				{
 					std::cout << currentMap->stats(glm::vec2(renderer.getCamPos().x, renderer.getCamPos().z)) << std::endl;
 				}
+				else if (event.key.keysym.sym == SDLK_4)
+				{
+					std::cout << currentMap->getMapGeneralSoilType();
+				}
 				// Current position
-				else if (event.key.keysym.sym == SDLK_KP_4)
+				else if (event.key.keysym.sym == SDLK_5)
 				{
 					std::cout << "Current position = " << renderer.getCamPos().x << ", " << renderer.getCamPos().z << std::endl;
 				}
 				// Go to position
-				else if (event.key.keysym.sym == SDLK_KP_5)
+				else if (event.key.keysym.sym == SDLK_6)
 				{
 					std::cout << "Which node? (x,y)" << std::endl;
 					std::string choice;
@@ -203,19 +219,19 @@ int main()
 						std::cout << "invalid input" << std::endl;
 					}
 				}
-				else if (event.key.keysym.sym == SDLK_KP_6)
+				else if (event.key.keysym.sym == SDLK_7)
 				{
 					currentMap->grow();
 				}
-				else if (event.key.keysym.sym == SDLK_KP_7)
+				else if (event.key.keysym.sym == SDLK_8)
 				{
 					currentMap->erode(100);
 				}
-				else if (event.key.keysym.sym == SDLK_KP_8)
+				// Debug
+				else if (event.key.keysym.sym == SDLK_9)
 				{
-					std::cout << currentMap->getMapGeneralSoilType();
+					currentMap->erodeAllByValue(0.5f);
 				}
-
 				heightDisplayMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 				break;
 			default:
@@ -237,4 +253,6 @@ int main()
 			heightDisplayMode ? renderer.renderAtHeight(window, height) : renderer.render(window);
 		}
 	}
+
+	delete(currentMap);
 }
