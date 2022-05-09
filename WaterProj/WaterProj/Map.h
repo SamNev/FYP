@@ -83,9 +83,20 @@ struct MapParams
 		intPropertyMap.emplace(std::pair<std::string, int&>("treeRandomDeathChance", treeRandomDeathChance));
 		intPropertyMap.emplace(std::pair<std::string, int&>("treeGenerationRarity", treeGenerationRarity));
 
-		floatPropertyMap.emplace(std::pair<std::string, float&>("waterEvaporationRate", waterEvaporationRate));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("streamEvaporationRate", streamEvaporationRate));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("particleEvaporationRate", particleEvaporationRate));
 		intPropertyMap.emplace(std::pair<std::string, int&>("dropWidth", dropWidth));
 		floatPropertyMap.emplace(std::pair<std::string, float&>("seaLevel", seaLevel));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("dropDefaultVolume", dropDefaultVolume));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("dropMinimumVolume", dropMinimumVolume));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("dropSedimentSimulationMinimumVelocity", dropSedimentSimulationMinimumVelocity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("dropSedimentSimulationTerminationVelocity", dropSedimentSimulationTerminationVelocity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("dropSedimentDepositCap", dropSedimentDepositCap));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("dropContainedSedimentCap", dropContainedSedimentCap));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("particleTerminationProximity", particleTerminationProximity));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("particleSwayMagnitude", particleSwayMagnitude));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("floodDefaultIncrease", floodDefaultIncrease));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("drainErosionAmount", drainErosionAmount));
 
 		floatPropertyMap.emplace(std::pair<std::string, float&>("peakSandHeight", peakSandHeight));
 		floatPropertyMap.emplace(std::pair<std::string, float&>("sandResistivity", sandResistivity));
@@ -146,9 +157,20 @@ struct MapParams
 	int treeRandomDeathChance = 100000;
 	int treeGenerationRarity = 2;
 
-	float waterEvaporationRate = 0.95f;
+	float streamEvaporationRate = 0.95f;
+	float particleEvaporationRate = 0.985f;
 	int dropWidth = 2;
 	float seaLevel = 0.0f;
+	float dropDefaultVolume = 1.0f;
+	float dropMinimumVolume = 0.001f;
+	float dropSedimentSimulationMinimumVelocity = 1.0f;
+	float dropSedimentSimulationTerminationVelocity = 0.075f;
+	float dropSedimentDepositCap = 0.015f;
+	float dropContainedSedimentCap = 10.0f;
+	float particleTerminationProximity = 4.0f;
+	float particleSwayMagnitude = 0.05f;
+	float floodDefaultIncrease = 0.01f;
+	float drainErosionAmount = 0.005f;
 
 	float peakSandHeight = 0.5f;
 	float sandResistivity = 1.5f;

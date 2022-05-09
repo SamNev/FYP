@@ -504,7 +504,7 @@ void Map::erode(int cycles) {
 			springIndex++;
 		}
 
-		Drop drop(newParticlePos);
+		Drop drop(newParticlePos, &m_params);
 
 		// if we've moved 1km, give up.
 		while (drop.getVolume() > drop.getMinVolume() && drop.getAge() < 1000) {
@@ -549,11 +549,11 @@ void Map::erode(int cycles) {
 				}
 			}
 
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - (0.5f * m_params.waterEvaporationRate))));
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - (0.5f * m_params.streamEvaporationRate))));
 		}
 		else
 		{
-			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - m_params.waterEvaporationRate)));
+			m_nodes[i].setParticles(glm::max(0.0f, m_nodes[i].getParticles() * (1.0f - m_params.streamEvaporationRate)));
 		}
 	}
 

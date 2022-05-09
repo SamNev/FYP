@@ -1,16 +1,20 @@
 ﻿#include "Drop.h"
+
 #include <iostream>
 #include <stack>
 
-//TODO: all the water params
+#include "Map.h"
 
-Drop::Drop(glm::vec2 pos) 
-{ 
+Drop::Drop(glm::vec2 pos, MapParams* params) 
+{
+    m_params = params;
+    m_volume = params->dropDefaultVolume;
     m_pos = pos; 
 }
 
-Drop::Drop(glm::vec2 pos, float volume) 
+Drop::Drop(glm::vec2 pos, float volume, MapParams* params) 
 {
+    m_params = params;
     m_pos = pos;
     m_volume = volume;
 }
@@ -24,15 +28,14 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         return;
 
     // avoid /0 and incredibly high deposit values due to sediment not moving at all
-    if (m_velocity.length() < 1.0f)
+    if (m_velocity.length() < m_params->dropSedimentSimulationMinimumVelocity)
         return;
 
     // stokes' law, see write-up. Particle density assumed at 1500kg/m^3
     float deposit = m_sedimentAmount * glm::max(0.1f, glm::min(0.5f, 2.4627f / (float)m_velocity.length()));
     deposit /= 8.0f;
-    float depositCap = 0.015f;
-    if (deposit > depositCap)
-        deposit = depositCap;
+
+    deposit = glm::min(m_params->dropSedimentDepositCap, deposit);
 
     // neighbors
     const int nx[8] = { -1,-1,-1, 0, 0, 1, 1, 1 };
@@ -68,7 +71,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         // modify based on height difference, to account for exposed amount of surface
         transfer *= glm::max(1.0f, (1.5f - diff));
 
-        m_sedimentAmount = glm::min(10.0f, m_sedimentAmount + transfer);
+        m_sedimentAmount = glm::min(m_params->dropContainedSedimentCap, m_sedimentAmount + transfer);
         m_sediment.mix(nodes[ind].getDataAboveHeight(nodes[ind].topHeight() - transfer), glm::max(0.0f, glm::min(1.0f, transfer / m_sedimentAmount)));
 
         nodes[ind].setHeight(nodes[ind].topHeight() - transfer, m_sediment, maxHeight);
@@ -86,7 +89,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     if (m_terminated)
         return false;
 
-    if (m_volume < m_minVol)
+    if (m_volume < m_params->dropMinimumVolume)
         return false;
 
     m_lastVelocity = m_velocity;
@@ -120,7 +123,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     if (particleEffect != glm::vec2(0.0f))
     {
         particleEffect = glm::normalize(particleEffect);
-        m_velocity += particleEffect * 0.05f;
+        m_velocity += particleEffect * m_params->particleSwayMagnitude;
     }
 
     // accelleration due to gravity, a=gSin(θ)
@@ -129,7 +132,7 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     m_velocity += a * 26.28f;
 
     // barely moving- flat surface and no speed?
-    if (glm::length(m_velocity) < 0.075f)
+    if (glm::length(m_velocity) < m_params->dropSedimentSimulationTerminationVelocity)
         return false;
 
     // we need to visit every possible square, so normalize velocity only for movement. This won't matter as we immediately simulate again and will keep moving!
@@ -138,15 +141,15 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
     if (m_pos.x < 0 || m_pos.x >= dim.x || m_pos.y < 0 || m_pos.y >= dim.y)
         return false;
 
-    m_volume *= 0.985f;
-    m_sedimentAmount *= 0.985f;
+    m_volume *= m_params->particleEvaporationRate;
+    m_sedimentAmount *= m_params->particleEvaporationRate;
     m_age++;
 
     if (m_previous.size() >= 10)
     {
         glm::ivec2 prev = m_previous.front();
 
-        if (distance(m_previous.front(), m_pos) < 4.0f || nodes[prev.y * dim.x + prev.x].hasWater())
+        if (distance(m_previous.front(), m_pos) < m_params->particleTerminationProximity || nodes[prev.y * dim.x + prev.x].hasWater())
             m_terminated = true;
        
         m_previous.pop();
@@ -161,8 +164,8 @@ bool Drop::descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, flo
 
 bool Drop::flood(Node* nodes, glm::ivec2 dim) 
 {
-    float increaseAmount = 0.01f;
-    while (m_volume > m_minVol)
+    float increaseAmount = m_params->floodDefaultIncrease;
+    while (m_volume > m_params->dropMinimumVolume)
     {
         int index = (int)m_pos.y * dim.x + (int)m_pos.x;
         if (index < 0 || index >= dim.x * dim.y)
@@ -252,6 +255,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         }
         else if(set.size() > 1)
         {
+            // not a parameter, as changing this can really impact performance
             if (increaseAmount >= 0.00001f)
             {
                 increaseAmount /= 10.0f;
@@ -292,7 +296,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
                 glm::vec2 drainPos = glm::vec2(drain % dim.x, drain / dim.x);
                 if (m_pos == drainPos)
                 {
-                    nodes[drain].erodeByValue(0.005f);
+                    nodes[drain].erodeByValue(m_params->drainErosionAmount);
                     break;
                 }
 
@@ -321,4 +325,9 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim)
         delete[] tried;
     }
     return false;
+}
+
+float Drop::getMinVolume()
+{
+    return m_params->dropMinimumVolume;
 }
