@@ -1,9 +1,9 @@
 #include "Node.h"
 
-#include "Plant.h"
-
 #include <ext.hpp>
 #include <iostream>
+
+#include "Plant.h"
 
 NodeMarker* Node::top()
 {

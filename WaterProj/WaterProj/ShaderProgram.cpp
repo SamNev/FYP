@@ -2,15 +2,12 @@
 
 #include <vector>
 
-//TODO: does this need any changes? Probs not?
-
 ShaderProgram::ShaderProgram(const std::string vertexShader, const std::string fragmentShader)
 {
 	const char* vert = vertexShader.c_str();
 	const char* frag = fragmentShader.c_str();
 
-	// Create a new vertex shader, attach source code, compile it and
-	// check for errors.
+	// Create a new vertex shader, attach source code, compile it and check for errors.
 	GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShaderId, 1, &vert, NULL);
 	glCompileShader(vertexShaderId);
@@ -33,8 +30,7 @@ ShaderProgram::ShaderProgram(const std::string vertexShader, const std::string f
 		throw std::exception(error.c_str());
 	}
 
-	// Create a new fragment shader, attach source code, compile it and
-	// check for errors.
+	// Create a new fragment shader, attach source code, compile it and check for errors.
 	GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderId, 1, &frag, NULL);
 	glCompileShader(fragmentShaderId);
@@ -54,7 +50,7 @@ ShaderProgram::ShaderProgram(const std::string vertexShader, const std::string f
 		throw std::exception(error.c_str());
 	}
 
-	// Create new shader program and attach our shader objects
+	// Create new shader program and attach shader objects
 	m_id = glCreateProgram();
 	glAttachShader(m_id, vertexShaderId);
 	glAttachShader(m_id, fragmentShaderId);

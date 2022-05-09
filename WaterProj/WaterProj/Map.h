@@ -3,13 +3,13 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <SDL2/SDL.h>
 #include <string>
 #include <time.h>
 #include <Windows.h>
 
 #include "Node.h"
 #include "Plant.h"
-#include "SDL2/SDL.h"
 
 //#define FLOODTESTMAP
 #define BEDROCK_LAYER -2.0f

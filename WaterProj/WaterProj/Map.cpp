@@ -4,11 +4,11 @@
 #include <ext.hpp>
 #include <sstream>
 
+#include "Drop.h"
 #include "MapRenderer.h"
 #include "Node.h"
 #include "PerlinNoise.h"
 #include "Plant.h"
-#include "Drop.h"
 
 ///////////////////////////////////////////////////////////////////////////////// MapParams
 
