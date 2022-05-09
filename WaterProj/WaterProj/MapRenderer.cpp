@@ -36,6 +36,7 @@ void MapRenderer::setMap(Map* map)
 
 void MapRenderer::makeMapTile()
 {
+	// Positions of default map tile
 	const GLfloat positionsA[] = {
 		0.0f, 0.0f, 0.0f,
 		0.5f, 0.0f, 0.5f,
@@ -98,6 +99,7 @@ void MapRenderer::makeMapTile()
 
 ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath)
 {
+	// Get path, searching upwards
 	calcPath(vertexShaderPath);
 	std::ifstream vertexFile(vertexShaderPath);
 	GLchar* vShaderText = NULL;
@@ -108,22 +110,20 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 		int length = (int)vertexFile.tellg() + 1;
 		vertexFile.seekg(0, vertexFile.beg);
 
-		// Create our buffer
+		// Create buffer
 		vShaderText = new char[length] { NULL };
 
 		// Transfer data from file to buffer
 		vertexFile.read(&vShaderText[0], length);
 
-		// End of the file
+		// End of file
 		if (!vertexFile.eof())
 		{
 			vertexFile.close();
 			throw std::exception((std::string("Could not read vertex shader from file: ") + vertexShaderPath).c_str());
 		}
 
-		// Needs to be NULL-terminated
 		vShaderText[length - 1] = 0;
-
 		vertexFile.close();
 	}
 	else
@@ -131,6 +131,7 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 		throw std::exception((std::string("Could not open vertex shader from file: ") + vertexShaderPath).c_str());
 	}
 
+	// repeat for frag shader
 	calcPath(fragmentShaderPath);
 	std::ifstream fragmentFile(fragmentShaderPath);
 	GLchar* fShaderText = NULL;
@@ -141,21 +142,19 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 		int length = (int)fragmentFile.tellg() + 1;
 		fragmentFile.seekg(0, fragmentFile.beg);
 
-		// Create our buffer
+		// Create buffer
 		fShaderText = new char[length] { NULL };
 		// Transfer data from file to buffer
 		fragmentFile.read(&fShaderText[0], length);
 
-		// End of the file
+		// End of file
 		if (!fragmentFile.eof())
 		{
 			fragmentFile.close();
 			throw std::exception((std::string("Could not read fragment shader from file: ") + fragmentShaderPath).c_str());
 		}
 
-		// Needs to be NULL-terminated
 		fShaderText[length - 1] = 0;
-
 		fragmentFile.close();
 	}
 	else
@@ -170,6 +169,7 @@ ShaderProgram* MapRenderer::createShaderProgram(std::string vertexShaderPath, st
 
 int MapRenderer::lodScaling()
 {
+	// Capped to prevent rediculous data oversimplification
 	return min(8.0f, uncappedLodScaling());
 }
 
@@ -185,6 +185,7 @@ void MapRenderer::transformCam(glm::vec2 transformation)
 
 float MapRenderer::getCullDist()
 {
+	// Cull distance depends on current LOD
 	return min(pow(uncappedLodScaling(), 1.9f) * 50.0f, 4000.0f);
 }
 
