@@ -94,7 +94,7 @@ particleEvaporationRate 0.985
 // Assumed meter coverage of a drop radius (limited by height)
 dropWidth 2
 // Generated sea level of the maps
-seaLevel 0.0
+seaLevel 2.0
 // Default volume of a drop. High increases may cause loss of accuracy!
 dropDefaultVolume 1.0
 // Minimum value of a drop before it is assumed to have fully evaporated
@@ -116,8 +116,10 @@ floodDefaultIncrease 0.01
 // Erode a drain this much when a particle drains.
 drainErosionAmount 0.005
 
-// Heighest generated sand height 
-peakSandHeight 0.5
+// Variance in sand height
+sandHeightVariance 0.5
+// Minimum sand height
+minimumSandHeight 2.0
 // Resistivity of sand (no variance)
 sandResistivity 1.5
 // Fertility of sand

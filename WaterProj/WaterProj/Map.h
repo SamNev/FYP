@@ -12,8 +12,8 @@
 #include "Plant.h"
 
 //#define FLOODTESTMAP
-#define BEDROCK_LAYER -20.0f
-#define BEDROCK_SAFETY_LAYER -19.9f
+#define BEDROCK_LAYER 0.0f
+#define BEDROCK_SAFETY_LAYER 0.1f
 
 class PerlinNoise;
 
@@ -100,7 +100,8 @@ struct MapParams
 		floatPropertyMap.emplace(std::pair<std::string, float&>("drainErosionAmount", drainErosionAmount));
 		floatPropertyMap.emplace(std::pair<std::string, float&>("poolSedimentLossRate", poolSedimentLossRate));
 
-		floatPropertyMap.emplace(std::pair<std::string, float&>("peakSandHeight", peakSandHeight));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("sandHeightVariance", sandHeightVariance));
+		floatPropertyMap.emplace(std::pair<std::string, float&>("minimumSandHeight", minimumSandHeight));
 		floatPropertyMap.emplace(std::pair<std::string, float&>("sandResistivity", sandResistivity));
 		floatPropertyMap.emplace(std::pair<std::string, float&>("sandFertility", sandFertility));
 
@@ -176,9 +177,10 @@ struct MapParams
 	float drainErosionAmount = 0.005f;
 	float poolSedimentLossRate = 0.5f;
 
-	float peakSandHeight = 0.5f;
+	float sandHeightVariance = 0.5f;
 	float sandResistivity = 1.5f;
 	float sandFertility = 0.05f;
+	float minimumSandHeight = 0.2f;
 
 	float bedrockResisitivity = 7.5f;
 };

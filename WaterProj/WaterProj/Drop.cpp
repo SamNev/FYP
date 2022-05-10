@@ -330,7 +330,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim, float& maxHeight)
     }
     return false;
 }
-
+#pragma optimize( "", off )
 void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* set, float& maxHeight)
 {
 #ifdef WATERDEBUG
@@ -344,14 +344,20 @@ void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* se
     float depth = 0.0f;
     for (int s : *set)
     {
-        float transfer = m_volume * pow(m_volume * pow((nodes[s].top()->resistiveForce - 1) * 0.02943f, -0.5f), 2.4f) * 0.0027507f;
-        sedimentAmount += transfer;
-        sediment.mix(nodes[s].getDataAboveHeight(nodes[s].topHeight() - transfer), transfer / sedimentAmount);
+        if (nodes[s].top()->resistiveForce < 10.0f)
+        {
+            float transfer = m_volume * pow(m_volume * pow((nodes[s].top()->resistiveForce - 1) * 0.02943f, -0.5f), 2.4f) * 0.0027507f;
+            sedimentAmount += transfer;
+            sediment.mix(nodes[s].getDataAboveHeight(nodes[s].topHeight() - transfer, true), transfer / sedimentAmount);
+            nodes[s].erodeByValue(transfer);
+        }
+
         depth += nodes[s].waterDepth();
-        nodes[s].erodeByValue(transfer);
     }
 
     sedimentAmount *= m_params->poolSedimentLossRate;
+    if (depth == 0)
+        return;
 
     for (int s : *set)
     {
@@ -359,6 +365,7 @@ void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* se
         nodes[s].setHeight(nodes[s].topHeight() + transfer, sediment, maxHeight);
     }
 }
+#pragma optimize( "", on )
 
 float Drop::getMinVolume()
 {

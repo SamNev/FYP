@@ -138,7 +138,7 @@ Map::Map(int width, int height, MapParams params, unsigned int seed)
 			total = (abs(x-500) + abs(y-500))/20.0f;
 #endif
 
-			const float sandThreshold = noises[NoiseType_Sand].noise(x, y, m_params.noiseSampleHeight) * m_params.peakSandHeight;
+			const float sandThreshold = noises[NoiseType_Sand].noise(x, y, m_params.noiseSampleHeight) * m_params.sandHeightVariance + m_params.minimumSandHeight;
 
 			if (total < sandThreshold)
 			{
@@ -189,6 +189,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 		{
 			bool isRock = false;
 			float height = getHeightAt(x, y);
+
 			float maxHeightScaled = height / m_maxHeight;
 
 			// Place a tree
@@ -201,6 +202,9 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 
 			for (float currHeight = 0.0f; currHeight < maxHeightScaled; currHeight += incrementValue)
 			{
+				if (currHeight * m_maxHeight < BEDROCK_SAFETY_LAYER)
+					continue;
+
 				const float scaledDensHeight = currHeight * m_params.rockVerticalScaling;
 				if (!isRock)
 				{
