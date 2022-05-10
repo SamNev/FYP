@@ -17,11 +17,12 @@ public:
     Drop(glm::vec2 p, float v, MapParams* params);
 
     bool descend(glm::vec3 norm, Node* nodes, bool* track, glm::ivec2 dim, float& maxHeight);
-    bool flood(Node* nodes, glm::ivec2 dim);
+    bool flood(Node* nodes, glm::ivec2 dim, float& maxHeight);
     void cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, float& maxHeight);
     glm::vec2 getPosition() { return m_pos; }
     float getVolume() { return m_volume; }
     float getMinVolume();
+    void transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* set, float& maxHeight);
     int getAge() { return m_age; }
 
 protected:
