@@ -258,10 +258,14 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 void Map::defineSoils()
 {
 	// All the soil types we need to know
-	m_soilDefinitions.push_back(SoilDefinition("eapa", glm::vec2(0.22f, 0.29f), glm::vec2(0.24f, 0.34f), glm::vec2(0.2f, 0.8f), glm::vec2(0.0f, 2.5f)));
-	m_soilDefinitions.push_back(SoilDefinition("attewan", glm::vec2(0.05f, 0.28f), glm::vec2(0.35f, 0.79f), glm::vec2(0.2f, 0.75f), glm::vec2(2.2f, 3.0f)));
-	m_soilDefinitions.push_back(SoilDefinition("ethridge", glm::vec2(0.31f, 0.39f), glm::vec2(0.18f, 0.30f), glm::vec2(0.2f, 0.8f), glm::vec2(2.8f, 4.0f)));
-	m_soilDefinitions.push_back(SoilDefinition("yamacall", glm::vec2(0.23f, 0.26f), glm::vec2(0.30f, 0.40f), glm::vec2(0.85f, 1.0f), glm::vec2(1.0f, 2.45f)));
+	m_soilDefinitions.push_back(SoilDefinition("eapa (mollisol)", glm::vec2(0.22f, 0.29f), glm::vec2(0.24f, 0.34f), glm::vec2(0.2f, 0.8f), glm::vec2(1.0f, 2.5f)));
+	m_soilDefinitions.push_back(SoilDefinition("attewan (mollisol)", glm::vec2(0.05f, 0.28f), glm::vec2(0.35f, 0.79f), glm::vec2(0.2f, 0.75f), glm::vec2(2.2f, 3.0f)));
+	m_soilDefinitions.push_back(SoilDefinition("ethridge (mollisol)", glm::vec2(0.31f, 0.39f), glm::vec2(0.18f, 0.30f), glm::vec2(0.2f, 0.8f), glm::vec2(2.8f, 4.0f)));
+	m_soilDefinitions.push_back(SoilDefinition("yamacall (inceptisol)", glm::vec2(0.23f, 0.26f), glm::vec2(0.30f, 0.40f), glm::vec2(0.85f, 1.0f), glm::vec2(1.0f, 2.45f)));
+	m_soilDefinitions.push_back(SoilDefinition("klutuk (inceptisol)", glm::vec2(0.03f, 0.08f), glm::vec2(0.20f, 0.55f), glm::vec2(0.80f, 1.0f), glm::vec2(1.0f, 2.45f)));
+	m_soilDefinitions.push_back(SoilDefinition("aquavent (entisol)", glm::vec2(0.22f, 0.29f), glm::vec2(0.24f, 0.34f), glm::vec2(0.8f, 1.0f), glm::vec2(1.0f, 2.5f)));
+	m_soilDefinitions.push_back(SoilDefinition("udalf (alfisol)", glm::vec2(0.11f, 0.23f), glm::vec2(0.30f, 0.55f), glm::vec2(0.90f, 1.0f), glm::vec2(2.2f, 2.85f)));
+	m_soilDefinitions.push_back(SoilDefinition("aquult (ultisol)", glm::vec2(0.05f, 0.13f), glm::vec2(0.43, 0.82f), glm::vec2(0.5f, 0.78f), glm::vec2(1.4f, 2.75f)));
 	m_soilDefinitions.push_back(SoilDefinition("sand", glm::vec2(0.0f,0.05f), glm::vec2(0.8f,1.0f), glm::vec2(0.0f, 0.1f), glm::vec2(1.5f, 2.0f)));
 	m_soilDefinitions.push_back(SoilDefinition("rock", glm::vec2(0.0f, 0.05f), glm::vec2(0.0f, 0.1f), glm::vec2(0.0f, 0.01f), glm::vec2(3.0f, 7.0f), true));
 }
@@ -463,13 +467,13 @@ std::string Map::getSoilType(glm::vec2 pos)
 		oss << "unknown";
 	}
 
-	NodeMarker loam = node->getDataAboveHeight(node->topHeight() - 1.0f, true);
+	NodeMarker topLayer = node->getDataAboveHeight(node->topHeight() - 1.0f, true);
 	int mainIndex = bestIndex;
-	bestIndex = getSoilTypeBestMatching(&loam, bestCertainty);
+	bestIndex = getSoilTypeBestMatching(&topLayer, bestCertainty);
 
 	if (bestIndex != -1 && mainIndex != bestIndex)
 	{
-		oss << ", with a " << m_soilDefinitions[bestIndex].name << " loam (" << bestCertainty << "% certainty)" << std::endl;
+		oss << ", with a " << m_soilDefinitions[bestIndex].name << " deposit (" << bestCertainty << "% certainty)" << std::endl;
 	}
 
 	return oss.str();
