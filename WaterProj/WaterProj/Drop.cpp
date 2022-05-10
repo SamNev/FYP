@@ -334,7 +334,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim, float& maxHeight)
 void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* set, float& maxHeight)
 {
 #ifdef WATERDEBUG
-    std::cout << "mixing sediment in pool of " << set->size() << std::endl;
+    std::cout << "mixing sediment in pool of size " << set->size() << std::endl;
 #endif // WATERDEBUG
     if (!set || set->size() < 1)
         return;
