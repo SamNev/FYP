@@ -330,7 +330,7 @@ bool Drop::flood(Node* nodes, glm::ivec2 dim, float& maxHeight)
     }
     return false;
 }
-#pragma optimize( "", off )
+
 void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* set, float& maxHeight)
 {
 #ifdef WATERDEBUG
@@ -365,7 +365,6 @@ void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* se
         nodes[s].setHeight(nodes[s].topHeight() + transfer, sediment, maxHeight);
     }
 }
-#pragma optimize( "", on )
 
 float Drop::getMinVolume()
 {
