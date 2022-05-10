@@ -412,18 +412,26 @@ std::string Map::getMapGeneralSoilType()
 	int* count = new int[m_soilDefinitions.size()];
 	std::fill(count, count + m_soilDefinitions.size(), 0);
 	float certainty;
+	int waterCount = 0;
 
 	for (int i = 0; i < m_width * m_height; ++i)
 	{
+		if (m_nodes[i].waterDepth() > 1.0f)
+		{
+			waterCount++;
+			continue;
+		}
+
 		NodeMarker general = m_nodes[i].getDataAboveHeight(m_nodes[i].topHeight() - 1.0f, true);
 		int index = getSoilTypeBestMatching(&general, certainty);
 		if (index != -1)
 			count[index]++;
 	}
 
+	oss << "water coverage: " << (float)waterCount * 100.0f / (float)(m_width * m_height) << "%" << std::endl;
 	for (int i = 0; i < m_soilDefinitions.size(); ++i)
 	{
-		oss << m_soilDefinitions[i].name << ": " << count[i] * 100 / (m_width * m_height) << "%" << std::endl;
+		oss << m_soilDefinitions[i].name << ": " << (float)count[i] * 100.0f / (float)(m_width * m_height) << "%" << std::endl;
 	}
 
 	delete[m_soilDefinitions.size()] count;
