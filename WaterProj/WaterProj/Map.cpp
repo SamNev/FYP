@@ -265,7 +265,7 @@ void Map::defineSoils()
 	m_soilDefinitions.push_back(SoilDefinition("klutuk (inceptisol)", glm::vec2(0.03f, 0.08f), glm::vec2(0.20f, 0.55f), glm::vec2(0.80f, 1.0f), glm::vec2(1.0f, 2.45f)));
 	m_soilDefinitions.push_back(SoilDefinition("aquavent (entisol)", glm::vec2(0.22f, 0.29f), glm::vec2(0.24f, 0.34f), glm::vec2(0.8f, 1.0f), glm::vec2(1.0f, 2.5f)));
 	m_soilDefinitions.push_back(SoilDefinition("udalf (alfisol)", glm::vec2(0.11f, 0.23f), glm::vec2(0.30f, 0.55f), glm::vec2(0.90f, 1.0f), glm::vec2(2.2f, 2.85f)));
-	m_soilDefinitions.push_back(SoilDefinition("aquult (ultisol)", glm::vec2(0.05f, 0.13f), glm::vec2(0.43, 0.82f), glm::vec2(0.5f, 0.78f), glm::vec2(1.4f, 2.75f)));
+	m_soilDefinitions.push_back(SoilDefinition("aquult (ultisol)", glm::vec2(0.43, 0.82f), glm::vec2(0.2f, 0.35f), glm::vec2(0.5f, 0.78f), glm::vec2(1.4f, 2.75f)));
 	m_soilDefinitions.push_back(SoilDefinition("sand", glm::vec2(0.0f,0.05f), glm::vec2(0.8f,1.0f), glm::vec2(0.0f, 0.1f), glm::vec2(1.5f, 2.0f)));
 	m_soilDefinitions.push_back(SoilDefinition("rock", glm::vec2(0.0f, 0.05f), glm::vec2(0.0f, 0.1f), glm::vec2(0.0f, 0.01f), glm::vec2(3.0f, 7.0f), true));
 }

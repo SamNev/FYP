@@ -340,7 +340,7 @@ void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* se
         return;
 
     NodeMarker sediment = m_sediment;
-    float sedimentAmount = m_sedimentAmount;
+    float sedimentAmount = 0;
     float depth = 0.0f;
     for (int s : *set)
     {
@@ -349,20 +349,26 @@ void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* se
             float transfer = m_volume * pow(m_volume * pow((nodes[s].top()->resistiveForce - 1) * 0.02943f, -0.5f), 2.4f) * 0.0027507f;
             sedimentAmount += transfer;
             sediment.mix(nodes[s].getDataAboveHeight(nodes[s].topHeight() - transfer, true), transfer / sedimentAmount);
-            nodes[s].erodeByValue(transfer);
         }
 
+        sedimentAmount *= m_params->poolSedimentLossRate;
         depth += nodes[s].waterDepth();
     }
 
-    sedimentAmount *= m_params->poolSedimentLossRate;
     if (depth == 0)
         return;
 
     for (int s : *set)
     {
-        float transfer = (nodes[s].waterDepth() / depth) * sedimentAmount;
-        nodes[s].setHeight(nodes[s].topHeight() + transfer, sediment, maxHeight);
+        NodeMarker* node = nodes[s].top();
+        if (node->resistiveForce < 10.0f)
+        {
+            node->clayAmount = sediment.clayAmount;
+            node->sandAmount = sediment.sandAmount;
+            node->color = sediment.color;
+            node->fertility = sediment.fertility;
+            node->resistiveForce = sediment.resistiveForce;
+        }
     }
 }
 
