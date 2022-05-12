@@ -342,6 +342,7 @@ void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* se
     NodeMarker sediment = m_sediment;
     float sedimentAmount = 0;
     float depth = 0.0f;
+    // Collect sediment from all areas of the pool
     for (int s : *set)
     {
         if (nodes[s].top()->resistiveForce < 10.0f)
@@ -358,16 +359,15 @@ void Drop::transportThroughPool(Node* nodes, glm::vec2 dim, std::vector<int>* se
     if (depth == 0)
         return;
 
+    // Deposit sediment based on existing height + pickup rate
     for (int s : *set)
     {
-        NodeMarker* node = nodes[s].top();
-        if (node->resistiveForce < 10.0f)
+        if (nodes[s].top()->resistiveForce < 10.0f)
         {
-            node->clayAmount = sediment.clayAmount;
-            node->sandAmount = sediment.sandAmount;
-            node->color = sediment.color;
-            node->fertility = sediment.fertility;
-            node->resistiveForce = sediment.resistiveForce;
+            float topHeight = nodes[s].topHeight();
+            float transfer = m_volume * pow(m_volume * pow((nodes[s].top()->resistiveForce - 1) * 0.02943f, -0.5f), 2.4f) * 0.0027507f;
+            nodes[s].erodeByValue(transfer);
+            nodes[s].setHeight(topHeight, sediment, maxHeight);
         }
     }
 }

@@ -462,7 +462,7 @@ std::string Map::getSoilType(glm::vec2 pos)
 	Node* node = getNodeAt(pos.x, pos.y);
 	int bestIndex = -1;
 	float bestCertainty = 0.0f;
-	NodeMarker general = node->getDataAboveHeight(-1.9f, true);
+	NodeMarker general = node->getDataAboveHeight(BEDROCK_SAFETY_LAYER, true);
 
 	bestIndex = getSoilTypeBestMatching(&general, bestCertainty);
 
