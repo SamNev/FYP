@@ -1,0 +1,60 @@
+\hypertarget{struct_soil_definition}{}\doxysection{Soil\+Definition Struct Reference}
+\label{struct_soil_definition}\index{SoilDefinition@{SoilDefinition}}
+
+
+{\ttfamily \#include $<$Node.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_soil_definition_ab479b09e34aae7f13341fd9db73f437e}\label{struct_soil_definition_ab479b09e34aae7f13341fd9db73f437e}} 
+{\bfseries Soil\+Definition} (std\+::string definition\+Name, glm\+::vec2 definition\+Clay\+Bounds, glm\+::vec2 definition\+Sand\+Bounds, glm\+::vec2 definition\+Fert\+Bounds, glm\+::vec2 definition\+Res\+Bounds, bool is\+Hard\+Stop=false)
+\item 
+\mbox{\Hypertarget{struct_soil_definition_a15552edf321cf05f972102cdc6b64bad}\label{struct_soil_definition_a15552edf321cf05f972102cdc6b64bad}} 
+float {\bfseries perc\+For\+Bounds} (float val, glm\+::vec2 bounds)
+\item 
+float \mbox{\hyperlink{struct_soil_definition_aa97d05572cce530ab71a60d7f3b26462}{get\+Certainty}} (\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} $\ast$marker)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_soil_definition_a6aa6f27265176210a6b70b893fe4971d}\label{struct_soil_definition_a6aa6f27265176210a6b70b893fe4971d}} 
+std\+::string {\bfseries name}
+\item 
+\mbox{\Hypertarget{struct_soil_definition_a8d6427b0e760c9b975b2dc34b2b70682}\label{struct_soil_definition_a8d6427b0e760c9b975b2dc34b2b70682}} 
+glm\+::vec2 {\bfseries clay\+Bounds}
+\item 
+\mbox{\Hypertarget{struct_soil_definition_ae9d524103a7bff28de9d75fa77fafba7}\label{struct_soil_definition_ae9d524103a7bff28de9d75fa77fafba7}} 
+glm\+::vec2 {\bfseries sand\+Bounds}
+\item 
+\mbox{\Hypertarget{struct_soil_definition_acccdee925a820939a54386a9badc8e3e}\label{struct_soil_definition_acccdee925a820939a54386a9badc8e3e}} 
+glm\+::vec2 {\bfseries fert\+Bounds}
+\item 
+\mbox{\Hypertarget{struct_soil_definition_a8f980a13ca7a3cf7085a1785850df301}\label{struct_soil_definition_a8f980a13ca7a3cf7085a1785850df301}} 
+glm\+::vec2 {\bfseries res\+Bounds}
+\item 
+\mbox{\Hypertarget{struct_soil_definition_a9f77c1fcfe1bf98b76f96bde6fa07016}\label{struct_soil_definition_a9f77c1fcfe1bf98b76f96bde6fa07016}} 
+bool {\bfseries hard\+Stop}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines a soil and the boundaries of its properties 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{struct_soil_definition_aa97d05572cce530ab71a60d7f3b26462}\label{struct_soil_definition_aa97d05572cce530ab71a60d7f3b26462}} 
+\index{SoilDefinition@{SoilDefinition}!getCertainty@{getCertainty}}
+\index{getCertainty@{getCertainty}!SoilDefinition@{SoilDefinition}}
+\doxysubsubsection{\texorpdfstring{getCertainty()}{getCertainty()}}
+{\footnotesize\ttfamily float Soil\+Definition\+::get\+Certainty (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} $\ast$}]{marker }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Works out the certainty that the given marker is of this soil type by comparing the bounds with marker values. 
+\begin{DoxyParams}{Parameters}
+{\em marker} & The marker to compare against. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Node.\+h\end{DoxyCompactItemize}

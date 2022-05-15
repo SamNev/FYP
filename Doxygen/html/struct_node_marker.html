@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WaterProj: NodeMarker Struct Reference</title>
+<title>Dissertation: NodeMarker Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">WaterProj
+   <div id="projectname">Dissertation
    </div>
   </td>
  </tr>
@@ -69,11 +69,12 @@ $(function() {
   <div class="headertitle"><div class="title">NodeMarker Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_node_8h_source.html">Node.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab060f95289df50dda71aedfa3ea4ca95"><td class="memItemLeft" align="right" valign="top"><a id="ab060f95289df50dda71aedfa3ea4ca95" name="ab060f95289df50dda71aedfa3ea4ca95"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>mix</b> (<a class="el" href="struct_node_marker.html">NodeMarker</a> marker, float weight)</td></tr>
+<tr class="memitem:ab060f95289df50dda71aedfa3ea4ca95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_node_marker.html#ab060f95289df50dda71aedfa3ea4ca95">mix</a> (<a class="el" href="struct_node_marker.html">NodeMarker</a> marker, float weight)</td></tr>
 <tr class="separator:ab060f95289df50dda71aedfa3ea4ca95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -97,9 +98,55 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>sandAmount</b> = 0.3
 float&#160;</td><td class="memItemRight" valign="bottom"><b>clayAmount</b> = 0.25f</td></tr>
 <tr class="separator:a5af8a1f64d4a80149a5061aee890597f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad0c84d1a3b2f315cbf2f950c06d5193"><td class="memItemLeft" align="right" valign="top"><a id="aad0c84d1a3b2f315cbf2f950c06d5193" name="aad0c84d1a3b2f315cbf2f950c06d5193"></a>
-glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>color</b> = glm::vec3(0.0f, 0.0f, 0.0f)</td></tr>
+glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>color</b> = glm::vec3(1.0f, 1.0f, 1.0f)</td></tr>
 <tr class="separator:aad0c84d1a3b2f315cbf2f950c06d5193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >A point defined at a given height within a node, to represent a marker on a vertical soil map. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab060f95289df50dda71aedfa3ea4ca95" name="ab060f95289df50dda71aedfa3ea4ca95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab060f95289df50dda71aedfa3ea4ca95">&#9670;&nbsp;</a></span>mix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NodeMarker::mix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_node_marker.html">NodeMarker</a>&#160;</td>
+          <td class="paramname"><em>marker</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Mix the values within this and another marker. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">marker</td><td>The marker to mix with </td></tr>
+    <tr><td class="paramname">weight</td><td>The weight (0-1) of the other marker's value compared to this marker. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="_node_8h_source.html">Node.h</a></li>
 </ul>

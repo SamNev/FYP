@@ -1,0 +1,187 @@
+\hypertarget{class_drop}{}\doxysection{Drop Class Reference}
+\label{class_drop}\index{Drop@{Drop}}
+
+
+{\ttfamily \#include $<$Drop.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_drop_a1d8d44864a1b8b0284b880e6c3e2e148}{Drop}} (glm\+::vec2 pos, \mbox{\hyperlink{struct_map_params}{Map\+Params}} $\ast$params)
+\item 
+\mbox{\hyperlink{class_drop_afc38be5b4c1accae92015dc451ff8872}{Drop}} (glm\+::vec2 p, float v, \mbox{\hyperlink{struct_map_params}{Map\+Params}} $\ast$params)
+\item 
+bool \mbox{\hyperlink{class_drop_a3b45e3dd9b18da075030deeb9f4585c4}{descend}} (glm\+::vec3 norm, \mbox{\hyperlink{class_node}{Node}} $\ast$nodes, bool $\ast$track, glm\+::ivec2 dim, float \&max\+Height)
+\item 
+bool \mbox{\hyperlink{class_drop_aa30af059883ab5981009137bb85bff3d}{flood}} (\mbox{\hyperlink{class_node}{Node}} $\ast$nodes, glm\+::ivec2 dim, float \&max\+Height)
+\item 
+void \mbox{\hyperlink{class_drop_a379381c7fd2937929a7f1d5cb3c74417}{cascade}} (glm\+::vec2 pos, glm\+::ivec2 dim, \mbox{\hyperlink{class_node}{Node}} $\ast$nodes, bool $\ast$track, float \&max\+Height)
+\item 
+void \mbox{\hyperlink{class_drop_a2ec52b6ffeefb2999d0db077bf843956}{transport\+Through\+Pool}} (\mbox{\hyperlink{class_node}{Node}} $\ast$nodes, glm\+::vec2 dim, std\+::vector$<$ int $>$ $\ast$set, float \&max\+Height)
+\item 
+\mbox{\Hypertarget{class_drop_adc3744fb9000f4fd4c6ddf04031ce9ed}\label{class_drop_adc3744fb9000f4fd4c6ddf04031ce9ed}} 
+glm\+::vec2 {\bfseries get\+Position} ()
+\item 
+\mbox{\Hypertarget{class_drop_aaf3526858425d07540daed637f5363aa}\label{class_drop_aaf3526858425d07540daed637f5363aa}} 
+float {\bfseries get\+Volume} ()
+\item 
+\mbox{\Hypertarget{class_drop_a82905e84bce312e17bd0bd175ba630f0}\label{class_drop_a82905e84bce312e17bd0bd175ba630f0}} 
+int {\bfseries get\+Age} ()
+\item 
+\mbox{\Hypertarget{class_drop_ab217b3bc95803e7b38d3e3ca3cacb50e}\label{class_drop_ab217b3bc95803e7b38d3e3ca3cacb50e}} 
+float {\bfseries get\+Min\+Volume} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_drop_a135a11fd1fc1a4ee21d888ab84b8a4ff}\label{class_drop_a135a11fd1fc1a4ee21d888ab84b8a4ff}} 
+int {\bfseries m\+\_\+age} = 0
+\item 
+\mbox{\Hypertarget{class_drop_a7393fd228bf4444d3535766477bb8591}\label{class_drop_a7393fd228bf4444d3535766477bb8591}} 
+glm\+::vec2 {\bfseries m\+\_\+pos}
+\item 
+\mbox{\Hypertarget{class_drop_ad733ef3959b8ce620fbdb962d173bb15}\label{class_drop_ad733ef3959b8ce620fbdb962d173bb15}} 
+glm\+::vec2 {\bfseries m\+\_\+velocity} = glm\+::vec2(0.\+0)
+\item 
+\mbox{\Hypertarget{class_drop_aa226b4bc11f6fc62fa3223bc4e233bde}\label{class_drop_aa226b4bc11f6fc62fa3223bc4e233bde}} 
+glm\+::vec2 {\bfseries m\+\_\+last\+Velocity} = glm\+::vec2(0.\+0)
+\item 
+\mbox{\Hypertarget{class_drop_ae532bcc1fcd19e0b3730c5526f5419ca}\label{class_drop_ae532bcc1fcd19e0b3730c5526f5419ca}} 
+std\+::queue$<$ glm\+::vec2 $>$ {\bfseries m\+\_\+previous}
+\item 
+\mbox{\Hypertarget{class_drop_a890d0dead2e8109f153bf746332ce239}\label{class_drop_a890d0dead2e8109f153bf746332ce239}} 
+float {\bfseries m\+\_\+volume} = 1
+\item 
+\mbox{\Hypertarget{class_drop_a5619a42f0ab0c9c59ea686df7918db22}\label{class_drop_a5619a42f0ab0c9c59ea686df7918db22}} 
+int {\bfseries m\+\_\+prev\+Index} = 0
+\item 
+\mbox{\Hypertarget{class_drop_aa9505c2221d8929f6202939ae864739c}\label{class_drop_aa9505c2221d8929f6202939ae864739c}} 
+int {\bfseries m\+\_\+retread\+Count} = 0
+\item 
+\mbox{\Hypertarget{class_drop_a47a254f54fed2fcfe3d01c2f1c24b863}\label{class_drop_a47a254f54fed2fcfe3d01c2f1c24b863}} 
+float {\bfseries m\+\_\+sediment\+Amount} = 0.\+0f
+\item 
+\mbox{\Hypertarget{class_drop_ac24a9884fbab4889df82b46fb3514075}\label{class_drop_ac24a9884fbab4889df82b46fb3514075}} 
+\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} {\bfseries m\+\_\+sediment}
+\item 
+\mbox{\Hypertarget{class_drop_aa593237b125381cec7db092e0f216f40}\label{class_drop_aa593237b125381cec7db092e0f216f40}} 
+\mbox{\hyperlink{struct_map_params}{Map\+Params}} $\ast$ {\bfseries m\+\_\+params}
+\item 
+\mbox{\Hypertarget{class_drop_ab96c1d830e83c1609b2b5719cb794ac9}\label{class_drop_ab96c1d830e83c1609b2b5719cb794ac9}} 
+bool {\bfseries m\+\_\+terminated} = false
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\mbox{\hyperlink{class_drop}{Drop}} performs all fluid simulation calculations for the program.
+
+It will update terrain heights, manage the aquisition and deposition of sediment, and form pools where acceptable. Each particle simulation is independant of other particles, but their tracked movement may be used to influence other particle simulation. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_drop_a1d8d44864a1b8b0284b880e6c3e2e148}\label{class_drop_a1d8d44864a1b8b0284b880e6c3e2e148}} 
+\index{Drop@{Drop}!Drop@{Drop}}
+\index{Drop@{Drop}!Drop@{Drop}}
+\doxysubsubsection{\texorpdfstring{Drop()}{Drop()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Drop\+::\+Drop (\begin{DoxyParamCaption}\item[{glm\+::vec2}]{pos,  }\item[{\mbox{\hyperlink{struct_map_params}{Map\+Params}} $\ast$}]{params }\end{DoxyParamCaption})}
+
+The drop constuctor establishes the position of the drop and provides reference to the parameters of the current map. 
+\begin{DoxyParams}{Parameters}
+{\em pos} & The particle\textquotesingle{}s current position \\
+\hline
+{\em params} & The map parameters of the map this exists on \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_drop_afc38be5b4c1accae92015dc451ff8872}\label{class_drop_afc38be5b4c1accae92015dc451ff8872}} 
+\index{Drop@{Drop}!Drop@{Drop}}
+\index{Drop@{Drop}!Drop@{Drop}}
+\doxysubsubsection{\texorpdfstring{Drop()}{Drop()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Drop\+::\+Drop (\begin{DoxyParamCaption}\item[{glm\+::vec2}]{p,  }\item[{float}]{v,  }\item[{\mbox{\hyperlink{struct_map_params}{Map\+Params}} $\ast$}]{params }\end{DoxyParamCaption})}
+
+The drop constuctor establishes the position of the drop and provides reference to the parameters of the current map. 
+\begin{DoxyParams}{Parameters}
+{\em pos} & The particle\textquotesingle{}s current position \\
+\hline
+{\em params} & The map parameters of the map this exists on \\
+\hline
+{\em v} & The volume of the particle \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_drop_a379381c7fd2937929a7f1d5cb3c74417}\label{class_drop_a379381c7fd2937929a7f1d5cb3c74417}} 
+\index{Drop@{Drop}!cascade@{cascade}}
+\index{cascade@{cascade}!Drop@{Drop}}
+\doxysubsubsection{\texorpdfstring{cascade()}{cascade()}}
+{\footnotesize\ttfamily void Drop\+::cascade (\begin{DoxyParamCaption}\item[{glm\+::vec2}]{pos,  }\item[{glm\+::ivec2}]{dim,  }\item[{\mbox{\hyperlink{class_node}{Node}} $\ast$}]{nodes,  }\item[{bool $\ast$}]{track,  }\item[{float \&}]{max\+Height }\end{DoxyParamCaption})}
+
+Cascading for a particle, picking up and depositing sediment after a descent. 
+\begin{DoxyParams}{Parameters}
+{\em pos} & The position of the particle \\
+\hline
+{\em dim} & The dimesions of the map \\
+\hline
+{\em nodes} & Pointer to the node array that makes up the map \\
+\hline
+{\em track} & A series of flags to allow particle movement to be tracked by the map \\
+\hline
+{\em max\+Height} & The maximum height of the map \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_drop_a3b45e3dd9b18da075030deeb9f4585c4}\label{class_drop_a3b45e3dd9b18da075030deeb9f4585c4}} 
+\index{Drop@{Drop}!descend@{descend}}
+\index{descend@{descend}!Drop@{Drop}}
+\doxysubsubsection{\texorpdfstring{descend()}{descend()}}
+{\footnotesize\ttfamily bool Drop\+::descend (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{norm,  }\item[{\mbox{\hyperlink{class_node}{Node}} $\ast$}]{nodes,  }\item[{bool $\ast$}]{track,  }\item[{glm\+::ivec2}]{dim,  }\item[{float \&}]{max\+Height }\end{DoxyParamCaption})}
+
+Movement simulation for a single particle. Handles all the tracking and gravitational calculations needed for simulation 
+\begin{DoxyParams}{Parameters}
+{\em norm} & The normal of the current tile \\
+\hline
+{\em nodes} & Pointer to the node array that makes up the map \\
+\hline
+{\em track} & A series of flags to allow particle movement to be tracked by the map \\
+\hline
+{\em dim} & The dimesions of the map \\
+\hline
+{\em max\+Height} & The maximum height of the map \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_drop_aa30af059883ab5981009137bb85bff3d}\label{class_drop_aa30af059883ab5981009137bb85bff3d}} 
+\index{Drop@{Drop}!flood@{flood}}
+\index{flood@{flood}!Drop@{Drop}}
+\doxysubsubsection{\texorpdfstring{flood()}{flood()}}
+{\footnotesize\ttfamily bool Drop\+::flood (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_node}{Node}} $\ast$}]{nodes,  }\item[{glm\+::ivec2}]{dim,  }\item[{float \&}]{max\+Height }\end{DoxyParamCaption})}
+
+Flood simulation for a particle, attempting to join or create a pool 
+\begin{DoxyParams}{Parameters}
+{\em nodes} & Pointer to the node array that makes up the map \\
+\hline
+{\em dim} & The dimesions of the map \\
+\hline
+{\em max\+Height} & The maximum height of the map \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_drop_a2ec52b6ffeefb2999d0db077bf843956}\label{class_drop_a2ec52b6ffeefb2999d0db077bf843956}} 
+\index{Drop@{Drop}!transportThroughPool@{transportThroughPool}}
+\index{transportThroughPool@{transportThroughPool}!Drop@{Drop}}
+\doxysubsubsection{\texorpdfstring{transportThroughPool()}{transportThroughPool()}}
+{\footnotesize\ttfamily void Drop\+::transport\+Through\+Pool (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_node}{Node}} $\ast$}]{nodes,  }\item[{glm\+::vec2}]{dim,  }\item[{std\+::vector$<$ int $>$ $\ast$}]{set,  }\item[{float \&}]{max\+Height }\end{DoxyParamCaption})}
+
+Transporting sediment through a defined pool. This will evenly mix all top value sediment within the given set, and deposit it accordingly. 
+\begin{DoxyParams}{Parameters}
+{\em nodes} & Pointer to the node array that makes up the map \\
+\hline
+{\em dim} & The dimesions of the map \\
+\hline
+{\em set} & A set of index values for nodes within the pool, to have their sediment mixed \\
+\hline
+{\em max\+Height} & The maximum height of the map \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Drop.\+h\item 
+Drop.\+cpp\end{DoxyCompactItemize}

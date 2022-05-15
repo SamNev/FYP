@@ -1,0 +1,139 @@
+\hypertarget{_node_8h_source}{}\doxysection{Node.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <GL/glew.h>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <glm.hpp>}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{11 \textcolor{keyword}{struct }\mbox{\hyperlink{struct_water_data}{WaterData}}}
+\DoxyCodeLine{12 \{}
+\DoxyCodeLine{13     \textcolor{keywordtype}{float} height;}
+\DoxyCodeLine{14     \textcolor{keywordtype}{float} particles;}
+\DoxyCodeLine{15 \};}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{20 \textcolor{keyword}{struct }\mbox{\hyperlink{struct_vegetation_data}{VegetationData}}}
+\DoxyCodeLine{21 \{}
+\DoxyCodeLine{22     \textcolor{keywordtype}{float} density;}
+\DoxyCodeLine{23     \textcolor{keywordtype}{float} waterSupply;}
+\DoxyCodeLine{24 \};}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{29 \textcolor{keyword}{struct }\mbox{\hyperlink{struct_node_marker}{NodeMarker}}}
+\DoxyCodeLine{30 \{}
+\DoxyCodeLine{31     \textcolor{keywordtype}{float} height = -\/2.0f;}
+\DoxyCodeLine{32     \textcolor{keywordtype}{float} resistiveForce = 6.0f;}
+\DoxyCodeLine{33     \textcolor{keywordtype}{bool} hardStop = \textcolor{keyword}{false};}
+\DoxyCodeLine{34     \textcolor{keywordtype}{float} fertility = 0.8f;}
+\DoxyCodeLine{35     \textcolor{keywordtype}{float} sandAmount = 0.3f;}
+\DoxyCodeLine{36     \textcolor{keywordtype}{float} clayAmount = 0.25f;}
+\DoxyCodeLine{37     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{39 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{44     \textcolor{keywordtype}{void} \mbox{\hyperlink{struct_node_marker_ab060f95289df50dda71aedfa3ea4ca95}{mix}}(\mbox{\hyperlink{struct_node_marker}{NodeMarker}} marker, \textcolor{keywordtype}{float} weight)}
+\DoxyCodeLine{45     \{}
+\DoxyCodeLine{46         \textcolor{keywordtype}{float} invWeight = (1.0f -\/ weight);}
+\DoxyCodeLine{47         height = height * invWeight + marker.height * weight;}
+\DoxyCodeLine{48         resistiveForce = resistiveForce * invWeight + marker.resistiveForce * weight;}
+\DoxyCodeLine{49         hardStop = \textcolor{keyword}{false};}
+\DoxyCodeLine{50         color = color * invWeight + marker.color * weight;}
+\DoxyCodeLine{51         fertility = fertility * invWeight + marker.fertility * weight;}
+\DoxyCodeLine{52         sandAmount = sandAmount * invWeight + marker.sandAmount * weight;}
+\DoxyCodeLine{53         clayAmount = clayAmount * invWeight + marker.clayAmount * weight;}
+\DoxyCodeLine{54     \}}
+\DoxyCodeLine{55 \};}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{57 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{60 \textcolor{keyword}{struct }\mbox{\hyperlink{struct_soil_definition}{SoilDefinition}}}
+\DoxyCodeLine{61 \{}
+\DoxyCodeLine{62     std::string name;}
+\DoxyCodeLine{63     glm::vec2 clayBounds;}
+\DoxyCodeLine{64     glm::vec2 sandBounds;}
+\DoxyCodeLine{65     glm::vec2 fertBounds;}
+\DoxyCodeLine{66     glm::vec2 resBounds;}
+\DoxyCodeLine{67     \textcolor{keywordtype}{bool} hardStop;}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69     \mbox{\hyperlink{struct_soil_definition}{SoilDefinition}}(std::string definitionName, glm::vec2 definitionClayBounds, glm::vec2 definitionSandBounds, glm::vec2 definitionFertBounds, glm::vec2 definitionResBounds, \textcolor{keywordtype}{bool} isHardStop = \textcolor{keyword}{false})}
+\DoxyCodeLine{70     \{}
+\DoxyCodeLine{71         name = definitionName;}
+\DoxyCodeLine{72         clayBounds = definitionClayBounds;}
+\DoxyCodeLine{73         sandBounds = definitionSandBounds;}
+\DoxyCodeLine{74         fertBounds = definitionFertBounds;}
+\DoxyCodeLine{75         resBounds = definitionResBounds;}
+\DoxyCodeLine{76         hardStop = isHardStop;}
+\DoxyCodeLine{77     \}}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79     \textcolor{keywordtype}{float} percForBounds(\textcolor{keywordtype}{float} val, glm::vec2 bounds)}
+\DoxyCodeLine{80     \{}
+\DoxyCodeLine{81         \textcolor{keywordflow}{if} (val >= bounds.x)}
+\DoxyCodeLine{82         \{}
+\DoxyCodeLine{83             \textcolor{keywordflow}{if} (val <= bounds.y)}
+\DoxyCodeLine{84                 \textcolor{keywordflow}{return} 25.0f;}
+\DoxyCodeLine{85             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{86                 \textcolor{keywordflow}{return} 125.0f * glm::max<float>(0.0f, (0.2f -\/ abs(val -\/ bounds.y)));}
+\DoxyCodeLine{87         \}}
+\DoxyCodeLine{88         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{89         \{}
+\DoxyCodeLine{90             \textcolor{keywordflow}{return} 125.0f * glm::max<float>(0.0f, (0.2f -\/ abs(bounds.x -\/ val)));}
+\DoxyCodeLine{91         \}}
+\DoxyCodeLine{92     \}}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{99     \textcolor{keywordtype}{float} \mbox{\hyperlink{struct_soil_definition_aa97d05572cce530ab71a60d7f3b26462}{getCertainty}}(\mbox{\hyperlink{struct_node_marker}{NodeMarker}}* marker)}
+\DoxyCodeLine{100     \{}
+\DoxyCodeLine{101         \textcolor{keywordtype}{float} cert = 0.0f;}
+\DoxyCodeLine{102         cert += percForBounds(marker-\/>clayAmount, clayBounds);}
+\DoxyCodeLine{103         cert += percForBounds(marker-\/>sandAmount, sandBounds);}
+\DoxyCodeLine{104         cert += percForBounds(marker-\/>fertility, fertBounds);}
+\DoxyCodeLine{105         cert += percForBounds(marker-\/>resistiveForce, resBounds);}
+\DoxyCodeLine{106         \textcolor{keywordflow}{if} (marker-\/>hardStop != hardStop)}
+\DoxyCodeLine{107             cert /= 2.0f;}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{109         \textcolor{keywordflow}{return} cert;}
+\DoxyCodeLine{110     \}}
+\DoxyCodeLine{111 \};}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113 \textcolor{keyword}{class }\mbox{\hyperlink{class_node}{Node}} \{}
+\DoxyCodeLine{114 \textcolor{keyword}{public}:}
+\DoxyCodeLine{115     \textcolor{keywordtype}{void} addWater(\textcolor{keywordtype}{float} height);}
+\DoxyCodeLine{116     \textcolor{keywordtype}{void} addMarker(\mbox{\hyperlink{struct_node_marker}{NodeMarker}} marker, \textcolor{keywordtype}{float}\& maxHeight);}
+\DoxyCodeLine{117     \textcolor{keywordtype}{void} addMarker(\textcolor{keywordtype}{float} height, \textcolor{keywordtype}{float} resistiveForce, \textcolor{keywordtype}{bool} hardStop, glm::vec3 color, \textcolor{keywordtype}{float} fertility, \textcolor{keywordtype}{float} sandAmount, \textcolor{keywordtype}{float} clayAmount, \textcolor{keywordtype}{float}\& maxHeight);}
+\DoxyCodeLine{118 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{122     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_node_ac53630ee6e50c474777f05d61f3bde6b}{erodeByValue}}(\textcolor{keywordtype}{float} amount);}
+\DoxyCodeLine{123     \textcolor{keywordtype}{float} getResistiveForceAtHeight(\textcolor{keywordtype}{float} height) \textcolor{keyword}{const};}
+\DoxyCodeLine{124 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{129     \mbox{\hyperlink{struct_node_marker}{NodeMarker}} \mbox{\hyperlink{class_node_aacfb886a6e59ff69fc9d0dd0446fd742}{getDataAboveHeight}}(\textcolor{keywordtype}{float} height, \textcolor{keywordtype}{bool} ignoreRock = \textcolor{keyword}{false}) \textcolor{keyword}{const};}
+\DoxyCodeLine{130     glm::vec3 getColorAtHeight(\textcolor{keywordtype}{float} height) \textcolor{keyword}{const};}
+\DoxyCodeLine{131 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{134     \textcolor{keywordtype}{float} \mbox{\hyperlink{class_node_ad7003df95225a33ca9bfad29f2e615b2}{topHeight}}() \textcolor{keyword}{const};}
+\DoxyCodeLine{135     glm::vec3 topColor() \textcolor{keyword}{const};}
+\DoxyCodeLine{136 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{139     \mbox{\hyperlink{struct_node_marker}{NodeMarker}}* \mbox{\hyperlink{class_node_a1b2c9febd27e95a8a891e741e57c6832}{top}}();}
+\DoxyCodeLine{140 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{143     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_node_a24c8bd2df0e9cdc5edea4bb6b7d54fa3}{skim}}();}
+\DoxyCodeLine{144     \textcolor{keywordtype}{float} waterHeight() \textcolor{keyword}{const};}
+\DoxyCodeLine{145     \textcolor{keywordtype}{float} waterHeight(\textcolor{keywordtype}{float} valIfNoWater) \textcolor{keyword}{const};}
+\DoxyCodeLine{146     \textcolor{keywordtype}{float} waterHeightWithStreams(\textcolor{keywordtype}{float} valIfNoWater) \textcolor{keyword}{const};}
+\DoxyCodeLine{147     \textcolor{keywordtype}{float} waterDepth() \textcolor{keyword}{const};}
+\DoxyCodeLine{148     \textcolor{keywordtype}{void} setWaterHeight(\textcolor{keywordtype}{float} waterHeight);}
+\DoxyCodeLine{149     \textcolor{keywordtype}{void} setWaterDepth(\textcolor{keywordtype}{float} waterDepth);}
+\DoxyCodeLine{150     \textcolor{keywordtype}{bool} hasWater() \textcolor{keyword}{const};}
+\DoxyCodeLine{151 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{158     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_node_a46c54abbfc9c5fc3d43b62012f01ed5e}{setHeight}}(\textcolor{keywordtype}{float} height, \mbox{\hyperlink{struct_node_marker}{NodeMarker}} fillerValue, \textcolor{keywordtype}{float}\& maxHeight);}
+\DoxyCodeLine{159     \textcolor{keywordtype}{float} getParticles() \textcolor{keyword}{const};}
+\DoxyCodeLine{160     \textcolor{keywordtype}{void} setParticles(\textcolor{keywordtype}{float} particles);}
+\DoxyCodeLine{161     \textcolor{keywordtype}{void} setFoliageDensity(\textcolor{keywordtype}{float} density);}
+\DoxyCodeLine{162     \textcolor{keywordtype}{float} getFertility() \textcolor{keyword}{const};}
+\DoxyCodeLine{163     \textcolor{keywordtype}{float} getFoliageDensity() \textcolor{keyword}{const};}
+\DoxyCodeLine{164     \textcolor{keywordtype}{float} getFoliageWaterSupply() \textcolor{keyword}{const};}
+\DoxyCodeLine{165 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{166     std::vector<NodeMarker> m\_nodeData;}
+\DoxyCodeLine{167     \mbox{\hyperlink{struct_water_data}{WaterData}} m\_waterData;}
+\DoxyCodeLine{168     \mbox{\hyperlink{struct_vegetation_data}{VegetationData}} m\_vegetationData;}
+\DoxyCodeLine{169 \};}
+
+\end{DoxyCode}

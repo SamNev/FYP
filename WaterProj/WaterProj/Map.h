@@ -17,6 +17,10 @@
 
 class PerlinNoise;
 
+/***************************************************************************//**
+ * Defines for the type of noise within the array of generated noise. Mostly
+ * for code readability purposes.
+ ******************************************************************************/
 enum noiseType : int
 {
 	NoiseType_BaseVariance,
@@ -29,10 +33,18 @@ enum noiseType : int
 	NoiseType_Sand,
 };
 
+/***************************************************************************//**
+ * MapParams define all tweakable values for the program. Loaded from a map config
+ * file (named "params" by defaut)
+ ******************************************************************************/
 struct MapParams
 {
 	void loadFromFile();
 
+	/***************************************************************************//**
+	 * Defines all properties in a map by their name. This is so they can be set
+	 * when the properties are read from a file.
+	 ******************************************************************************/
 	MapParams()
 	{
 		floatPropertyMap.emplace(std::pair<std::string, float&>("noiseSampleHeight", noiseSampleHeight));
@@ -185,13 +197,39 @@ struct MapParams
 	float bedrockResisitivity = 7.5f;
 };
 
+/***************************************************************************//**
+ * The map class serves as the simulation access point- all calls to
+ * simulate anything will go through here. It also houses all node
+ * data for the program.
+ ******************************************************************************/
 class Map 
 {
 public:
+	/***************************************************************************//**
+	 * The map constructor fills all node data to generate terrain using a defined seed
+	 * if no seed is given, it will generate one based on the current time.
+	 @param width The width of the map
+	 @param height The height of the map
+	 @param params Defines for generation and simulation within the map
+	 @param seed The seed to generate the map from 
+	 ******************************************************************************/
 	Map(int width, int height, MapParams params, unsigned int seed = 0);
 	~Map();
 
+	/***************************************************************************//**
+	 * Assumes a heightmap has been generated, and populates the area underneath
+	 * with soil data. Uses perlin noise for randomisation.
+	 @param resistivityNoise noise for terrain resistivity
+	 @param rockNoise noise for rock generation (at heigher values rocks will generate)
+	 ******************************************************************************/
 	void addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise);
+	/***************************************************************************//**
+	 * Calculates a perlin noise sample coordinate based on rarity of a feature,
+	 * scale, and the current position
+	 @param x The current X coordinate
+	 @param y The current Y coordinate
+	 @param rarity Rarity (taken from the map parameters)
+	 ******************************************************************************/
 	glm::vec2 calculateXYFromRarity(int x, int y, float rarity);
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
@@ -206,13 +244,40 @@ public:
 	float getHillValue(PerlinNoise* noise, int x, int y, float hillHeight, float rarity);
 	float getDivetValue(PerlinNoise* noise, int x, int y, float divetHeight, float rarity);
 	float getMountainValue(PerlinNoise* noise, int x, int y, float mountainHeight, float rarity);
+	/***************************************************************************//**
+	 * Defines all commonly-seen soils for comparison to map data
+	 ******************************************************************************/
 	void defineSoils();
+	/***************************************************************************//**
+	 * Debug. Erodes the top marker of every node on the map
+	 ******************************************************************************/
 	void skimTop();
+	/***************************************************************************//**
+	 * Try to create a spring at a location
+	 ******************************************************************************/
 	void addSpring(int x, int y);
 	void erodeAllByValue(float amount);
+	/***************************************************************************//**
+	 * Generates a string of stats to output to the console. Soil types, height,
+	 * colour, normal, etc
+	 @param pos The position to sample
+	 ******************************************************************************/
 	std::string stats(glm::vec2 pos);
+	/***************************************************************************//**
+	 * Returns the string name of the soil type at the given node, and the certainty.
+	 @param pos The position to sample
+	 ******************************************************************************/
 	std::string getSoilType(glm::vec2 pos);
+	/***************************************************************************//**
+	 * Returns the a general overview of the soil percentages throughout the map
+	 * formatted as a string for console output.
+	 ******************************************************************************/
 	std::string getMapGeneralSoilType();
+	/***************************************************************************//**
+	 * Returns the index of the soil type at the given node.
+	 @param nodeData The node to sample
+	 @param bestCertainty The certainty of the outcome
+	 ******************************************************************************/
 	int getSoilTypeBestMatching(NodeMarker* nodeData, float& bestCertainty);
 	bool trySpawnTree(glm::vec2 pos);
 

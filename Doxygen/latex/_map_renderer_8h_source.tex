@@ -1,0 +1,68 @@
+\hypertarget{_map_renderer_8h_source}{}\doxysection{Map\+Renderer.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <ext.hpp>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <glm.hpp>}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <GL/glew.h>}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <SDL2/SDL.h>}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{keyword}{class }\mbox{\hyperlink{class_map}{Map}};}
+\DoxyCodeLine{11 \textcolor{keyword}{class }\mbox{\hyperlink{class_shader_program}{ShaderProgram}};}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{17 \textcolor{keyword}{class }\mbox{\hyperlink{class_map_renderer}{MapRenderer}}}
+\DoxyCodeLine{18 \{}
+\DoxyCodeLine{19 \textcolor{keyword}{public}:}
+\DoxyCodeLine{20 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{24     \mbox{\hyperlink{class_map_renderer_a02070c35eeae692c23db06b79af2aa2e}{MapRenderer}}(\mbox{\hyperlink{class_map}{Map}}* map);}
+\DoxyCodeLine{25     \mbox{\hyperlink{class_map_renderer}{\string~MapRenderer}}();}
+\DoxyCodeLine{26 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{31     \mbox{\hyperlink{class_shader_program}{ShaderProgram}}* \mbox{\hyperlink{class_map_renderer_ac87e84a47f481e1fb7ffc82b3be0f4f6}{createShaderProgram}}(std::string vertexShaderPath, std::string fragmentShaderPath);}
+\DoxyCodeLine{32 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{36     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_renderer_a61419a524ada8a571e9226eec3853f31}{render}}(SDL\_Window* window);}
+\DoxyCodeLine{37 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{43     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_renderer_a21cef9190f5ec931792b327c10b184cc}{renderAtHeight}}(SDL\_Window* window, \textcolor{keywordtype}{float} height);}
+\DoxyCodeLine{44 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{48     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_renderer_a5cb054ace27a6f77b8fd6ad6bbb5925d}{calcPath}}(std::string\& path);}
+\DoxyCodeLine{49     \textcolor{keywordtype}{void} makeMapTile();}
+\DoxyCodeLine{50     \textcolor{keywordtype}{void} transformCam(glm::vec2 transformation);}
+\DoxyCodeLine{51     \textcolor{keywordtype}{void} setMap(\mbox{\hyperlink{class_map}{Map}}* map);}
+\DoxyCodeLine{52     \textcolor{keywordtype}{void} setCamPos(glm::vec3 camPos) \{ m\_camPos = camPos; \}}
+\DoxyCodeLine{53     glm::vec3 getCamPos() \{ \textcolor{keywordflow}{return} m\_camPos; \}}
+\DoxyCodeLine{54     \textcolor{keywordtype}{void} zoomIn();}
+\DoxyCodeLine{55     \textcolor{keywordtype}{void} zoomOut();}
+\DoxyCodeLine{56     \textcolor{keywordtype}{float} getCullDist();}
+\DoxyCodeLine{57 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{61     \textcolor{keywordtype}{float} \mbox{\hyperlink{class_map_renderer_aae8f8e60a148214cda2b0020ee532c22}{distFromCamera}}(glm::vec3 pos);}
+\DoxyCodeLine{62     \textcolor{keywordtype}{int} lodScaling();}
+\DoxyCodeLine{63     \textcolor{keywordtype}{int} uncappedLodScaling();}
+\DoxyCodeLine{64 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{67     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_renderer_ae059a3d3d58666ec5a52ffc68c19bffc}{cacheProperties}}();}
+\DoxyCodeLine{68 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{73     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_renderer_ab6f6efbefdf828a671b5e9032f14b578}{prepareRender}}(\textcolor{keywordtype}{bool} ignoreHeight);}
+\DoxyCodeLine{74 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{75     std::vector<ShaderProgram*> m\_shaderPrograms;}
+\DoxyCodeLine{76     \mbox{\hyperlink{class_shader_program}{ShaderProgram}}* m\_groundRenderer;}
+\DoxyCodeLine{77     \mbox{\hyperlink{class_map}{Map}}* m\_map;}
+\DoxyCodeLine{78     GLuint m\_vaoId;}
+\DoxyCodeLine{79     std::string m\_knownResourceFolder;}
+\DoxyCodeLine{80     glm::vec3 m\_camPos;}
+\DoxyCodeLine{81     \textcolor{keywordtype}{int} m\_zoomLevel = 1;}
+\DoxyCodeLine{82     \textcolor{keywordtype}{bool} m\_propertiesCached = \textcolor{keyword}{false};}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84     GLuint m\_colorLoc;}
+\DoxyCodeLine{85     GLuint m\_surroundingLoc;}
+\DoxyCodeLine{86     GLuint m\_surroundingColorLoc;}
+\DoxyCodeLine{87     GLuint m\_posLoc;}
+\DoxyCodeLine{88     GLuint m\_maxHeightLoc;}
+\DoxyCodeLine{89     GLuint m\_ignoreHeightLoc;}
+\DoxyCodeLine{90     GLuint m\_surrWaterHeightLoc;}
+\DoxyCodeLine{91     GLuint m\_projLoc;}
+\DoxyCodeLine{92     GLuint m\_viewLoc;}
+\DoxyCodeLine{93 \};}
+
+\end{DoxyCode}

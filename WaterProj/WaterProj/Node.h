@@ -5,18 +5,27 @@
 #include <string>
 #include <vector>
 
+/***************************************************************************//**
+ * Data attaining to the amount of water on a node
+ ******************************************************************************/
 struct WaterData
 {
 	float height;
 	float particles;
 };
 
+/***************************************************************************//**
+ * Data attaining to the plant coverage and fertility of a node
+ ******************************************************************************/
 struct VegetationData
 {
 	float density;
 	float waterSupply;
 };
 
+/***************************************************************************//**
+ * A point defined at a given height within a node, to represent a marker on a vertical soil map.
+ ******************************************************************************/
 struct NodeMarker
 {
 	float height = -2.0f;
@@ -27,6 +36,11 @@ struct NodeMarker
 	float clayAmount = 0.25f;
 	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
+	/***************************************************************************//**
+	 * Mix the values within this and another marker. 
+	 @param marker The marker to mix with
+	 @param weight The weight (0-1) of the other marker's value compared to this marker.
+	 ******************************************************************************/
 	void mix(NodeMarker marker, float weight)
 	{
 		float invWeight = (1.0f - weight);
@@ -40,6 +54,9 @@ struct NodeMarker
 	}
 };
 
+/***************************************************************************//**
+ * Defines a soil and the boundaries of its properties
+ ******************************************************************************/
 struct SoilDefinition
 {
 	std::string name;
@@ -74,6 +91,11 @@ struct SoilDefinition
 		}
 	}
 
+	/***************************************************************************//**
+	 * Works out the certainty that the given marker is of this soil type by
+	 * comparing the bounds with marker values.
+	 @param marker The marker to compare against.
+	 ******************************************************************************/
 	float getCertainty(NodeMarker* marker)
 	{
 		float cert = 0.0f;
@@ -93,13 +115,31 @@ public:
 	void addWater(float height);
 	void addMarker(NodeMarker marker, float& maxHeight);
 	void addMarker(float height, float resistiveForce, bool hardStop, glm::vec3 color, float fertility, float sandAmount, float clayAmount, float& maxHeight);
+	/***************************************************************************//**
+	 * Erodes the terrain by a height value
+	 @param amount The amount to erode by
+	 ******************************************************************************/
 	void erodeByValue(float amount);
 	float getResistiveForceAtHeight(float height) const;
+	/***************************************************************************//**
+	 * Returns a NodeMarker containing all soil data above a given height mixed together.
+	 @param height The height to check above
+	 @param ignoreRock Whether rocks should be considered or not.
+	 ******************************************************************************/
 	NodeMarker getDataAboveHeight(float height, bool ignoreRock = false) const;
 	glm::vec3 getColorAtHeight(float height) const;
+	/***************************************************************************//**
+	 * Returns the heighest height of the node.
+	 ******************************************************************************/
 	float topHeight() const;
 	glm::vec3 topColor() const;
+	/***************************************************************************//**
+	 * Returns the topmost marker of the node
+	 ******************************************************************************/
 	NodeMarker* top();
+	/***************************************************************************//**
+	 * Debug- remove the top layer of the node.
+	 ******************************************************************************/
 	void skim();
 	float waterHeight() const;
 	float waterHeight(float valIfNoWater) const;
@@ -108,6 +148,13 @@ public:
 	void setWaterHeight(float waterHeight);
 	void setWaterDepth(float waterDepth);
 	bool hasWater() const;
+	/***************************************************************************//**
+	 * Sets the node's height to a given value. If above the current height, will
+	 * use filler data to increase the height.
+	 @param height The height to set to
+	 @param fillerValue The data to use to fill the terrain if it is not heigh enough
+	 @param maxHeight map maximum height
+	 ******************************************************************************/
 	void setHeight(float height, NodeMarker fillerValue, float& maxHeight);
 	float getParticles() const;
 	void setParticles(float particles);

@@ -1,0 +1,59 @@
+\hypertarget{struct_node_marker}{}\doxysection{Node\+Marker Struct Reference}
+\label{struct_node_marker}\index{NodeMarker@{NodeMarker}}
+
+
+{\ttfamily \#include $<$Node.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{struct_node_marker_ab060f95289df50dda71aedfa3ea4ca95}{mix}} (\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} marker, float weight)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_node_marker_a8f5934a07fd8595de850a338b0608314}\label{struct_node_marker_a8f5934a07fd8595de850a338b0608314}} 
+float {\bfseries height} = -\/2.\+0f
+\item 
+\mbox{\Hypertarget{struct_node_marker_af12e92f32daef887ed0ba6bb3e468719}\label{struct_node_marker_af12e92f32daef887ed0ba6bb3e468719}} 
+float {\bfseries resistive\+Force} = 6.\+0f
+\item 
+\mbox{\Hypertarget{struct_node_marker_a2f0de0b4a78951e50bdc38f0075883db}\label{struct_node_marker_a2f0de0b4a78951e50bdc38f0075883db}} 
+bool {\bfseries hard\+Stop} = false
+\item 
+\mbox{\Hypertarget{struct_node_marker_ab0fbceab6bda9be607be034f6a28f88d}\label{struct_node_marker_ab0fbceab6bda9be607be034f6a28f88d}} 
+float {\bfseries fertility} = 0.\+8f
+\item 
+\mbox{\Hypertarget{struct_node_marker_ab5d3883b5ddc0bb4dedbb74697633513}\label{struct_node_marker_ab5d3883b5ddc0bb4dedbb74697633513}} 
+float {\bfseries sand\+Amount} = 0.\+3f
+\item 
+\mbox{\Hypertarget{struct_node_marker_a5af8a1f64d4a80149a5061aee890597f}\label{struct_node_marker_a5af8a1f64d4a80149a5061aee890597f}} 
+float {\bfseries clay\+Amount} = 0.\+25f
+\item 
+\mbox{\Hypertarget{struct_node_marker_aad0c84d1a3b2f315cbf2f950c06d5193}\label{struct_node_marker_aad0c84d1a3b2f315cbf2f950c06d5193}} 
+glm\+::vec3 {\bfseries color} = glm\+::vec3(1.\+0f, 1.\+0f, 1.\+0f)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A point defined at a given height within a node, to represent a marker on a vertical soil map. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{struct_node_marker_ab060f95289df50dda71aedfa3ea4ca95}\label{struct_node_marker_ab060f95289df50dda71aedfa3ea4ca95}} 
+\index{NodeMarker@{NodeMarker}!mix@{mix}}
+\index{mix@{mix}!NodeMarker@{NodeMarker}}
+\doxysubsubsection{\texorpdfstring{mix()}{mix()}}
+{\footnotesize\ttfamily void Node\+Marker\+::mix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_node_marker}{Node\+Marker}}}]{marker,  }\item[{float}]{weight }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Mix the values within this and another marker. 
+\begin{DoxyParams}{Parameters}
+{\em marker} & The marker to mix with \\
+\hline
+{\em weight} & The weight (0-\/1) of the other marker\textquotesingle{}s value compared to this marker. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Node.\+h\end{DoxyCompactItemize}

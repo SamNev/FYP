@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WaterProj: ShaderProgram Class Reference</title>
+<title>Dissertation: ShaderProgram Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">WaterProj
+   <div id="projectname">Dissertation
    </div>
   </td>
  </tr>
@@ -68,22 +68,86 @@ $(function() {
   <div class="headertitle"><div class="title">ShaderProgram Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_shader_program_8h_source.html">ShaderProgram.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab306fe29a185c84cc439d1f55dcc5934"><td class="memItemLeft" align="right" valign="top"><a id="ab306fe29a185c84cc439d1f55dcc5934" name="ab306fe29a185c84cc439d1f55dcc5934"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ShaderProgram</b> (const std::string vertexShader, const std::string fragmentShader)</td></tr>
+<tr class="memitem:ab306fe29a185c84cc439d1f55dcc5934"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_shader_program.html#ab306fe29a185c84cc439d1f55dcc5934">ShaderProgram</a> (const std::string vertexShader, const std::string fragmentShader)</td></tr>
 <tr class="separator:ab306fe29a185c84cc439d1f55dcc5934"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac95c615ed58672e31da041c11671af7b"><td class="memItemLeft" align="right" valign="top"><a id="ac95c615ed58672e31da041c11671af7b" name="ac95c615ed58672e31da041c11671af7b"></a>
 GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>getId</b> ()</td></tr>
 <tr class="separator:ac95c615ed58672e31da041c11671af7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a285c27da064068522f4900a8e8075f68"><td class="memItemLeft" align="right" valign="top"><a id="a285c27da064068522f4900a8e8075f68" name="a285c27da064068522f4900a8e8075f68"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>use</b> ()</td></tr>
+<tr class="memitem:a285c27da064068522f4900a8e8075f68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_shader_program.html#a285c27da064068522f4900a8e8075f68">use</a> ()</td></tr>
 <tr class="separator:a285c27da064068522f4900a8e8075f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7316e5150f4b236cc63342882ad98504"><td class="memItemLeft" align="right" valign="top"><a id="a7316e5150f4b236cc63342882ad98504" name="a7316e5150f4b236cc63342882ad98504"></a>
 GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>getUniform</b> (std::string uniformName)</td></tr>
 <tr class="separator:a7316e5150f4b236cc63342882ad98504"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Create a shader program for rendering, housed in the <a class="el" href="class_map_renderer.html">MapRenderer</a> </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab306fe29a185c84cc439d1f55dcc5934" name="ab306fe29a185c84cc439d1f55dcc5934"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab306fe29a185c84cc439d1f55dcc5934">&#9670;&nbsp;</a></span>ShaderProgram()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ShaderProgram::ShaderProgram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>vertexShader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>fragmentShader</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Create a shader program from the given strings as GLSL code. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertexShader</td><td>Vertex shader as GLSL code @pram fragmentShader Fragment shader as GLSL code </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a285c27da064068522f4900a8e8075f68" name="a285c27da064068522f4900a8e8075f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a285c27da064068522f4900a8e8075f68">&#9670;&nbsp;</a></span>use()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ShaderProgram::use </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Use this shader program to render </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="_shader_program_8h_source.html">ShaderProgram.h</a></li>
 <li>ShaderProgram.cpp</li>

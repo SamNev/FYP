@@ -1,0 +1,229 @@
+\hypertarget{class_map}{}\doxysection{Map Class Reference}
+\label{class_map}\index{Map@{Map}}
+
+
+{\ttfamily \#include $<$Map.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_map_a1926b001805b6d5ae02a4b875ae3980f}{Map}} (int width, int height, \mbox{\hyperlink{struct_map_params}{Map\+Params}} params, unsigned int seed=0)
+\item 
+void \mbox{\hyperlink{class_map_adc597e9eb96bcf28dd329677d5103446}{add\+Rocks\+And\+Dirt}} (Perlin\+Noise $\ast$resistivity\+Noise, Perlin\+Noise $\ast$rock\+Noise)
+\item 
+glm\+::vec2 \mbox{\hyperlink{class_map_aeac473afa62cd27c5183e6afd9cc571c}{calculate\+XYFrom\+Rarity}} (int x, int y, float rarity)
+\item 
+\mbox{\Hypertarget{class_map_afd34d12227676b3cebeed9f5fae2508f}\label{class_map_afd34d12227676b3cebeed9f5fae2508f}} 
+int {\bfseries get\+Width} ()
+\item 
+\mbox{\Hypertarget{class_map_a2b09c8875af2efb711fc3a022e70427d}\label{class_map_a2b09c8875af2efb711fc3a022e70427d}} 
+int {\bfseries get\+Height} ()
+\item 
+\mbox{\Hypertarget{class_map_a78b40133858025f8173437fe58d82389}\label{class_map_a78b40133858025f8173437fe58d82389}} 
+float {\bfseries get\+Scale} ()
+\item 
+\mbox{\Hypertarget{class_map_a67c2953f3089fc7c6fe0adf820b38d7c}\label{class_map_a67c2953f3089fc7c6fe0adf820b38d7c}} 
+float {\bfseries get\+Max\+Height} ()
+\item 
+\mbox{\Hypertarget{class_map_ad2f7a9bcf1c65bda2353d6f05155a2f0}\label{class_map_ad2f7a9bcf1c65bda2353d6f05155a2f0}} 
+int {\bfseries get\+Age} ()
+\item 
+\mbox{\Hypertarget{class_map_ade79fe36b02578759068e4500605172f}\label{class_map_ade79fe36b02578759068e4500605172f}} 
+\mbox{\hyperlink{class_node}{Node}} $\ast$ {\bfseries get\+Node\+At} (int x, int y)
+\item 
+\mbox{\Hypertarget{class_map_acc239c4f8005e0521b84430f3c301b5e}\label{class_map_acc239c4f8005e0521b84430f3c301b5e}} 
+float {\bfseries get\+Density\+At} (int x, int y, float height)
+\item 
+\mbox{\Hypertarget{class_map_a904fef177cc93b760823c72fca9ebdfa}\label{class_map_a904fef177cc93b760823c72fca9ebdfa}} 
+float {\bfseries get\+Height\+At} (int x, int y)
+\item 
+\mbox{\Hypertarget{class_map_a27b2003f5ea9e54a1cee5b29f4c48e2a}\label{class_map_a27b2003f5ea9e54a1cee5b29f4c48e2a}} 
+float {\bfseries get\+Height\+At} (int index)
+\item 
+\mbox{\Hypertarget{class_map_abd4c8a0864494d05a6e311d6800eee4d}\label{class_map_abd4c8a0864494d05a6e311d6800eee4d}} 
+float {\bfseries get\+Depth\+At} (int index)
+\item 
+\mbox{\Hypertarget{class_map_a59fda74e32d4782b43da95975b813c72}\label{class_map_a59fda74e32d4782b43da95975b813c72}} 
+float {\bfseries get\+Hill\+Value} (Perlin\+Noise $\ast$noise, int x, int y, float hill\+Height, float rarity)
+\item 
+\mbox{\Hypertarget{class_map_ac8563e59ab02bc2fb0f6323463ce24a3}\label{class_map_ac8563e59ab02bc2fb0f6323463ce24a3}} 
+float {\bfseries get\+Divet\+Value} (Perlin\+Noise $\ast$noise, int x, int y, float divet\+Height, float rarity)
+\item 
+\mbox{\Hypertarget{class_map_ae3a74b19af92db7c6229a993f873b19f}\label{class_map_ae3a74b19af92db7c6229a993f873b19f}} 
+float {\bfseries get\+Mountain\+Value} (Perlin\+Noise $\ast$noise, int x, int y, float mountain\+Height, float rarity)
+\item 
+void \mbox{\hyperlink{class_map_a4d484dd961ed47705d40319e56f7897b}{define\+Soils}} ()
+\item 
+void \mbox{\hyperlink{class_map_a9c2a06a316dbbbe99d74a7b6f88e4ab5}{skim\+Top}} ()
+\item 
+void \mbox{\hyperlink{class_map_a82d5322b46c9939d2d7239f332fc2422}{add\+Spring}} (int x, int y)
+\item 
+\mbox{\Hypertarget{class_map_a046fd13715db9c6e46f9b3a106c12033}\label{class_map_a046fd13715db9c6e46f9b3a106c12033}} 
+void {\bfseries erode\+All\+By\+Value} (float amount)
+\item 
+std\+::string \mbox{\hyperlink{class_map_a71fcae9edcbae8220fe44213f0b8d30f}{stats}} (glm\+::vec2 pos)
+\item 
+std\+::string \mbox{\hyperlink{class_map_a7a1951b467296aeac31ac6d6693814cd}{get\+Soil\+Type}} (glm\+::vec2 pos)
+\item 
+std\+::string \mbox{\hyperlink{class_map_a2a0a41f95381e521d461bad54ae4c204}{get\+Map\+General\+Soil\+Type}} ()
+\item 
+int \mbox{\hyperlink{class_map_a6e77999ada32f6d2371d7321dc751be9}{get\+Soil\+Type\+Best\+Matching}} (\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} $\ast$node\+Data, float \&best\+Certainty)
+\item 
+\mbox{\Hypertarget{class_map_a90bbc25c69e85d12650062922d7f1bd1}\label{class_map_a90bbc25c69e85d12650062922d7f1bd1}} 
+bool {\bfseries try\+Spawn\+Tree} (glm\+::vec2 pos)
+\item 
+\mbox{\Hypertarget{class_map_a6f480baf14ef54a77246d1e1a5aa77c4}\label{class_map_a6f480baf14ef54a77246d1e1a5aa77c4}} 
+void {\bfseries erode} (int cycles)
+\item 
+\mbox{\Hypertarget{class_map_abe926356752be9972afb68b92fcc41c0}\label{class_map_abe926356752be9972afb68b92fcc41c0}} 
+void {\bfseries grow} ()
+\item 
+\mbox{\Hypertarget{class_map_a9148a7896b95d9a4859acc06e65c4146}\label{class_map_a9148a7896b95d9a4859acc06e65c4146}} 
+glm\+::vec3 {\bfseries normal} (int index)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_map_a1cdaed8c24c2c77bb91152c2b3899aab}\label{class_map_a1cdaed8c24c2c77bb91152c2b3899aab}} 
+\mbox{\hyperlink{class_node}{Node}} $\ast$ {\bfseries m\+\_\+nodes}
+\item 
+\mbox{\Hypertarget{class_map_ab8b5dc8d09b831ee3909cfe90b8fc503}\label{class_map_ab8b5dc8d09b831ee3909cfe90b8fc503}} 
+int {\bfseries m\+\_\+width}
+\item 
+\mbox{\Hypertarget{class_map_a9c449a0744df77914d95e125c7f790d3}\label{class_map_a9c449a0744df77914d95e125c7f790d3}} 
+int {\bfseries m\+\_\+height}
+\item 
+\mbox{\Hypertarget{class_map_a7d1a44c226b975f2641821c5bf608cac}\label{class_map_a7d1a44c226b975f2641821c5bf608cac}} 
+int {\bfseries m\+\_\+age}
+\item 
+\mbox{\Hypertarget{class_map_a5cc5e3cbbd27544527dca24e856b5a93}\label{class_map_a5cc5e3cbbd27544527dca24e856b5a93}} 
+float {\bfseries m\+\_\+max\+Height}
+\item 
+\mbox{\Hypertarget{class_map_ab6cc39c37aed97f8ba0c3b96a8e4b56f}\label{class_map_ab6cc39c37aed97f8ba0c3b96a8e4b56f}} 
+std\+::vector$<$ glm\+::vec2 $>$ {\bfseries m\+\_\+springs}
+\item 
+\mbox{\Hypertarget{class_map_ad25794b490bb6b5cbb089375f4cace60}\label{class_map_ad25794b490bb6b5cbb089375f4cace60}} 
+std\+::vector$<$ \mbox{\hyperlink{struct_soil_definition}{Soil\+Definition}} $>$ {\bfseries m\+\_\+soil\+Definitions}
+\item 
+\mbox{\Hypertarget{class_map_ae78980f5671ac5869ca615039988a625}\label{class_map_ae78980f5671ac5869ca615039988a625}} 
+\mbox{\hyperlink{struct_map_params}{Map\+Params}} {\bfseries m\+\_\+params}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The map class serves as the simulation access point-\/ all calls to simulate anything will go through here. It also houses all node data for the program. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_map_a1926b001805b6d5ae02a4b875ae3980f}\label{class_map_a1926b001805b6d5ae02a4b875ae3980f}} 
+\index{Map@{Map}!Map@{Map}}
+\index{Map@{Map}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{Map()}{Map()}}
+{\footnotesize\ttfamily Map\+::\+Map (\begin{DoxyParamCaption}\item[{int}]{width,  }\item[{int}]{height,  }\item[{\mbox{\hyperlink{struct_map_params}{Map\+Params}}}]{params,  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+The map constructor fills all node data to generate terrain using a defined seed if no seed is given, it will generate one based on the current time. 
+\begin{DoxyParams}{Parameters}
+{\em width} & The width of the map \\
+\hline
+{\em height} & The height of the map \\
+\hline
+{\em params} & Defines for generation and simulation within the map \\
+\hline
+{\em seed} & The seed to generate the map from \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_map_adc597e9eb96bcf28dd329677d5103446}\label{class_map_adc597e9eb96bcf28dd329677d5103446}} 
+\index{Map@{Map}!addRocksAndDirt@{addRocksAndDirt}}
+\index{addRocksAndDirt@{addRocksAndDirt}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{addRocksAndDirt()}{addRocksAndDirt()}}
+{\footnotesize\ttfamily void Map\+::add\+Rocks\+And\+Dirt (\begin{DoxyParamCaption}\item[{Perlin\+Noise $\ast$}]{resistivity\+Noise,  }\item[{Perlin\+Noise $\ast$}]{rock\+Noise }\end{DoxyParamCaption})}
+
+Assumes a heightmap has been generated, and populates the area underneath with soil data. Uses perlin noise for randomisation. 
+\begin{DoxyParams}{Parameters}
+{\em resistivity\+Noise} & noise for terrain resistivity \\
+\hline
+{\em rock\+Noise} & noise for rock generation (at heigher values rocks will generate) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_map_a82d5322b46c9939d2d7239f332fc2422}\label{class_map_a82d5322b46c9939d2d7239f332fc2422}} 
+\index{Map@{Map}!addSpring@{addSpring}}
+\index{addSpring@{addSpring}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{addSpring()}{addSpring()}}
+{\footnotesize\ttfamily void Map\+::add\+Spring (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+Try to create a spring at a location \mbox{\Hypertarget{class_map_aeac473afa62cd27c5183e6afd9cc571c}\label{class_map_aeac473afa62cd27c5183e6afd9cc571c}} 
+\index{Map@{Map}!calculateXYFromRarity@{calculateXYFromRarity}}
+\index{calculateXYFromRarity@{calculateXYFromRarity}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{calculateXYFromRarity()}{calculateXYFromRarity()}}
+{\footnotesize\ttfamily glm\+::vec2 Map\+::calculate\+XYFrom\+Rarity (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{float}]{rarity }\end{DoxyParamCaption})}
+
+Calculates a perlin noise sample coordinate based on rarity of a feature, scale, and the current position 
+\begin{DoxyParams}{Parameters}
+{\em x} & The current X coordinate \\
+\hline
+{\em y} & The current Y coordinate \\
+\hline
+{\em rarity} & Rarity (taken from the map parameters) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_map_a4d484dd961ed47705d40319e56f7897b}\label{class_map_a4d484dd961ed47705d40319e56f7897b}} 
+\index{Map@{Map}!defineSoils@{defineSoils}}
+\index{defineSoils@{defineSoils}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{defineSoils()}{defineSoils()}}
+{\footnotesize\ttfamily void Map\+::define\+Soils (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Defines all commonly-\/seen soils for comparison to map data \mbox{\Hypertarget{class_map_a2a0a41f95381e521d461bad54ae4c204}\label{class_map_a2a0a41f95381e521d461bad54ae4c204}} 
+\index{Map@{Map}!getMapGeneralSoilType@{getMapGeneralSoilType}}
+\index{getMapGeneralSoilType@{getMapGeneralSoilType}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getMapGeneralSoilType()}{getMapGeneralSoilType()}}
+{\footnotesize\ttfamily std\+::string Map\+::get\+Map\+General\+Soil\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Returns the a general overview of the soil percentages throughout the map formatted as a string for console output. \mbox{\Hypertarget{class_map_a7a1951b467296aeac31ac6d6693814cd}\label{class_map_a7a1951b467296aeac31ac6d6693814cd}} 
+\index{Map@{Map}!getSoilType@{getSoilType}}
+\index{getSoilType@{getSoilType}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getSoilType()}{getSoilType()}}
+{\footnotesize\ttfamily std\+::string Map\+::get\+Soil\+Type (\begin{DoxyParamCaption}\item[{glm\+::vec2}]{pos }\end{DoxyParamCaption})}
+
+Returns the string name of the soil type at the given node, and the certainty. 
+\begin{DoxyParams}{Parameters}
+{\em pos} & The position to sample \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_map_a6e77999ada32f6d2371d7321dc751be9}\label{class_map_a6e77999ada32f6d2371d7321dc751be9}} 
+\index{Map@{Map}!getSoilTypeBestMatching@{getSoilTypeBestMatching}}
+\index{getSoilTypeBestMatching@{getSoilTypeBestMatching}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getSoilTypeBestMatching()}{getSoilTypeBestMatching()}}
+{\footnotesize\ttfamily int Map\+::get\+Soil\+Type\+Best\+Matching (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} $\ast$}]{node\+Data,  }\item[{float \&}]{best\+Certainty }\end{DoxyParamCaption})}
+
+Returns the index of the soil type at the given node. 
+\begin{DoxyParams}{Parameters}
+{\em node\+Data} & The node to sample \\
+\hline
+{\em best\+Certainty} & The certainty of the outcome \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_map_a9c2a06a316dbbbe99d74a7b6f88e4ab5}\label{class_map_a9c2a06a316dbbbe99d74a7b6f88e4ab5}} 
+\index{Map@{Map}!skimTop@{skimTop}}
+\index{skimTop@{skimTop}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{skimTop()}{skimTop()}}
+{\footnotesize\ttfamily void Map\+::skim\+Top (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Debug. Erodes the top marker of every node on the map \mbox{\Hypertarget{class_map_a71fcae9edcbae8220fe44213f0b8d30f}\label{class_map_a71fcae9edcbae8220fe44213f0b8d30f}} 
+\index{Map@{Map}!stats@{stats}}
+\index{stats@{stats}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{stats()}{stats()}}
+{\footnotesize\ttfamily std\+::string Map\+::stats (\begin{DoxyParamCaption}\item[{glm\+::vec2}]{pos }\end{DoxyParamCaption})}
+
+Generates a string of stats to output to the console. Soil types, height, colour, normal, etc 
+\begin{DoxyParams}{Parameters}
+{\em pos} & The position to sample \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Map.\+h\item 
+Map.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,262 @@
+\hypertarget{_map_8h_source}{}\doxysection{Map.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <fstream>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <map>}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <SDL2/SDL.h>}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <time.h>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <Windows.h>}}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include "{}Node.h"{}}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include "{}Plant.h"{}}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{comment}{//\#define FLOODTESTMAP}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#define BEDROCK\_LAYER 0.0f}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#define BEDROCK\_SAFETY\_LAYER 0.1f}}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{keyword}{class }PerlinNoise;}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{24 \textcolor{keyword}{enum} noiseType : \textcolor{keywordtype}{int}}
+\DoxyCodeLine{25 \{}
+\DoxyCodeLine{26     NoiseType\_BaseVariance,}
+\DoxyCodeLine{27     NoiseType\_Hill,}
+\DoxyCodeLine{28     NoiseType\_Divet,}
+\DoxyCodeLine{29     NoiseType\_Mountain,}
+\DoxyCodeLine{30     NoiseType\_Lie,}
+\DoxyCodeLine{31     NoiseType\_Rock,}
+\DoxyCodeLine{32     NoiseType\_Resistivity,}
+\DoxyCodeLine{33     NoiseType\_Sand,}
+\DoxyCodeLine{34 \};}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{36 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{40 \textcolor{keyword}{struct }\mbox{\hyperlink{struct_map_params}{MapParams}}}
+\DoxyCodeLine{41 \{}
+\DoxyCodeLine{42     \textcolor{keywordtype}{void} loadFromFile();}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{44 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{48     \mbox{\hyperlink{struct_map_params_ae2361daabae8ad0624a4d8dc58ce712b}{MapParams}}()}
+\DoxyCodeLine{49     \{}
+\DoxyCodeLine{50         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}noiseSampleHeight"{}}, noiseSampleHeight));}
+\DoxyCodeLine{51         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}scale"{}}, scale));}
+\DoxyCodeLine{52         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}baseVariance"{}}, baseVariance));}
+\DoxyCodeLine{53         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}lieChangeRate"{}}, lieChangeRate));}
+\DoxyCodeLine{54         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}liePeak"{}}, liePeak));}
+\DoxyCodeLine{55         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}lieModif"{}}, lieModif));}
+\DoxyCodeLine{56         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}hillHeight"{}}, hillHeight));}
+\DoxyCodeLine{57         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}hillRarity"{}}, hillRarity));}
+\DoxyCodeLine{58         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}hillVariancePower"{}}, hillVariancePower));}
+\DoxyCodeLine{59 }
+\DoxyCodeLine{60         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}divetRarity"{}}, divetRarity));}
+\DoxyCodeLine{61         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}divetHillScalar"{}}, divetHillScalar));}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}mountainHeight"{}}, mountainHeight));}
+\DoxyCodeLine{64         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}mountainRarity"{}}, mountainRarity));}
+\DoxyCodeLine{65         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}mountainThreshold"{}}, mountainThreshold));}
+\DoxyCodeLine{66         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}mountainConstantMultiplier"{}}, mountainConstantMultiplier));}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}generatedMapDensity"{}}, generatedMapDensity));}
+\DoxyCodeLine{69         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilResistivityChangeRate"{}}, soilResistivityChangeRate));}
+\DoxyCodeLine{70         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilResistivityBase"{}}, soilResistivityBase));}
+\DoxyCodeLine{71         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilResistivityVariance"{}}, soilResistivityVariance));}
+\DoxyCodeLine{72         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilSandContent"{}}, soilSandContent));}
+\DoxyCodeLine{73         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilClayContent"{}}, soilClayContent));}
+\DoxyCodeLine{74         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilSandVariance"{}}, soilSandVariance));}
+\DoxyCodeLine{75         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilClayVariance"{}}, soilClayVariance));}
+\DoxyCodeLine{76         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}soilFertility"{}}, soilFertility));}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}rockRarity"{}}, rockRarity));}
+\DoxyCodeLine{79         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}rockResistivityVariance"{}}, rockResistivityVariance));}
+\DoxyCodeLine{80         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}rockVerticalScaling"{}}, rockVerticalScaling));}
+\DoxyCodeLine{81         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}rockResistivityBase"{}}, rockResistivityBase));}
+\DoxyCodeLine{82         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}rockThreshold"{}}, rockThreshold));}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}springThreshold"{}}, springThreshold));}
+\DoxyCodeLine{85         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}minimumSpringHeight"{}}, minimumSpringHeight));}
+\DoxyCodeLine{86         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}springRarity"{}}, springRarity));}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}cliffThreshold"{}}, cliffThreshold));}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}treeParticleDeathThreshold"{}}, treeParticleDeathThreshold));}
+\DoxyCodeLine{91         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}treeSlopeThreshold"{}}, treeSlopeThreshold));}
+\DoxyCodeLine{92         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}treeSpreadChance"{}}, treeSpreadChance));}
+\DoxyCodeLine{93         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}treeSpreadRadius"{}}, treeSpreadRadius));}
+\DoxyCodeLine{94         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}treeLongDistanceFertilizationCount"{}}, treeLongDistanceFertilizationCount));}
+\DoxyCodeLine{95         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}foliageOverpopulationThreshold"{}}, foliageOverpopulationThreshold));}
+\DoxyCodeLine{96         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}treeRandomDeathChance"{}}, treeRandomDeathChance));}
+\DoxyCodeLine{97         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}treeGenerationRarity"{}}, treeGenerationRarity));}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}streamEvaporationRate"{}}, streamEvaporationRate));}
+\DoxyCodeLine{100         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}particleEvaporationRate"{}}, particleEvaporationRate));}
+\DoxyCodeLine{101         intPropertyMap.emplace(std::pair<std::string, int\&>(\textcolor{stringliteral}{"{}dropWidth"{}}, dropWidth));}
+\DoxyCodeLine{102         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}seaLevel"{}}, seaLevel));}
+\DoxyCodeLine{103         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}dropDefaultVolume"{}}, dropDefaultVolume));}
+\DoxyCodeLine{104         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}dropMinimumVolume"{}}, dropMinimumVolume));}
+\DoxyCodeLine{105         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}dropSedimentSimulationMinimumVelocity"{}}, dropSedimentSimulationMinimumVelocity));}
+\DoxyCodeLine{106         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}dropSedimentSimulationTerminationVelocity"{}}, dropSedimentSimulationTerminationVelocity));}
+\DoxyCodeLine{107         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}dropSedimentDepositCap"{}}, dropSedimentDepositCap));}
+\DoxyCodeLine{108         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}dropContainedSedimentCap"{}}, dropContainedSedimentCap));}
+\DoxyCodeLine{109         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}particleTerminationProximity"{}}, particleTerminationProximity));}
+\DoxyCodeLine{110         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}particleSwayMagnitude"{}}, particleSwayMagnitude));}
+\DoxyCodeLine{111         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}floodDefaultIncrease"{}}, floodDefaultIncrease));}
+\DoxyCodeLine{112         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}drainErosionAmount"{}}, drainErosionAmount));}
+\DoxyCodeLine{113         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}poolSedimentLossRate"{}}, poolSedimentLossRate));}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}sandHeightVariance"{}}, sandHeightVariance));}
+\DoxyCodeLine{116         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}minimumSandHeight"{}}, minimumSandHeight));}
+\DoxyCodeLine{117         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}sandResistivity"{}}, sandResistivity));}
+\DoxyCodeLine{118         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}sandFertility"{}}, sandFertility));}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120         floatPropertyMap.emplace(std::pair<std::string, float\&>(\textcolor{stringliteral}{"{}bedrockResisitivity"{}}, bedrockResisitivity));}
+\DoxyCodeLine{121     \}}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{123     std::map<std::string, float\&> floatPropertyMap;}
+\DoxyCodeLine{124     std::map<std::string, int\&> intPropertyMap;}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{126     \textcolor{comment}{// NOTE: additional map parameters need to be added to the constructor, filling the property map!}}
+\DoxyCodeLine{127     \textcolor{keywordtype}{float} noiseSampleHeight = 0.5f;}
+\DoxyCodeLine{128     \textcolor{keywordtype}{int} scale = 1;}
+\DoxyCodeLine{129     \textcolor{keywordtype}{float} baseVariance = 0.05f;}
+\DoxyCodeLine{130     \textcolor{keywordtype}{float} lieChangeRate = 3000.0f;}
+\DoxyCodeLine{131     \textcolor{keywordtype}{float} liePeak = 25.0f;}
+\DoxyCodeLine{132     \textcolor{keywordtype}{float} lieModif = -\/24.0f;}
+\DoxyCodeLine{133     \textcolor{keywordtype}{float} hillHeight = 80.0f;}
+\DoxyCodeLine{134     \textcolor{keywordtype}{int} hillRarity = 1000;}
+\DoxyCodeLine{135     \textcolor{keywordtype}{float} hillVariancePower = 0.5f;}
+\DoxyCodeLine{136 }
+\DoxyCodeLine{137     \textcolor{keywordtype}{int} divetRarity = 85;}
+\DoxyCodeLine{138     \textcolor{keywordtype}{float} divetHillScalar = 0.05f;}
+\DoxyCodeLine{139 }
+\DoxyCodeLine{140     \textcolor{keywordtype}{float} mountainHeight = 200.0f;}
+\DoxyCodeLine{141     \textcolor{keywordtype}{int} mountainRarity = 5000;}
+\DoxyCodeLine{142     \textcolor{keywordtype}{float} mountainThreshold = 0.85;}
+\DoxyCodeLine{143     \textcolor{keywordtype}{float} mountainConstantMultiplier = 6.6f;}
+\DoxyCodeLine{144 }
+\DoxyCodeLine{145     \textcolor{keywordtype}{int} generatedMapDensity = 20;}
+\DoxyCodeLine{146     \textcolor{keywordtype}{float} soilResistivityChangeRate = 2000.0f;}
+\DoxyCodeLine{147     \textcolor{keywordtype}{float} soilResistivityBase = 2.3f;}
+\DoxyCodeLine{148     \textcolor{keywordtype}{float} soilResistivityVariance = 0.3f;}
+\DoxyCodeLine{149     \textcolor{keywordtype}{float} soilSandContent = 0.25f;}
+\DoxyCodeLine{150     \textcolor{keywordtype}{float} soilClayContent = 0.22f;}
+\DoxyCodeLine{151     \textcolor{keywordtype}{float} soilSandVariance = 0.15f;}
+\DoxyCodeLine{152     \textcolor{keywordtype}{float} soilClayVariance = 0.07f;}
+\DoxyCodeLine{153     \textcolor{keywordtype}{float} soilFertility = 0.8f;}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155     \textcolor{keywordtype}{float} rockRarity = 200.0f;}
+\DoxyCodeLine{156     \textcolor{keywordtype}{float} rockResistivityVariance = 0.6f;}
+\DoxyCodeLine{157     \textcolor{keywordtype}{float} rockVerticalScaling = 5.0f;}
+\DoxyCodeLine{158     \textcolor{keywordtype}{float} rockResistivityBase = 3.8f;}
+\DoxyCodeLine{159     \textcolor{keywordtype}{float} rockThreshold = 0.6f;}
+\DoxyCodeLine{160 }
+\DoxyCodeLine{161     \textcolor{keywordtype}{float} springThreshold = 0.99f;}
+\DoxyCodeLine{162     \textcolor{keywordtype}{float} minimumSpringHeight = 50.0f;}
+\DoxyCodeLine{163     \textcolor{keywordtype}{int} springRarity = 200;}
+\DoxyCodeLine{164 }
+\DoxyCodeLine{165     \textcolor{keywordtype}{float} cliffThreshold = 0.0007f;}
+\DoxyCodeLine{166 }
+\DoxyCodeLine{167     \textcolor{keywordtype}{float} treeParticleDeathThreshold = 0.1f;}
+\DoxyCodeLine{168     \textcolor{keywordtype}{float} treeSlopeThreshold = 0.985f;}
+\DoxyCodeLine{169     \textcolor{keywordtype}{int} treeSpreadChance = 5;}
+\DoxyCodeLine{170     \textcolor{keywordtype}{int} treeSpreadRadius = 9;}
+\DoxyCodeLine{171     \textcolor{keywordtype}{int} treeLongDistanceFertilizationCount = 5;}
+\DoxyCodeLine{172     \textcolor{keywordtype}{float} foliageOverpopulationThreshold = 0.8f;}
+\DoxyCodeLine{173     \textcolor{keywordtype}{int} treeRandomDeathChance = 100000;}
+\DoxyCodeLine{174     \textcolor{keywordtype}{int} treeGenerationRarity = 2;}
+\DoxyCodeLine{175 }
+\DoxyCodeLine{176     \textcolor{keywordtype}{float} streamEvaporationRate = 0.95f;}
+\DoxyCodeLine{177     \textcolor{keywordtype}{float} particleEvaporationRate = 0.985f;}
+\DoxyCodeLine{178     \textcolor{keywordtype}{int} dropWidth = 2;}
+\DoxyCodeLine{179     \textcolor{keywordtype}{float} seaLevel = 0.0f;}
+\DoxyCodeLine{180     \textcolor{keywordtype}{float} dropDefaultVolume = 1.0f;}
+\DoxyCodeLine{181     \textcolor{keywordtype}{float} dropMinimumVolume = 0.001f;}
+\DoxyCodeLine{182     \textcolor{keywordtype}{float} dropSedimentSimulationMinimumVelocity = 1.0f;}
+\DoxyCodeLine{183     \textcolor{keywordtype}{float} dropSedimentSimulationTerminationVelocity = 0.075f;}
+\DoxyCodeLine{184     \textcolor{keywordtype}{float} dropSedimentDepositCap = 0.015f;}
+\DoxyCodeLine{185     \textcolor{keywordtype}{float} dropContainedSedimentCap = 10.0f;}
+\DoxyCodeLine{186     \textcolor{keywordtype}{float} particleTerminationProximity = 4.0f;}
+\DoxyCodeLine{187     \textcolor{keywordtype}{float} particleSwayMagnitude = 0.05f;}
+\DoxyCodeLine{188     \textcolor{keywordtype}{float} floodDefaultIncrease = 0.01f;}
+\DoxyCodeLine{189     \textcolor{keywordtype}{float} drainErosionAmount = 0.005f;}
+\DoxyCodeLine{190     \textcolor{keywordtype}{float} poolSedimentLossRate = 0.5f;}
+\DoxyCodeLine{191 }
+\DoxyCodeLine{192     \textcolor{keywordtype}{float} sandHeightVariance = 0.5f;}
+\DoxyCodeLine{193     \textcolor{keywordtype}{float} sandResistivity = 1.5f;}
+\DoxyCodeLine{194     \textcolor{keywordtype}{float} sandFertility = 0.05f;}
+\DoxyCodeLine{195     \textcolor{keywordtype}{float} minimumSandHeight = 0.2f;}
+\DoxyCodeLine{196 }
+\DoxyCodeLine{197     \textcolor{keywordtype}{float} bedrockResisitivity = 7.5f;}
+\DoxyCodeLine{198 \};}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{200 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{205 \textcolor{keyword}{class }\mbox{\hyperlink{class_map}{Map}} }
+\DoxyCodeLine{206 \{}
+\DoxyCodeLine{207 \textcolor{keyword}{public}:}
+\DoxyCodeLine{208 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{216     \mbox{\hyperlink{class_map_a1926b001805b6d5ae02a4b875ae3980f}{Map}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height, \mbox{\hyperlink{struct_map_params}{MapParams}} params, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} seed = 0);}
+\DoxyCodeLine{217     \mbox{\hyperlink{class_map}{\string~Map}}();}
+\DoxyCodeLine{218 }
+\DoxyCodeLine{219 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{225     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_adc597e9eb96bcf28dd329677d5103446}{addRocksAndDirt}}(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise);}
+\DoxyCodeLine{226 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{233     glm::vec2 \mbox{\hyperlink{class_map_aeac473afa62cd27c5183e6afd9cc571c}{calculateXYFromRarity}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{float} rarity);}
+\DoxyCodeLine{234     \textcolor{keywordtype}{int} getWidth() \{ \textcolor{keywordflow}{return} m\_width; \}}
+\DoxyCodeLine{235     \textcolor{keywordtype}{int} getHeight() \{ \textcolor{keywordflow}{return} m\_height; \}}
+\DoxyCodeLine{236     \textcolor{keywordtype}{float} getScale() \{ \textcolor{keywordflow}{return} m\_params.scale; \}}
+\DoxyCodeLine{237     \textcolor{keywordtype}{float} getMaxHeight() \{ \textcolor{keywordflow}{return} m\_maxHeight; \}}
+\DoxyCodeLine{238     \textcolor{keywordtype}{int} getAge() \{ \textcolor{keywordflow}{return} m\_age; \}}
+\DoxyCodeLine{239     \mbox{\hyperlink{class_node}{Node}}* getNodeAt(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{240     \textcolor{keywordtype}{float} getDensityAt(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{float} height);}
+\DoxyCodeLine{241     \textcolor{keywordtype}{float} getHeightAt(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{242     \textcolor{keywordtype}{float} getHeightAt(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{243     \textcolor{keywordtype}{float} getDepthAt(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{244     \textcolor{keywordtype}{float} getHillValue(PerlinNoise* noise, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{float} hillHeight, \textcolor{keywordtype}{float} rarity);}
+\DoxyCodeLine{245     \textcolor{keywordtype}{float} getDivetValue(PerlinNoise* noise, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{float} divetHeight, \textcolor{keywordtype}{float} rarity);}
+\DoxyCodeLine{246     \textcolor{keywordtype}{float} getMountainValue(PerlinNoise* noise, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{float} mountainHeight, \textcolor{keywordtype}{float} rarity);}
+\DoxyCodeLine{247 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{250     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_a4d484dd961ed47705d40319e56f7897b}{defineSoils}}();}
+\DoxyCodeLine{251 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{254     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_a9c2a06a316dbbbe99d74a7b6f88e4ab5}{skimTop}}();}
+\DoxyCodeLine{255 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{258     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_map_a82d5322b46c9939d2d7239f332fc2422}{addSpring}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{259     \textcolor{keywordtype}{void} erodeAllByValue(\textcolor{keywordtype}{float} amount);}
+\DoxyCodeLine{260 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{265     std::string \mbox{\hyperlink{class_map_a71fcae9edcbae8220fe44213f0b8d30f}{stats}}(glm::vec2 pos);}
+\DoxyCodeLine{266 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{270     std::string \mbox{\hyperlink{class_map_a7a1951b467296aeac31ac6d6693814cd}{getSoilType}}(glm::vec2 pos);}
+\DoxyCodeLine{271 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{275     std::string \mbox{\hyperlink{class_map_a2a0a41f95381e521d461bad54ae4c204}{getMapGeneralSoilType}}();}
+\DoxyCodeLine{276 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{281     \textcolor{keywordtype}{int} \mbox{\hyperlink{class_map_a6e77999ada32f6d2371d7321dc751be9}{getSoilTypeBestMatching}}(\mbox{\hyperlink{struct_node_marker}{NodeMarker}}* nodeData, \textcolor{keywordtype}{float}\& bestCertainty);}
+\DoxyCodeLine{282     \textcolor{keywordtype}{bool} trySpawnTree(glm::vec2 pos);}
+\DoxyCodeLine{283 }
+\DoxyCodeLine{284     \textcolor{comment}{// Hydrology Functions}}
+\DoxyCodeLine{285     \textcolor{keywordtype}{void} erode(\textcolor{keywordtype}{int} cycles);}
+\DoxyCodeLine{286     \textcolor{keywordtype}{void} grow();}
+\DoxyCodeLine{287 }
+\DoxyCodeLine{288     glm::vec3 normal(\textcolor{keywordtype}{int} index)}
+\DoxyCodeLine{289     \{}
+\DoxyCodeLine{290         glm::vec2 pos = glm::vec2(index \% m\_width, index / m\_width);}
+\DoxyCodeLine{291         \textcolor{keywordtype}{float} left = getNodeAt(pos.x + 1, pos.y)-\/>waterHeight(getNodeAt(pos.x + 1, pos.y)-\/>\mbox{\hyperlink{class_node_ad7003df95225a33ca9bfad29f2e615b2}{topHeight}}());}
+\DoxyCodeLine{292         \textcolor{keywordtype}{float} right = getNodeAt(pos.x -\/ 1, pos.y)-\/>waterHeight(getNodeAt(pos.x -\/ 1, pos.y)-\/>\mbox{\hyperlink{class_node_ad7003df95225a33ca9bfad29f2e615b2}{topHeight}}());}
+\DoxyCodeLine{293         \textcolor{keywordtype}{float} up = getNodeAt(pos.x, pos.y + 1)-\/>waterHeight(getNodeAt(pos.x, pos.y + 1)-\/>\mbox{\hyperlink{class_node_ad7003df95225a33ca9bfad29f2e615b2}{topHeight}}());}
+\DoxyCodeLine{294         \textcolor{keywordtype}{float} down = getNodeAt(pos.x, pos.y -\/ 1)-\/>waterHeight(getNodeAt(pos.x, pos.y -\/ 1)-\/>\mbox{\hyperlink{class_node_ad7003df95225a33ca9bfad29f2e615b2}{topHeight}}());}
+\DoxyCodeLine{295         \textcolor{keywordflow}{return} glm::normalize(glm::vec3(2 * (right -\/ left), 2 * (down -\/ up), -\/4));}
+\DoxyCodeLine{296     \}}
+\DoxyCodeLine{297     }
+\DoxyCodeLine{298 }
+\DoxyCodeLine{299 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{300     \mbox{\hyperlink{class_node}{Node}}* m\_nodes;}
+\DoxyCodeLine{301     \textcolor{keywordtype}{int} m\_width;}
+\DoxyCodeLine{302     \textcolor{keywordtype}{int} m\_height;}
+\DoxyCodeLine{303     \textcolor{keywordtype}{int} m\_age;}
+\DoxyCodeLine{304     \textcolor{keywordtype}{float} m\_maxHeight;}
+\DoxyCodeLine{305     std::vector<glm::vec2> m\_springs;}
+\DoxyCodeLine{306     std::vector<SoilDefinition> m\_soilDefinitions;}
+\DoxyCodeLine{307     \mbox{\hyperlink{struct_map_params}{MapParams}} m\_params;}
+\DoxyCodeLine{308 \};}
+
+\end{DoxyCode}

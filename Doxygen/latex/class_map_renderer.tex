@@ -1,0 +1,172 @@
+\hypertarget{class_map_renderer}{}\doxysection{Map\+Renderer Class Reference}
+\label{class_map_renderer}\index{MapRenderer@{MapRenderer}}
+
+
+{\ttfamily \#include $<$Map\+Renderer.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_map_renderer_a02070c35eeae692c23db06b79af2aa2e}{Map\+Renderer}} (\mbox{\hyperlink{class_map}{Map}} $\ast$map)
+\item 
+\mbox{\hyperlink{class_shader_program}{Shader\+Program}} $\ast$ \mbox{\hyperlink{class_map_renderer_ac87e84a47f481e1fb7ffc82b3be0f4f6}{create\+Shader\+Program}} (std\+::string vertex\+Shader\+Path, std\+::string fragment\+Shader\+Path)
+\item 
+void \mbox{\hyperlink{class_map_renderer_a61419a524ada8a571e9226eec3853f31}{render}} (SDL\+\_\+\+Window $\ast$window)
+\item 
+void \mbox{\hyperlink{class_map_renderer_a21cef9190f5ec931792b327c10b184cc}{render\+At\+Height}} (SDL\+\_\+\+Window $\ast$window, float height)
+\item 
+void \mbox{\hyperlink{class_map_renderer_a5cb054ace27a6f77b8fd6ad6bbb5925d}{calc\+Path}} (std\+::string \&path)
+\item 
+\mbox{\Hypertarget{class_map_renderer_af3b17aeb25cefa0777bd58a7a0d49d9d}\label{class_map_renderer_af3b17aeb25cefa0777bd58a7a0d49d9d}} 
+void {\bfseries make\+Map\+Tile} ()
+\item 
+\mbox{\Hypertarget{class_map_renderer_afbd7eacad70c1070d72b10bb9c638b01}\label{class_map_renderer_afbd7eacad70c1070d72b10bb9c638b01}} 
+void {\bfseries transform\+Cam} (glm\+::vec2 transformation)
+\item 
+\mbox{\Hypertarget{class_map_renderer_a76f0835e936879303e0bc535b372c38e}\label{class_map_renderer_a76f0835e936879303e0bc535b372c38e}} 
+void {\bfseries set\+Map} (\mbox{\hyperlink{class_map}{Map}} $\ast$map)
+\item 
+\mbox{\Hypertarget{class_map_renderer_a9ae612e304924f8566514465cb6a0fd9}\label{class_map_renderer_a9ae612e304924f8566514465cb6a0fd9}} 
+void {\bfseries set\+Cam\+Pos} (glm\+::vec3 cam\+Pos)
+\item 
+\mbox{\Hypertarget{class_map_renderer_a6fc5eec3f4d3b2a84298d6becaa65481}\label{class_map_renderer_a6fc5eec3f4d3b2a84298d6becaa65481}} 
+glm\+::vec3 {\bfseries get\+Cam\+Pos} ()
+\item 
+\mbox{\Hypertarget{class_map_renderer_a07c9d578f871311303ae80c9323b5e48}\label{class_map_renderer_a07c9d578f871311303ae80c9323b5e48}} 
+void {\bfseries zoom\+In} ()
+\item 
+\mbox{\Hypertarget{class_map_renderer_adc03d8440f0fa4f55e151d7c5315fce5}\label{class_map_renderer_adc03d8440f0fa4f55e151d7c5315fce5}} 
+void {\bfseries zoom\+Out} ()
+\item 
+\mbox{\Hypertarget{class_map_renderer_a0c60e3aca84b502ac0da09b9b5cfe59f}\label{class_map_renderer_a0c60e3aca84b502ac0da09b9b5cfe59f}} 
+float {\bfseries get\+Cull\+Dist} ()
+\item 
+float \mbox{\hyperlink{class_map_renderer_aae8f8e60a148214cda2b0020ee532c22}{dist\+From\+Camera}} (glm\+::vec3 pos)
+\item 
+\mbox{\Hypertarget{class_map_renderer_a57a7caf7d6bd75ec628d654f23c1e0d6}\label{class_map_renderer_a57a7caf7d6bd75ec628d654f23c1e0d6}} 
+int {\bfseries lod\+Scaling} ()
+\item 
+\mbox{\Hypertarget{class_map_renderer_a4427b1de39bd78c223ba334d49eba8c9}\label{class_map_renderer_a4427b1de39bd78c223ba334d49eba8c9}} 
+int {\bfseries uncapped\+Lod\+Scaling} ()
+\item 
+void \mbox{\hyperlink{class_map_renderer_ae059a3d3d58666ec5a52ffc68c19bffc}{cache\+Properties}} ()
+\item 
+void \mbox{\hyperlink{class_map_renderer_ab6f6efbefdf828a671b5e9032f14b578}{prepare\+Render}} (bool ignore\+Height)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_map_renderer_aed47f9b9e3ac2ab2dad1fa587a9333cc}\label{class_map_renderer_aed47f9b9e3ac2ab2dad1fa587a9333cc}} 
+std\+::vector$<$ \mbox{\hyperlink{class_shader_program}{Shader\+Program}} $\ast$ $>$ {\bfseries m\+\_\+shader\+Programs}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a6c3b5e52dd0b4c2903b4d090a6eebfcd}\label{class_map_renderer_a6c3b5e52dd0b4c2903b4d090a6eebfcd}} 
+\mbox{\hyperlink{class_shader_program}{Shader\+Program}} $\ast$ {\bfseries m\+\_\+ground\+Renderer}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a2da1931fe5bf2aa62b42b9d592729ca6}\label{class_map_renderer_a2da1931fe5bf2aa62b42b9d592729ca6}} 
+\mbox{\hyperlink{class_map}{Map}} $\ast$ {\bfseries m\+\_\+map}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a2b5d6c39cb87e9c1e36e7225307877ce}\label{class_map_renderer_a2b5d6c39cb87e9c1e36e7225307877ce}} 
+GLuint {\bfseries m\+\_\+vao\+Id}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a9736be24de5f15cd22606a715f9bdb3b}\label{class_map_renderer_a9736be24de5f15cd22606a715f9bdb3b}} 
+std\+::string {\bfseries m\+\_\+known\+Resource\+Folder}
+\item 
+\mbox{\Hypertarget{class_map_renderer_aa14fe71df003bcfe8f19a4e7b8fd5aac}\label{class_map_renderer_aa14fe71df003bcfe8f19a4e7b8fd5aac}} 
+glm\+::vec3 {\bfseries m\+\_\+cam\+Pos}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a14ac24f40c2be922df6502b4e1829927}\label{class_map_renderer_a14ac24f40c2be922df6502b4e1829927}} 
+int {\bfseries m\+\_\+zoom\+Level} = 1
+\item 
+\mbox{\Hypertarget{class_map_renderer_ac9a5fb710294e8397eccece5dbfc29c6}\label{class_map_renderer_ac9a5fb710294e8397eccece5dbfc29c6}} 
+bool {\bfseries m\+\_\+properties\+Cached} = false
+\item 
+\mbox{\Hypertarget{class_map_renderer_a6f36edc30660deb27d7621d65556f805}\label{class_map_renderer_a6f36edc30660deb27d7621d65556f805}} 
+GLuint {\bfseries m\+\_\+color\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_ac0dec1d0b0f2b9f91d7f198a0d2edd9d}\label{class_map_renderer_ac0dec1d0b0f2b9f91d7f198a0d2edd9d}} 
+GLuint {\bfseries m\+\_\+surrounding\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a4f4ade7003d22d482017485b5d6eba02}\label{class_map_renderer_a4f4ade7003d22d482017485b5d6eba02}} 
+GLuint {\bfseries m\+\_\+surrounding\+Color\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_ac88d7e58ff62adfc93b19d9df0367828}\label{class_map_renderer_ac88d7e58ff62adfc93b19d9df0367828}} 
+GLuint {\bfseries m\+\_\+pos\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a7deb90c406ac55626cf90fe1793bdd9a}\label{class_map_renderer_a7deb90c406ac55626cf90fe1793bdd9a}} 
+GLuint {\bfseries m\+\_\+max\+Height\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_abf513ff7f15e7376606a09d5d78d8fed}\label{class_map_renderer_abf513ff7f15e7376606a09d5d78d8fed}} 
+GLuint {\bfseries m\+\_\+ignore\+Height\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_afd4ac6248976435b793677ede67fadc4}\label{class_map_renderer_afd4ac6248976435b793677ede67fadc4}} 
+GLuint {\bfseries m\+\_\+surr\+Water\+Height\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_ae93f7f4ad5c79712063fcd232547e1f4}\label{class_map_renderer_ae93f7f4ad5c79712063fcd232547e1f4}} 
+GLuint {\bfseries m\+\_\+proj\+Loc}
+\item 
+\mbox{\Hypertarget{class_map_renderer_a3047d958fea76f84c454b4d267a4d5c4}\label{class_map_renderer_a3047d958fea76f84c454b4d267a4d5c4}} 
+GLuint {\bfseries m\+\_\+view\+Loc}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The map renderer refers to the map and provides an Open\+GL wrapper for all rendering purposes. In theory, this could be swapped out for any renderer. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_map_renderer_a02070c35eeae692c23db06b79af2aa2e}\label{class_map_renderer_a02070c35eeae692c23db06b79af2aa2e}} 
+\index{MapRenderer@{MapRenderer}!MapRenderer@{MapRenderer}}
+\index{MapRenderer@{MapRenderer}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{MapRenderer()}{MapRenderer()}}
+{\footnotesize\ttfamily Map\+Renderer\+::\+Map\+Renderer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_map}{Map}} $\ast$}]{map }\end{DoxyParamCaption})}
+
+Creates a map\+Renderer referring to the current map. @params map The map to render 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_map_renderer_ae059a3d3d58666ec5a52ffc68c19bffc}\label{class_map_renderer_ae059a3d3d58666ec5a52ffc68c19bffc}} 
+\index{MapRenderer@{MapRenderer}!cacheProperties@{cacheProperties}}
+\index{cacheProperties@{cacheProperties}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{cacheProperties()}{cacheProperties()}}
+{\footnotesize\ttfamily void Map\+Renderer\+::cache\+Properties (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Cache all shader program properties \mbox{\Hypertarget{class_map_renderer_a5cb054ace27a6f77b8fd6ad6bbb5925d}\label{class_map_renderer_a5cb054ace27a6f77b8fd6ad6bbb5925d}} 
+\index{MapRenderer@{MapRenderer}!calcPath@{calcPath}}
+\index{calcPath@{calcPath}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{calcPath()}{calcPath()}}
+{\footnotesize\ttfamily void Map\+Renderer\+::calc\+Path (\begin{DoxyParamCaption}\item[{std\+::string \&}]{path }\end{DoxyParamCaption})}
+
+Calculates the path for the file name specified by path. Will be adjusted as needed. @params path The name of the file (with extension) to search for. \mbox{\Hypertarget{class_map_renderer_ac87e84a47f481e1fb7ffc82b3be0f4f6}\label{class_map_renderer_ac87e84a47f481e1fb7ffc82b3be0f4f6}} 
+\index{MapRenderer@{MapRenderer}!createShaderProgram@{createShaderProgram}}
+\index{createShaderProgram@{createShaderProgram}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{createShaderProgram()}{createShaderProgram()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_shader_program}{Shader\+Program}} $\ast$ Map\+Renderer\+::create\+Shader\+Program (\begin{DoxyParamCaption}\item[{std\+::string}]{vertex\+Shader\+Path,  }\item[{std\+::string}]{fragment\+Shader\+Path }\end{DoxyParamCaption})}
+
+Makes a shader program based on the fragment and vertex shaders loaded from files @params vertex\+Shader\+Path The file path of the vertex shader txt @params fragment\+Shader\+Path The file path of the fragment shader txt \mbox{\Hypertarget{class_map_renderer_aae8f8e60a148214cda2b0020ee532c22}\label{class_map_renderer_aae8f8e60a148214cda2b0020ee532c22}} 
+\index{MapRenderer@{MapRenderer}!distFromCamera@{distFromCamera}}
+\index{distFromCamera@{distFromCamera}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{distFromCamera()}{distFromCamera()}}
+{\footnotesize\ttfamily float Map\+Renderer\+::dist\+From\+Camera (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{pos }\end{DoxyParamCaption})}
+
+Works out the position defined by pos\textquotesingle{}s distance from the camera. For culling. @params pos The position to compare to the camera\textquotesingle{}s position \mbox{\Hypertarget{class_map_renderer_ab6f6efbefdf828a671b5e9032f14b578}\label{class_map_renderer_ab6f6efbefdf828a671b5e9032f14b578}} 
+\index{MapRenderer@{MapRenderer}!prepareRender@{prepareRender}}
+\index{prepareRender@{prepareRender}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{prepareRender()}{prepareRender()}}
+{\footnotesize\ttfamily void Map\+Renderer\+::prepare\+Render (\begin{DoxyParamCaption}\item[{bool}]{ignore\+Height }\end{DoxyParamCaption})}
+
+Calculate view matrix etc for rendering. Sets the ignore height flag on the fragment shader. @params ignore\+Height Whether this render pass should render heigher terrain brighter. \mbox{\Hypertarget{class_map_renderer_a61419a524ada8a571e9226eec3853f31}\label{class_map_renderer_a61419a524ada8a571e9226eec3853f31}} 
+\index{MapRenderer@{MapRenderer}!render@{render}}
+\index{render@{render}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void Map\+Renderer\+::render (\begin{DoxyParamCaption}\item[{SDL\+\_\+\+Window $\ast$}]{window }\end{DoxyParamCaption})}
+
+Perform a full render pass at the current camera position, rendering to the given window. @params window The window to render to \mbox{\Hypertarget{class_map_renderer_a21cef9190f5ec931792b327c10b184cc}\label{class_map_renderer_a21cef9190f5ec931792b327c10b184cc}} 
+\index{MapRenderer@{MapRenderer}!renderAtHeight@{renderAtHeight}}
+\index{renderAtHeight@{renderAtHeight}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{renderAtHeight()}{renderAtHeight()}}
+{\footnotesize\ttfamily void Map\+Renderer\+::render\+At\+Height (\begin{DoxyParamCaption}\item[{SDL\+\_\+\+Window $\ast$}]{window,  }\item[{float}]{height }\end{DoxyParamCaption})}
+
+Perform a render pass at the current camera position, rendering only at a given height. For segmenting terrain and debug views. @params window The window to render to @paramas height The height to render at 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Map\+Renderer.\+h\item 
+Map\+Renderer.\+cpp\end{DoxyCompactItemize}

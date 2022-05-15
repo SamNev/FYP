@@ -1,0 +1,51 @@
+\hypertarget{class_shader_program}{}\doxysection{Shader\+Program Class Reference}
+\label{class_shader_program}\index{ShaderProgram@{ShaderProgram}}
+
+
+{\ttfamily \#include $<$Shader\+Program.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_shader_program_ab306fe29a185c84cc439d1f55dcc5934}{Shader\+Program}} (const std\+::string vertex\+Shader, const std\+::string fragment\+Shader)
+\item 
+\mbox{\Hypertarget{class_shader_program_ac95c615ed58672e31da041c11671af7b}\label{class_shader_program_ac95c615ed58672e31da041c11671af7b}} 
+GLuint {\bfseries get\+Id} ()
+\item 
+void \mbox{\hyperlink{class_shader_program_a285c27da064068522f4900a8e8075f68}{use}} ()
+\item 
+\mbox{\Hypertarget{class_shader_program_a7316e5150f4b236cc63342882ad98504}\label{class_shader_program_a7316e5150f4b236cc63342882ad98504}} 
+GLuint {\bfseries get\+Uniform} (std\+::string uniform\+Name)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Create a shader program for rendering, housed in the \mbox{\hyperlink{class_map_renderer}{Map\+Renderer}} 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_shader_program_ab306fe29a185c84cc439d1f55dcc5934}\label{class_shader_program_ab306fe29a185c84cc439d1f55dcc5934}} 
+\index{ShaderProgram@{ShaderProgram}!ShaderProgram@{ShaderProgram}}
+\index{ShaderProgram@{ShaderProgram}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{ShaderProgram()}{ShaderProgram()}}
+{\footnotesize\ttfamily Shader\+Program\+::\+Shader\+Program (\begin{DoxyParamCaption}\item[{const std\+::string}]{vertex\+Shader,  }\item[{const std\+::string}]{fragment\+Shader }\end{DoxyParamCaption})}
+
+Create a shader program from the given strings as GLSL code. 
+\begin{DoxyParams}{Parameters}
+{\em vertex\+Shader} & Vertex shader as GLSL code @pram fragment\+Shader Fragment shader as GLSL code \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_shader_program_a285c27da064068522f4900a8e8075f68}\label{class_shader_program_a285c27da064068522f4900a8e8075f68}} 
+\index{ShaderProgram@{ShaderProgram}!use@{use}}
+\index{use@{use}!ShaderProgram@{ShaderProgram}}
+\doxysubsubsection{\texorpdfstring{use()}{use()}}
+{\footnotesize\ttfamily void Shader\+Program\+::use (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Use this shader program to render 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Shader\+Program.\+h\item 
+Shader\+Program.\+cpp\end{DoxyCompactItemize}

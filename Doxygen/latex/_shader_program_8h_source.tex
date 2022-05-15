@@ -1,0 +1,21 @@
+\hypertarget{_shader_program_8h_source}{}\doxysection{Shader\+Program.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#include <GL/glew.h>}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{7 \textcolor{keyword}{class }\mbox{\hyperlink{class_shader_program}{ShaderProgram}}}
+\DoxyCodeLine{8 \{}
+\DoxyCodeLine{9 \textcolor{keyword}{public}:}
+\DoxyCodeLine{10 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{15     \mbox{\hyperlink{class_shader_program_ab306fe29a185c84cc439d1f55dcc5934}{ShaderProgram}}(\textcolor{keyword}{const} std::string vertexShader, \textcolor{keyword}{const} std::string fragmentShader);}
+\DoxyCodeLine{16     GLuint getId() \{ \textcolor{keywordflow}{return} m\_id; \}}
+\DoxyCodeLine{17 \textcolor{comment}{    /***************************************************************************/}}
+\DoxyCodeLine{20     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_shader_program_a285c27da064068522f4900a8e8075f68}{use}}() \{ glUseProgram(m\_id); \}}
+\DoxyCodeLine{21     GLuint getUniform(std::string uniformName) \{ \textcolor{keywordflow}{return} glGetUniformLocation(m\_id, uniformName.c\_str()); \}}
+\DoxyCodeLine{22 \textcolor{keyword}{private}:}
+\DoxyCodeLine{23     GLuint m\_id;}
+\DoxyCodeLine{24 \};}
+
+\end{DoxyCode}

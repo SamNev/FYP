@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WaterProj: Plant Class Reference</title>
+<title>Dissertation: Plant Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">WaterProj
+   <div id="projectname">Dissertation
    </div>
   </td>
  </tr>
@@ -68,16 +68,108 @@ $(function() {
   <div class="headertitle"><div class="title">Plant Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_plant_8h_source.html">Plant.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a23f547d3852f6e8bf8837db7b8bf2d1d"><td class="memItemLeft" align="right" valign="top"><a id="a23f547d3852f6e8bf8837db7b8bf2d1d" name="a23f547d3852f6e8bf8837db7b8bf2d1d"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>root</b> (<a class="el" href="class_node.html">Node</a> *nodes, glm::ivec2 dim, glm::ivec2 pos, float foliageDensity)</td></tr>
+<tr class="memitem:a23f547d3852f6e8bf8837db7b8bf2d1d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plant.html#a23f547d3852f6e8bf8837db7b8bf2d1d">root</a> (<a class="el" href="class_node.html">Node</a> *nodes, glm::ivec2 dim, glm::ivec2 pos, float foliageDensity)</td></tr>
 <tr class="separator:a23f547d3852f6e8bf8837db7b8bf2d1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0f716d2c48d77e6ee1bd646a2ec012d"><td class="memItemLeft" align="right" valign="top"><a id="ae0f716d2c48d77e6ee1bd646a2ec012d" name="ae0f716d2c48d77e6ee1bd646a2ec012d"></a>
-static float&#160;</td><td class="memItemRight" valign="bottom"><b>getFertilityForNode</b> (const <a class="el" href="class_node.html">Node</a> *node)</td></tr>
+<tr class="memitem:ae0f716d2c48d77e6ee1bd646a2ec012d"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_plant.html#ae0f716d2c48d77e6ee1bd646a2ec012d">getFertilityForNode</a> (const <a class="el" href="class_node.html">Node</a> *node)</td></tr>
 <tr class="separator:ae0f716d2c48d77e6ee1bd646a2ec012d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p ><a class="el" href="class_plant.html">Plant</a> handles all foliage calculations for a map using static functions. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae0f716d2c48d77e6ee1bd646a2ec012d" name="ae0f716d2c48d77e6ee1bd646a2ec012d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f716d2c48d77e6ee1bd646a2ec012d">&#9670;&nbsp;</a></span>getFertilityForNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Plant::getFertilityForNode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_node.html">Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Calculates fertility for the given node </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">node</td><td>The node to check fertility of </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a23f547d3852f6e8bf8837db7b8bf2d1d" name="a23f547d3852f6e8bf8837db7b8bf2d1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f547d3852f6e8bf8837db7b8bf2d1d">&#9670;&nbsp;</a></span>root()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Plant::root </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_node.html">Node</a> *&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::ivec2&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::ivec2&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>foliageDensity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Root a plant at the given location. Will increase both the current and surrounding node foliage densities </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nodes</td><td>The nodes that make up the map data </td></tr>
+    <tr><td class="paramname">dim</td><td>The size of the map </td></tr>
+    <tr><td class="paramname">pos</td><td>The position to root from </td></tr>
+    <tr><td class="paramname">foliageDensity</td><td>The amount of foliage to place </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="_plant_8h_source.html">Plant.h</a></li>
 <li>Plant.cpp</li>

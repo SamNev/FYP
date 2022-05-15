@@ -1,0 +1,152 @@
+\hypertarget{class_node}{}\doxysection{Node Class Reference}
+\label{class_node}\index{Node@{Node}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_node_a89cd934ed78c39e23ba10d28c87c2074}\label{class_node_a89cd934ed78c39e23ba10d28c87c2074}} 
+void {\bfseries add\+Water} (float height)
+\item 
+\mbox{\Hypertarget{class_node_a7f6413a082597a87a0fd8e6dfb26d7c7}\label{class_node_a7f6413a082597a87a0fd8e6dfb26d7c7}} 
+void {\bfseries add\+Marker} (\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} marker, float \&max\+Height)
+\item 
+\mbox{\Hypertarget{class_node_ade7ae663759d2ade7de97d428faab2b7}\label{class_node_ade7ae663759d2ade7de97d428faab2b7}} 
+void {\bfseries add\+Marker} (float height, float resistive\+Force, bool hard\+Stop, glm\+::vec3 color, float fertility, float sand\+Amount, float clay\+Amount, float \&max\+Height)
+\item 
+void \mbox{\hyperlink{class_node_ac53630ee6e50c474777f05d61f3bde6b}{erode\+By\+Value}} (float amount)
+\item 
+\mbox{\Hypertarget{class_node_a6f6c0dd00f4fb88dca3bfb4af57acb9b}\label{class_node_a6f6c0dd00f4fb88dca3bfb4af57acb9b}} 
+float {\bfseries get\+Resistive\+Force\+At\+Height} (float height) const
+\item 
+\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} \mbox{\hyperlink{class_node_aacfb886a6e59ff69fc9d0dd0446fd742}{get\+Data\+Above\+Height}} (float height, bool ignore\+Rock=false) const
+\item 
+\mbox{\Hypertarget{class_node_a5db62c45b03690c73d97c37188b175af}\label{class_node_a5db62c45b03690c73d97c37188b175af}} 
+glm\+::vec3 {\bfseries get\+Color\+At\+Height} (float height) const
+\item 
+float \mbox{\hyperlink{class_node_ad7003df95225a33ca9bfad29f2e615b2}{top\+Height}} () const
+\item 
+\mbox{\Hypertarget{class_node_a14e133fe1b2da11a12471d5b05e8c280}\label{class_node_a14e133fe1b2da11a12471d5b05e8c280}} 
+glm\+::vec3 {\bfseries top\+Color} () const
+\item 
+\mbox{\hyperlink{struct_node_marker}{Node\+Marker}} $\ast$ \mbox{\hyperlink{class_node_a1b2c9febd27e95a8a891e741e57c6832}{top}} ()
+\item 
+void \mbox{\hyperlink{class_node_a24c8bd2df0e9cdc5edea4bb6b7d54fa3}{skim}} ()
+\item 
+\mbox{\Hypertarget{class_node_a62deb580d3e600c69426cc1288ba5a43}\label{class_node_a62deb580d3e600c69426cc1288ba5a43}} 
+float {\bfseries water\+Height} () const
+\item 
+\mbox{\Hypertarget{class_node_a6f6283325cf421c73e944c574ecef703}\label{class_node_a6f6283325cf421c73e944c574ecef703}} 
+float {\bfseries water\+Height} (float val\+If\+No\+Water) const
+\item 
+\mbox{\Hypertarget{class_node_a821f4e15155f64e11dc89fe72351b8b9}\label{class_node_a821f4e15155f64e11dc89fe72351b8b9}} 
+float {\bfseries water\+Height\+With\+Streams} (float val\+If\+No\+Water) const
+\item 
+\mbox{\Hypertarget{class_node_a158c094870e5bd5a23caf82a8e307227}\label{class_node_a158c094870e5bd5a23caf82a8e307227}} 
+float {\bfseries water\+Depth} () const
+\item 
+\mbox{\Hypertarget{class_node_a0bdf96283abf3a5587da3317acd337cc}\label{class_node_a0bdf96283abf3a5587da3317acd337cc}} 
+void {\bfseries set\+Water\+Height} (float water\+Height)
+\item 
+\mbox{\Hypertarget{class_node_ae6608596e6a4ece81ca2e6b102305d3d}\label{class_node_ae6608596e6a4ece81ca2e6b102305d3d}} 
+void {\bfseries set\+Water\+Depth} (float water\+Depth)
+\item 
+\mbox{\Hypertarget{class_node_a62b137c5598df2d83cbc684eb92a3cd3}\label{class_node_a62b137c5598df2d83cbc684eb92a3cd3}} 
+bool {\bfseries has\+Water} () const
+\item 
+void \mbox{\hyperlink{class_node_a46c54abbfc9c5fc3d43b62012f01ed5e}{set\+Height}} (float height, \mbox{\hyperlink{struct_node_marker}{Node\+Marker}} filler\+Value, float \&max\+Height)
+\item 
+\mbox{\Hypertarget{class_node_a43e7eb9d30341afec96f20091194e118}\label{class_node_a43e7eb9d30341afec96f20091194e118}} 
+float {\bfseries get\+Particles} () const
+\item 
+\mbox{\Hypertarget{class_node_afcfd923b72f30342770d173505450360}\label{class_node_afcfd923b72f30342770d173505450360}} 
+void {\bfseries set\+Particles} (float particles)
+\item 
+\mbox{\Hypertarget{class_node_a41b524849b1ad87afa5d8470b264cff9}\label{class_node_a41b524849b1ad87afa5d8470b264cff9}} 
+void {\bfseries set\+Foliage\+Density} (float density)
+\item 
+\mbox{\Hypertarget{class_node_a4ec360e5c7c27d00b67f8c709c9510dd}\label{class_node_a4ec360e5c7c27d00b67f8c709c9510dd}} 
+float {\bfseries get\+Fertility} () const
+\item 
+\mbox{\Hypertarget{class_node_a6bffc7651b8c2746e0eacee9dc24503c}\label{class_node_a6bffc7651b8c2746e0eacee9dc24503c}} 
+float {\bfseries get\+Foliage\+Density} () const
+\item 
+\mbox{\Hypertarget{class_node_afeda080919ab06d235ae867824452971}\label{class_node_afeda080919ab06d235ae867824452971}} 
+float {\bfseries get\+Foliage\+Water\+Supply} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_node_afc6dd8942607634de8c8ecc63e3e460e}\label{class_node_afc6dd8942607634de8c8ecc63e3e460e}} 
+std\+::vector$<$ \mbox{\hyperlink{struct_node_marker}{Node\+Marker}} $>$ {\bfseries m\+\_\+node\+Data}
+\item 
+\mbox{\Hypertarget{class_node_a1452e688f6e276599f94f57a0350f2a3}\label{class_node_a1452e688f6e276599f94f57a0350f2a3}} 
+\mbox{\hyperlink{struct_water_data}{Water\+Data}} {\bfseries m\+\_\+water\+Data}
+\item 
+\mbox{\Hypertarget{class_node_a62711297d553a17bb1276df38773af08}\label{class_node_a62711297d553a17bb1276df38773af08}} 
+\mbox{\hyperlink{struct_vegetation_data}{Vegetation\+Data}} {\bfseries m\+\_\+vegetation\+Data}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_node_ac53630ee6e50c474777f05d61f3bde6b}\label{class_node_ac53630ee6e50c474777f05d61f3bde6b}} 
+\index{Node@{Node}!erodeByValue@{erodeByValue}}
+\index{erodeByValue@{erodeByValue}!Node@{Node}}
+\doxysubsubsection{\texorpdfstring{erodeByValue()}{erodeByValue()}}
+{\footnotesize\ttfamily void Node\+::erode\+By\+Value (\begin{DoxyParamCaption}\item[{float}]{amount }\end{DoxyParamCaption})}
+
+Erodes the terrain by a height value 
+\begin{DoxyParams}{Parameters}
+{\em amount} & The amount to erode by \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_node_aacfb886a6e59ff69fc9d0dd0446fd742}\label{class_node_aacfb886a6e59ff69fc9d0dd0446fd742}} 
+\index{Node@{Node}!getDataAboveHeight@{getDataAboveHeight}}
+\index{getDataAboveHeight@{getDataAboveHeight}!Node@{Node}}
+\doxysubsubsection{\texorpdfstring{getDataAboveHeight()}{getDataAboveHeight()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_node_marker}{Node\+Marker}} Node\+::get\+Data\+Above\+Height (\begin{DoxyParamCaption}\item[{float}]{height,  }\item[{bool}]{ignore\+Rock = {\ttfamily false} }\end{DoxyParamCaption}) const}
+
+Returns a \mbox{\hyperlink{struct_node_marker}{Node\+Marker}} containing all soil data above a given height mixed together. 
+\begin{DoxyParams}{Parameters}
+{\em height} & The height to check above \\
+\hline
+{\em ignore\+Rock} & Whether rocks should be considered or not. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_node_a46c54abbfc9c5fc3d43b62012f01ed5e}\label{class_node_a46c54abbfc9c5fc3d43b62012f01ed5e}} 
+\index{Node@{Node}!setHeight@{setHeight}}
+\index{setHeight@{setHeight}!Node@{Node}}
+\doxysubsubsection{\texorpdfstring{setHeight()}{setHeight()}}
+{\footnotesize\ttfamily void Node\+::set\+Height (\begin{DoxyParamCaption}\item[{float}]{height,  }\item[{\mbox{\hyperlink{struct_node_marker}{Node\+Marker}}}]{filler\+Value,  }\item[{float \&}]{max\+Height }\end{DoxyParamCaption})}
+
+Sets the node\textquotesingle{}s height to a given value. If above the current height, will use filler data to increase the height. 
+\begin{DoxyParams}{Parameters}
+{\em height} & The height to set to \\
+\hline
+{\em filler\+Value} & The data to use to fill the terrain if it is not heigh enough \\
+\hline
+{\em max\+Height} & map maximum height \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_node_a24c8bd2df0e9cdc5edea4bb6b7d54fa3}\label{class_node_a24c8bd2df0e9cdc5edea4bb6b7d54fa3}} 
+\index{Node@{Node}!skim@{skim}}
+\index{skim@{skim}!Node@{Node}}
+\doxysubsubsection{\texorpdfstring{skim()}{skim()}}
+{\footnotesize\ttfamily void Node\+::skim (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Debug-\/ remove the top layer of the node. \mbox{\Hypertarget{class_node_a1b2c9febd27e95a8a891e741e57c6832}\label{class_node_a1b2c9febd27e95a8a891e741e57c6832}} 
+\index{Node@{Node}!top@{top}}
+\index{top@{top}!Node@{Node}}
+\doxysubsubsection{\texorpdfstring{top()}{top()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_node_marker}{Node\+Marker}} $\ast$ Node\+::top (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Returns the topmost marker of the node \mbox{\Hypertarget{class_node_ad7003df95225a33ca9bfad29f2e615b2}\label{class_node_ad7003df95225a33ca9bfad29f2e615b2}} 
+\index{Node@{Node}!topHeight@{topHeight}}
+\index{topHeight@{topHeight}!Node@{Node}}
+\doxysubsubsection{\texorpdfstring{topHeight()}{topHeight()}}
+{\footnotesize\ttfamily float Node\+::top\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Returns the heighest height of the node. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Node.\+h\item 
+Node.\+cpp\end{DoxyCompactItemize}

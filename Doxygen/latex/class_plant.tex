@@ -1,0 +1,53 @@
+\hypertarget{class_plant}{}\doxysection{Plant Class Reference}
+\label{class_plant}\index{Plant@{Plant}}
+
+
+{\ttfamily \#include $<$Plant.\+h$>$}
+
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_plant_a23f547d3852f6e8bf8837db7b8bf2d1d}{root}} (\mbox{\hyperlink{class_node}{Node}} $\ast$nodes, glm\+::ivec2 dim, glm\+::ivec2 pos, float foliage\+Density)
+\item 
+static float \mbox{\hyperlink{class_plant_ae0f716d2c48d77e6ee1bd646a2ec012d}{get\+Fertility\+For\+Node}} (const \mbox{\hyperlink{class_node}{Node}} $\ast$node)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\mbox{\hyperlink{class_plant}{Plant}} handles all foliage calculations for a map using static functions. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_plant_ae0f716d2c48d77e6ee1bd646a2ec012d}\label{class_plant_ae0f716d2c48d77e6ee1bd646a2ec012d}} 
+\index{Plant@{Plant}!getFertilityForNode@{getFertilityForNode}}
+\index{getFertilityForNode@{getFertilityForNode}!Plant@{Plant}}
+\doxysubsubsection{\texorpdfstring{getFertilityForNode()}{getFertilityForNode()}}
+{\footnotesize\ttfamily float Plant\+::get\+Fertility\+For\+Node (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_node}{Node}} $\ast$}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Calculates fertility for the given node 
+\begin{DoxyParams}{Parameters}
+{\em node} & The node to check fertility of \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_plant_a23f547d3852f6e8bf8837db7b8bf2d1d}\label{class_plant_a23f547d3852f6e8bf8837db7b8bf2d1d}} 
+\index{Plant@{Plant}!root@{root}}
+\index{root@{root}!Plant@{Plant}}
+\doxysubsubsection{\texorpdfstring{root()}{root()}}
+{\footnotesize\ttfamily void Plant\+::root (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_node}{Node}} $\ast$}]{nodes,  }\item[{glm\+::ivec2}]{dim,  }\item[{glm\+::ivec2}]{pos,  }\item[{float}]{foliage\+Density }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Root a plant at the given location. Will increase both the current and surrounding node foliage densities 
+\begin{DoxyParams}{Parameters}
+{\em nodes} & The nodes that make up the map data \\
+\hline
+{\em dim} & The size of the map \\
+\hline
+{\em pos} & The position to root from \\
+\hline
+{\em foliage\+Density} & The amount of foliage to place \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Plant.\+h\item 
+Plant.\+cpp\end{DoxyCompactItemize}
