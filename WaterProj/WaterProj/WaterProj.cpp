@@ -39,6 +39,7 @@ void printControls()
 {
 	std::cout << "\nControls:\n";
 	std::cout << "ESC: Quit\n";
+	std::cout << "R: Generate new map\n";
 	std::cout << "W,A,S,D: Transform camera\n";
 	std::cout << "Q,E: Zoom in, zoom out\n";
 	std::cout << "P: Play/pause simulation\n";

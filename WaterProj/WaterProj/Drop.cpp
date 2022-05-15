@@ -31,7 +31,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
     if (m_velocity.length() < m_params->dropSedimentSimulationMinimumVelocity)
         return;
 
-    // Stokes' law, see write-up. Particle density assumed at 1500kg/m^3
+    // Stokes' law, see dissertation write-up. Particle density assumed at 1500kg/m^3
     float deposit = m_sedimentAmount * glm::max(0.1f, glm::min(0.5f, 2.4627f / (float)m_velocity.length()));
     deposit /= 8.0f;
 
@@ -60,7 +60,7 @@ void Drop::cascade(glm::vec2 pos, glm::ivec2 dim, Node* nodes, bool* track, floa
         if (m_lastVelocity == glm::vec2(0.0f))
             actingForce = 0.0f;
 
-        // very low velocity change! Likely that we're not really moving at all.
+        // Very low velocity change! Likely that we're not really moving at all.
         if (actingForce <= 0.0f)
             continue;
 

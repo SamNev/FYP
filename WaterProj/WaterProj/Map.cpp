@@ -205,11 +205,11 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 				if (currHeight * m_maxHeight < BEDROCK_SAFETY_LAYER)
 					continue;
 
-				const float scaledDensHeight = currHeight * m_params.rockVerticalScaling;
+				const float scaledHeight = currHeight * m_params.rockVerticalScaling;
 				if (!isRock)
 				{
 					// rock resistiveForce (3.8-4.2g/cm3)
-					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_params.scale), y / (m_params.rockRarity / m_params.scale), scaledDensHeight);
+					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_params.scale), y / (m_params.rockRarity / m_params.scale), scaledHeight);
 					if (currVal > m_params.rockThreshold)
 					{
 						float resistivity = m_params.rockResistivityBase + (currVal - m_params.rockThreshold) * m_params.rockResistivityVariance;
@@ -219,7 +219,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 					else
 					{
 						// soil resistiveForce (2.3-2.6g/cm3, increasing with depth)
-						float noise = resistivityNoise->noise(x / (m_params.soilResistivityChangeRate / m_params.scale), y / (m_params.soilResistivityChangeRate / m_params.scale), scaledDensHeight);
+						float noise = resistivityNoise->noise(x / (m_params.soilResistivityChangeRate / m_params.scale), y / (m_params.soilResistivityChangeRate / m_params.scale), scaledHeight);
 						float resistivity = m_params.soilResistivityBase + glm::max(0.0f, 0.5f - currHeight) + noise * m_params.soilResistivityVariance;
 						float sandAmount = m_params.soilSandContent + noise * m_params.soilSandVariance;
 						float clayAmount = m_params.soilClayContent + noise * m_params.soilClayVariance;
@@ -230,7 +230,7 @@ void Map::addRocksAndDirt(PerlinNoise* resistivityNoise, PerlinNoise* rockNoise)
 				else
 				{
 					// rock resistiveForce (3.8-4.2g/cm3)
-					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_params.scale), y / (m_params.rockRarity / m_params.scale), scaledDensHeight);
+					float currVal = rockNoise->noise(x / (m_params.rockRarity / m_params.scale), y / (m_params.rockRarity / m_params.scale), scaledHeight);
 					if (currVal < m_params.rockThreshold)
 					{
 						float resistivity = m_params.rockResistivityBase + (currVal - m_params.rockThreshold) * m_params.rockResistivityVariance;
