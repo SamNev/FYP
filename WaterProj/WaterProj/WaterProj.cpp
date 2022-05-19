@@ -43,7 +43,7 @@ void printControls()
 	std::cout << "W,A,S,D: Transform camera\n";
 	std::cout << "Q,E: Zoom in, zoom out\n";
 	std::cout << "P: Play/pause simulation\n";
-	std::cout << "1: Enter height view mode\n";
+	std::cout << "1: Toggle height view mode\n";
 	std::cout << "Up/Down arrows: Raise/Lower height view mode\n";
 	std::cout << "2: Get node data at specified position\n";
 	std::cout << "3: Get node data at current position\n";
